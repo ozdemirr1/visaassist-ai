@@ -1,9 +1,9 @@
-# Gizli bilgiler
+# Secrets
 .env
 .env.*
 !.env.example
 
-# Kişisel / gerçek belgeler — asla depoya girmez
+# Personal / real documents — never committed
 data/private/
 uploads/
 
@@ -18,7 +18,7 @@ __pycache__/
 node_modules/
 dist/
 
-# Sistem
+# OS / editors
 .DS_Store
 .idea/
 .vscode/

@@ -1,15 +1,16 @@
 # VisaAssist AI
 
-Vize başvurusu hazırlayan kişilere resmî kaynaklara dayalı rehberlik ve yapay zekâ destekli belge ön kontrolü sunan web uygulaması.
+A web application that provides visa applicants with guidance based on official sources and AI-assisted document pre-checks.
 
-İstanbul Bilgi Üniversitesi, Bilgisayar Mühendisliği — CMPE 491/492 Bitirme Projesi · Furkan Özdemir
+Istanbul Bilgi University, Computer Engineering — CMPE 491/492 Senior Design Project · Furkan Özdemir
 
-> Proje geliştirme aşamasındadır.
+> This project is under active development.
 
-## Kurulum
-Kurulum adımları ilk çalışan sürümle birlikte eklenecektir.
+## Getting Started
+Setup instructions will be added with the first working release.
 
-## Belgeler
-- [Yol haritası](docs/ROADMAP.md)
-- [Mimari kararlar](docs/decisions/)
-- [Haftalık notlar](docs/weekly/)
+## Documentation
+- [Roadmap](docs/ROADMAP.md)
+- [Architecture decisions](docs/decisions/)
+- [Weekly progress notes](docs/weekly/)
+- [Project proposal](docs/proposal/)

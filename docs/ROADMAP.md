@@ -1,17 +1,17 @@
-# Yol Haritası (taslak — proposal'dan alınmıştır, ders takvimine göre güncellenecek)
+# Roadmap (draft — based on the approved proposal, to be aligned with the course calendar)
 
-## Güz (CMPE 491)
-1. Gereksinim analizi ve literatür taraması — 2 hafta
-2. Sistem tasarımı: mimari, veritabanı şeması, API ve arayüz taslakları — 2 hafta
-3. Backend altyapısı: FastAPI, PostgreSQL, JWT, Docker — 2 hafta
-4. Resmî kaynaklardan vize gereksinim verilerinin derlenmesi — 2 hafta
-5. Web uygulamasının temel modülleri — 3 hafta
+## Fall Semester (CMPE 491)
+1. Requirements analysis and literature review — 2 weeks
+2. System design: architecture, database schema, API design and UI wireframes — 2 weeks
+3. Backend infrastructure: FastAPI, PostgreSQL, JWT authentication, Docker — 2 weeks
+4. Collection and structuring of visa requirement data from official sources — 2 weeks
+5. Core web application modules — 3 weeks
 
-## Bahar (CMPE 492)
-6. Sentetik başvuru dosyası veri seti — 2 hafta
-7. Yapay zekâ servisi; belge sınıflandırma ve bilgi çıkarma (OCR + VLM) — 3 hafta
-8. Kural motoru ve belgeler arası tutarlılık denetimi — 2 hafta
-9. Resmî kaynak takip sistemi ve yönetim paneli — 2 hafta
-10. Kaynaklı vize asistanı (RAG, pgvector) — 1 hafta
-11. Entegrasyon ve testler — 2 hafta
-12. Deneyler, değerlendirme ve final raporu — 2 hafta
+## Spring Semester (CMPE 492)
+6. Synthetic visa application dataset — 2 weeks
+7. AI service: document classification and information extraction (OCR + VLM) — 3 weeks
+8. Rule engine and cross-document consistency checking — 2 weeks
+9. Official source monitoring and admin panel — 2 weeks
+10. Source-grounded visa assistant (RAG, pgvector) — 1 week
+11. Integration and testing — 2 weeks
+12. Experiments, evaluation and final report — 2 weeks

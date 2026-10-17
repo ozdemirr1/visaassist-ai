@@ -1,7 +1,7 @@
-## Ne yapıldı
-## Neden (ilgili issue: #)
-## Nasıl test edildi
-## Dikkat edilmesi gerekenler / açık sorular
-## Kontrol listesi
-- [ ] Testler geçiyor
-- [ ] Gizli bilgi (API anahtarı, kişisel veri) eklenmedi
+## What was done
+## Why (related issue: #)
+## How it was tested
+## Notes / open questions
+## Checklist
+- [ ] Tests pass
+- [ ] No secrets (API keys, personal data) added

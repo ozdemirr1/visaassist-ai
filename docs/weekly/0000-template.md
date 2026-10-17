@@ -1,6 +1,6 @@
-# Hafta N — YYYY-MM-DD
+# Week N — YYYY-MM-DD
 
-## Bu hafta tamamlananlar
-## Gösterilebilir çıktı (ekran görüntüsü, demo, PR linki)
-## Karşılaşılan sorunlar
-## Gelecek hafta hedefleri
+## Completed this week
+## Demonstrable output (screenshot, demo, PR link)
+## Problems encountered
+## Goals for next week

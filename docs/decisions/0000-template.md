@@ -1,15 +1,15 @@
-# NNNN — Karar başlığı
-Tarih: YYYY-MM-DD · Durum: Önerildi / Kabul edildi / Değiştirildi
+# NNNN — Decision title
+Date: YYYY-MM-DD · Status: Proposed / Accepted / Superseded
 
-## Bağlam
-Hangi sorunu çözmeye çalışıyoruz?
+## Context
+What problem are we trying to solve?
 
-## Karar
-Ne seçtik?
+## Decision
+What did we choose?
 
-## Değerlendirilen alternatifler
-- Alternatif A: neden seçilmedi
-- Alternatif B: neden seçilmedi
+## Alternatives considered
+- Alternative A: why it was not chosen
+- Alternative B: why it was not chosen
 
-## Sonuçları
-Bu kararın getirdiği avantajlar, maliyetler ve riskler.
+## Consequences
+Benefits, costs and risks introduced by this decision.
