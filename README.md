@@ -15,4 +15,3 @@ Full setup instructions (Docker Compose) will be added with the first working re
 - [Roadmap](docs/ROADMAP.md)
 - [Architecture decisions](docs/decisions/)
 - [Weekly progress notes](docs/weekly/)
-- [Project proposal](docs/proposal/)
