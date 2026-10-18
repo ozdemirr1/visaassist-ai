@@ -7,7 +7,9 @@ Istanbul Bilgi University, Computer Engineering — CMPE 491/492 Senior Design P
 > This project is under active development.
 
 ## Getting Started
-Setup instructions will be added with the first working release.
+- Backend: see [backend/README.md](backend/README.md)
+
+Full setup instructions (Docker Compose) will be added with the first working release.
 
 ## Documentation
 - [Roadmap](docs/ROADMAP.md)
