@@ -7,9 +7,13 @@ Istanbul Bilgi University, Computer Engineering — CMPE 491/492 Senior Design P
 > This project is under active development.
 
 ## Getting Started
-- Backend: see [backend/README.md](backend/README.md)
+```bash
+cp .env.example .env     # then edit the values
+docker compose up -d     # PostgreSQL with pgvector
+```
+Then follow [backend/README.md](backend/README.md) to run the API.
 
-Full setup instructions (Docker Compose) will be added with the first working release.
+Full setup instructions will be added with the first working release.
 
 ## Documentation
 - [Roadmap](docs/ROADMAP.md)
