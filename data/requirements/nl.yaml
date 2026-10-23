@@ -1,0 +1,97 @@
+# National layer: the Netherlands, Schengen short-stay visa (C), tourism, applicants in Türkiye.
+# Source: NetherlandsWorldwide checklist (data/sources.yaml: nl-checklist-tourism-tr).
+# Added on top of the EU baseline (eu-tr.yaml). Passages are paraphrased; see docs/sources.md.
+
+layer: national
+destination: NL
+visa: schengen-c
+purposes: [tourism]
+
+requirements:
+  - id: nl-req-application-form
+    document: application_form
+    submit_as: original
+    source: {source_id: nl-checklist-tourism-tr, section: "Application form",
+             passage: "A completed and signed application form with a unique code, printed."}
+
+  - id: nl-req-passport
+    document: passport
+    submit_as: original_and_copy
+    source: {source_id: nl-checklist-tourism-tr, section: "Travel document",
+             passage: "Passport no more than 10 years old, with 2 empty visa pages and signed."}
+
+  - id: nl-req-photo
+    document: photo
+    submit_as: original
+    note: {en: Not needed when the service provider takes the photo.,
+           tr: Fotoğrafı başvuru merkezi çekiyorsa gerekmez.}
+    source: {source_id: nl-checklist-tourism-tr, section: "Photo",
+             passage: "Colour photo, at most 6 months old, 35 × 45 mm, light background."}
+
+  - id: nl-req-travel-insurance
+    document: travel_insurance
+    submit_as: copy
+    source: {source_id: nl-checklist-tourism-tr, section: "Travel medical insurance",
+             passage: "Covers all Schengen countries for the whole stay, at least EUR 30,000."}
+
+rules:
+  - id: nl-rule-passport-issued-within-10-years
+    title: {en: Passport issued within the last 10 years, tr: Pasaport son 10 yıl içinde verilmiş}
+    severity: error
+    check: {kind: max_age, documents: [passport], field: issue_date, amount: 10, unit: years}
+    source: {source_id: nl-checklist-tourism-tr, section: "Travel document",
+             passage: "The passport is no more than 10 years old."}
+
+  - id: nl-rule-passport-validity
+    title: {en: Passport valid 3 months after leaving the Schengen area,
+            tr: Pasaport Schengen bölgesinden çıkıştan sonra 3 ay geçerli}
+    severity: error
+    check: {kind: valid_after_trip, document: passport, field: expiry_date, months: 3}
+    source: {source_id: nl-checklist-tourism-tr, section: "Travel document",
+             passage: "Valid for at least 3 months after you leave the Schengen area."}
+
+  - id: nl-rule-passport-blank-pages
+    title: {en: Passport has at least 2 empty visa pages, tr: Pasaportta en az 2 boş vize sayfası var}
+    severity: error
+    check: {kind: min_value, document: passport, field: blank_pages, value: 2}
+    source: {source_id: nl-checklist-tourism-tr, section: "Travel document",
+             passage: "The passport has at least 2 empty visa pages."}
+
+  - id: nl-rule-passport-signed
+    title: {en: Passport is signed, tr: Pasaport imzalı}
+    severity: warning
+    check: {kind: field_true, documents: [passport], fields: [signed]}
+    source: {source_id: nl-checklist-tourism-tr, section: "Travel document",
+             passage: "The passport bears the holder's signature."}
+
+  - id: nl-rule-photo-age
+    title: {en: Photo not older than 6 months, tr: Fotoğraf 6 aydan eski değil}
+    severity: error
+    check: {kind: max_age, documents: [photo], field: taken_on, amount: 6, unit: months}
+    source: {source_id: nl-checklist-tourism-tr, section: "Photo",
+             passage: "The photo is no more than 6 months old."}
+
+  - id: nl-rule-insurance-amount
+    title: {en: "Insurance covers at least EUR 30,000", tr: "Sigorta en az 30.000 EUR teminat veriyor"}
+    severity: error
+    check: {kind: min_amount, document: travel_insurance, field: coverage_amount,
+            amount: 30000, currency: EUR}
+    source: {source_id: nl-checklist-tourism-tr, section: "Travel medical insurance",
+             passage: "At least EUR 30,000 in medical expenses, including repatriation."}
+
+  - id: nl-rule-insurance-period
+    title: {en: Insurance covers the whole stay, tr: Sigorta tüm kalış süresini kapsıyor}
+    severity: error
+    check: {kind: period_covers_trip, document: travel_insurance,
+            start_field: coverage_start, end_field: coverage_end}
+    source: {source_id: nl-checklist-tourism-tr, section: "Travel medical insurance",
+             passage: "The insurance covers the whole stay."}
+
+  - id: nl-rule-insurance-territory-and-repatriation
+    title: {en: Insurance valid in all Schengen states and covers repatriation,
+            tr: Sigorta tüm Schengen ülkelerinde geçerli ve geri nakli kapsıyor}
+    severity: error
+    check: {kind: field_true, documents: [travel_insurance],
+            fields: [covers_all_schengen, covers_repatriation]}
+    source: {source_id: nl-checklist-tourism-tr, section: "Travel medical insurance",
+             passage: "Covers all Schengen countries, including repatriation."}

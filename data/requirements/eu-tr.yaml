@@ -1,0 +1,156 @@
+# EU baseline for short-stay (C) visa applicants in Türkiye, shared by every destination.
+# Source: Commission Implementing Decision C(2021) 5156 (data/sources.yaml: eu-harmonised-list-tr).
+# Passages are paraphrased; see docs/sources.md.
+
+layer: eu
+destination: null
+visa: schengen-c
+purposes: [tourism]
+
+requirements:
+  - id: eu-req-travel-reservation
+    document: travel_reservation
+    submit_as: copy
+    source: {source_id: eu-harmonised-list-tr, section: "I. General requirements",
+             passage: "Travel arrangements: flight bookings, other proof of transport or itinerary."}
+
+  - id: eu-req-civil-registry
+    document: civil_registry_extract
+    submit_as: copy
+    source: {source_id: eu-harmonised-list-tr, section: "I. General requirements",
+             passage: "Complete civil registry extract (Tam Tekmil Vukuatlı Nüfus Kayıt Örneği)."}
+
+  - id: eu-req-accommodation
+    document: accommodation
+    submit_as: copy
+    source: {source_id: eu-harmonised-list-tr, section: "I. General requirements",
+             passage: "Proof of accommodation, for example a hotel booking."}
+
+  - id: eu-req-bank-statement
+    document: bank_statement
+    submit_as: copy
+    source: {source_id: eu-harmonised-list-tr, section: "I.4 Proof of means of subsistence",
+             passage: "Bank account statement showing movements over the last three months."}
+
+  - id: eu-req-payslips
+    document: payslip
+    profiles: [employed]
+    submit_as: copy
+    source: {source_id: eu-harmonised-list-tr, section: "I.4 Proof of means of subsistence",
+             passage: "Proof of regular income, such as salary slips for the last three months."}
+
+  - id: eu-req-employer-letter
+    document: employer_letter
+    profiles: [employed]
+    submit_as: original
+    source: {source_id: eu-harmonised-list-tr, section: "II. Employees",
+             passage: "Letter from the employer and/or leave approval addressed to the consulate."}
+
+  - id: eu-req-sgk-declaration
+    document: sgk_employment_declaration
+    profiles: [employed]
+    submit_as: copy
+    source: {source_id: eu-harmonised-list-tr, section: "II. Employees",
+             passage: "SGK employment statement with a readable QR code."}
+
+  - id: eu-req-sgk-service-record
+    document: sgk_service_record
+    profiles: [employed]
+    submit_as: copy
+    source: {source_id: eu-harmonised-list-tr, section: "II. Employees",
+             passage: "SGK registration and service record with a readable QR code."}
+
+  - id: eu-req-yok-certificate
+    document: yok_student_certificate
+    profiles: [student]
+    submit_as: original
+    source: {source_id: eu-harmonised-list-tr, section: "II. Students",
+             passage: "Higher education: student certificate issued by YÖK with a readable QR code."}
+
+rules:
+  - id: eu-rule-bank-statement-period
+    title: {en: Bank statement covers the last 3 months, tr: Banka dökümü son 3 ayı kapsıyor}
+    severity: error
+    check: {kind: covers_recent_months, document: bank_statement,
+            start_field: period_start, end_field: period_end, months: 3}
+    source: {source_id: eu-harmonised-list-tr, section: "I.4 Proof of means of subsistence",
+             passage: "Bank account statement showing movements over the last three months."}
+
+  - id: eu-rule-payslips-last-3-months
+    title: {en: Salary slips for each of the last 3 months, tr: Son 3 ayın her biri için maaş bordrosu}
+    severity: error
+    profiles: [employed]
+    check: {kind: recent_monthly_count, document: payslip, date_field: pay_month, months: 3}
+    source: {source_id: eu-harmonised-list-tr, section: "I.4 Proof of means of subsistence",
+             passage: "Proof of regular income, such as salary slips for the last three months."}
+
+  - id: eu-rule-employer-letter-contents
+    title: {en: Employer letter has the required contents, tr: İşveren yazısında gerekli bilgiler var}
+    severity: error
+    profiles: [employed]
+    check: {kind: fields_present, document: employer_letter,
+            fields: [employee_name, passport_number, employment_start, job_title, leave_start,
+                     leave_end, leave_paid, employer_contact, signatory_name]}
+    source:
+      source_id: eu-harmonised-list-tr
+      section: "II. Employees"
+      passage: >-
+        The letter states the employee's name and passport number, start date and job,
+        length of leave and whether it is paid, employer contacts and the signatory.
+
+  - id: eu-rule-employer-letter-addressed
+    title: {en: Employer letter is addressed to the consulate, tr: İşveren yazısı konsolosluğa hitaben}
+    severity: warning
+    profiles: [employed]
+    check: {kind: field_true, documents: [employer_letter], fields: [addressed_to_consulate]}
+    source: {source_id: eu-harmonised-list-tr, section: "II. Employees",
+             passage: "Letter from the employer and/or leave approval addressed to the consulate."}
+
+  - id: eu-rule-leave-covers-trip
+    title: {en: Leave covers the whole trip, tr: İzin tüm seyahati kapsıyor}
+    severity: error
+    profiles: [employed]
+    check: {kind: period_covers_trip, document: employer_letter,
+            start_field: leave_start, end_field: leave_end}
+    source: {source_id: eu-harmonised-list-tr, section: "II. Employees", basis: derived,
+             passage: "The letter states the length of leave; a trip outside the leave contradicts it."}
+
+  - id: eu-rule-sgk-qr-readable
+    title: {en: SGK documents have a readable QR code, tr: SGK belgelerinin karekodu okunuyor}
+    severity: error
+    profiles: [employed]
+    check: {kind: field_true, documents: [sgk_employment_declaration, sgk_service_record],
+            fields: [qr_code_readable]}
+    source: {source_id: eu-harmonised-list-tr, section: "II. Employees",
+             passage: "SGK employment statement and service record, both with a readable QR code."}
+
+  - id: eu-rule-yok-qr-readable
+    title: {en: YÖK certificate has a readable QR code, tr: YÖK belgesinin karekodu okunuyor}
+    severity: error
+    profiles: [student]
+    check: {kind: field_true, documents: [yok_student_certificate], fields: [qr_code_readable]}
+    source: {source_id: eu-harmonised-list-tr, section: "II. Students",
+             passage: "Higher education: student certificate issued by YÖK with a readable QR code."}
+
+  - id: eu-rule-names-match
+    title: {en: Names match the passport, tr: İsimler pasaportla uyuşuyor}
+    severity: error
+    check:
+      kind: names_match
+      reference: passport.full_name
+      compare: [civil_registry_extract.full_name, travel_reservation.passenger_name,
+                accommodation.guest_name, bank_statement.holder_name, payslip.employee_name,
+                employer_letter.employee_name, sgk_employment_declaration.full_name,
+                sgk_service_record.full_name, yok_student_certificate.full_name,
+                travel_insurance.insured_name]
+    source: {source_id: eu-harmonised-list-tr, section: "I. General requirements", basis: derived,
+             passage: "The supporting documents concern the applicant; a different name breaks that link."}
+
+  - id: eu-rule-passport-number-matches
+    title: {en: Passport number in the employer letter matches, tr: İşveren yazısındaki pasaport numarası uyuşuyor}
+    severity: error
+    profiles: [employed]
+    check: {kind: values_match, reference: passport.passport_number,
+            compare: [employer_letter.passport_number]}
+    source: {source_id: eu-harmonised-list-tr, section: "II. Employees",
+             passage: "The employer letter includes the employee's passport number."}
