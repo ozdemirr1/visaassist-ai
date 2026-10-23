@@ -26,3 +26,16 @@ RUN_INTEGRATION=1 uv run pytest          # also database tests (needs docker com
 uv run ruff check .
 uv run ruff format --check .
 ```
+
+## Official source snapshots
+The sources behind the requirements are listed in `data/sources.yaml` (inventory and notes:
+`docs/sources.md`). To capture a snapshot of every source, run weekly from `backend/`:
+
+```bash
+uv run python -m app.sources.snapshot                      # all sources
+uv run python -m app.sources.snapshot --only nl-apply-tr   # one source
+```
+
+A file is written to `data/snapshots/<source-id>/` only when the content changed; every attempt
+is appended to `data/snapshots/manifest.jsonl`. The command exits with status 1 if a source
+could not be fetched.
