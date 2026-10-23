@@ -1,5 +1,5 @@
 # 0001 — Pilot scope: Netherlands, Schengen short-stay tourism, employed and student applicants
-Date: 2026-10-19 · Status: Accepted
+Date: 2026-10-19 · Status: Accepted · Amended: 2026-10-23
 
 ## Context
 The approved CMPE 491 proposal form limits the initial pilot to one destination and one
@@ -44,3 +44,23 @@ stay with at least EUR 30,000.
 - Open gap: the Netherlands checklist does not state a translation requirement. The
   "missing translation / certification" error type needs an official basis; if none is
   found, that error type is excluded from the pilot and the exclusion is documented.
+  Superseded by the amendment below.
+
+## Amendment — 2026-10-23: second destination for the translation requirement
+Agreed with the advisor in the meeting of 23 October 2026.
+
+- The Netherlands stays the main pilot destination; visa category and profiles are unchanged.
+- A second Schengen destination whose official checklist for applicants in Türkiye states a
+  translation requirement is added as a second national layer on top of the EU baseline. The
+  missing-translation check uses only that destination's rule and cites it.
+- Candidate: Norway (its all-category checklist states a translation rule). The choice is
+  confirmed in the week 6 source inventory (`docs/sources.md`), which records the exact source,
+  passage and retrieval date; if Norway's source cannot be dated reliably, the next candidate
+  with a dated official checklist is used.
+- The proposal form's "one destination" limit is kept in spirit: one destination is modelled in
+  full, the second only as far as the translation requirement and the national differences
+  needed to compare the two.
+
+Consequences: the data model must support more than one national layer from the start (it was
+planned to, see "Consequences" above); the source inventory and snapshots cover both
+destinations; the comparison between the two national layers becomes an example in the report.

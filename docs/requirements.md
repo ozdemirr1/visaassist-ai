@@ -1,6 +1,6 @@
 # Requirements Specification
 
-Version 0.1 · 2026-10-19 · Draft for review with the advisor
+Version 0.2 · 2026-10-23 · Updated after the advisor meeting of 23 October 2026
 
 Sources: the approved project proposal, the CMPE 491 proposal form (v1.2), ADR 0001 (pilot scope)
 and ADR 0002 (architecture). Goal IDs H1–H5 refer to the proposal's objectives:
@@ -13,8 +13,10 @@ it builds a personalised checklist from official sources, checks the uploaded do
 the requirements and against each other, and shows the evidence behind every finding.
 
 **Pilot scope (ADR 0001):** the Netherlands, Schengen short-stay visa (type C) for tourism,
-employed and student (higher education) applicants. Other destinations and profiles follow the
-same data model later.
+employed and student (higher education) applicants. A second Schengen destination whose official
+checklist states a translation requirement is added as a further national layer, so that the
+missing-translation check rests on an official source (ADR 0001, amendment of 23 October 2026).
+Other destinations and profiles follow the same data model later.
 
 **Out of scope:** predicting or guaranteeing a visa decision; legal advice; submitting
 applications or booking appointments on the user's behalf; using real applicants' documents in
@@ -68,26 +70,41 @@ Priority: **Must** = required for the semester's outcome, **Should** = planned, 
 | NFR-07 Reproducibility | The system starts with Docker Compose following the README; dependencies are pinned (`uv.lock`); CI runs lint and tests on every pull request. |
 | NFR-08 Maintainability | Every rule has unit tests; decisions are recorded as ADRs; code and repository documents are in English. |
 | NFR-09 Robustness | Uploads are validated for type and size (at most 10 MB per file); the API exposes liveness and readiness checks. |
+| NFR-10 Languages | The applicant interface is available in Turkish and English, selectable at any time; all interface text comes from translation files, none is hard-coded. Quoted passages of official sources are shown in their original language with the link. |
 
 ## 5. Constraints and limitations
 - One developer with about 15 hours per week, over two semesters.
 - OpenAI budget of at most USD 20 per month.
 - Evaluation uses synthetic documents only, so results may not fully transfer to real applications; this limitation is reported.
 - Official pages can change without notice; the pilot relies on the sources listed in ADR 0001.
-- The pilot covers one destination, one visa category and two profiles.
+- The pilot covers one main destination (plus a second national layer for the translation
+  requirement), one visa category and two profiles.
 
-## 6. Success criteria (to be agreed with the advisor)
+## 6. Success criteria
+Agreed with the advisor on 23 October 2026: the criteria are sufficient, and every result is
+stated as a comparison against a reference or an alternative, never as an isolated score.
+Results are reported as measured; no score is promised in advance.
+
 **End of fall (prototype):**
 - An applicant of each pilot profile completes the flow: profile → checklist → upload → field entry → findings.
-- Every checklist item and every rule cites an official source.
-- On the demo application files, the rule engine reports every injected error of the supported types and no finding on the error-free file.
+- The generated checklist is compared item by item with a checklist compiled by hand from the
+  official sources (missing, extra and differing items); every item and every rule cites its source.
+- On the demo application files, the rule engine's findings are compared with the injected error
+  labels: every injected error of the supported types is reported, and the error-free file gets no finding.
+- The checklist for a pilot profile is compared with the answer a general-purpose chat assistant
+  (LLM only, no sources) gives to the same question: missing items, wrong items and missing citations.
 - The system starts by following the README; all tests pass in CI.
 
 **End of spring (complete project):**
 - A labelled synthetic dataset (target: about 200 files, 1,000+ documents) with a frozen test set.
-- Hybrid and LLM-only approaches compared per error type on the test set with precision, recall, F1, false-alarm rate, time and cost per file (AS1). The results are reported as measured; no score is promised in advance.
-- Human reviewers compared with the hybrid system on a subset of the test set (AS2).
-- Detection of meaningful versus cosmetic source changes measured on labelled page versions (AS3).
+- Hybrid and LLM-only approaches compared per error type on the test set with precision, recall,
+  F1, false-alarm rate, time and cost per file (AS1).
+- Human reviewers compared with the hybrid system on a subset of the test set: accuracy and time
+  per file (AS2).
+- Change detection compared with labelled page versions: meaningful versus cosmetic changes,
+  precision and recall, against a plain text-diff baseline (AS3).
+- Assistant answers compared with LLM-only answers to the same questions: citation coverage and
+  unsupported statements.
 - Final report and documentation sufficient for another engineer to re-implement the system.
 
 ## 7. Methodology (summary)
@@ -97,6 +114,8 @@ the spring and evaluated against an LLM-only baseline and human reviewers on syn
 with injected, labelled errors, keeping development and test data separate.
 
 ## 8. Open questions
-- Interface language for applicants (Turkish, English or both).
-- Official basis for a translation requirement in the Netherlands pilot (ADR 0001).
-- Confirmation of the success criteria in section 6 with the advisor.
+- Which second destination provides the official translation requirement (week 6 source
+  inventory; candidates in ADR 0001).
+
+Resolved on 23 October 2026: interface language (Turkish and English, NFR-10); basis for the
+translation requirement (a second destination, ADR 0001); success criteria (section 6).
