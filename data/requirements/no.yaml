@@ -1,0 +1,95 @@
+# National layer: Norway, Schengen short-stay visa (C), tourism, applicants in Türkiye.
+# Sources: Norwegian Embassy checklist for C-visa (no-checklist-c-visa-tr) and the Visitor's
+# visa page (no-visitors-visa-tr). Second national layer per the ADR 0001 amendment: it is
+# modelled for the translation requirement and the rules that differ from the Netherlands.
+# Not modelled yet: the NOK 500/day alternative proof of funds, the sponsor form, A4 format.
+
+layer: national
+destination: "NO"
+visa: schengen-c
+purposes: [tourism]
+
+requirements:
+  - id: no-req-application-form
+    document: application_form
+    submit_as: original
+    source: {source_id: no-checklist-c-visa-tr, section: "1. Required for all applicants",
+             passage: "Signed printout of the application form from the UDI portal, photo glued on."}
+
+  - id: no-req-passport
+    document: passport
+    submit_as: original_and_copy
+    source: {source_id: no-checklist-c-visa-tr, section: "1. Required for all applicants",
+             passage: "Original passport and copies of the ID page and all used pages."}
+
+  - id: no-req-photo
+    document: photo
+    submit_as: original
+    source: {source_id: no-checklist-c-visa-tr, section: "1. Required for all applicants",
+             passage: "Passport photo glued to the front page of the application form."}
+
+  - id: no-req-travel-insurance
+    document: travel_insurance
+    submit_as: original
+    source: {source_id: no-checklist-c-visa-tr, section: "1. Required for all applicants",
+             passage: "Original policy covering the Schengen area, at least EUR 30,000."}
+
+rules:
+  - id: no-rule-translation
+    title: {en: Documents translated into English or Norwegian,
+            tr: Belgeler İngilizceye veya Norveççeye tercüme edilmiş}
+    severity: error
+    check: {kind: translation_present, languages: [en, "no"]}
+    source: {source_id: no-checklist-c-visa-tr, section: "General rules",
+             passage: "All documents must be translated into English or Norwegian."}
+
+  - id: no-rule-document-age
+    title: {en: No supporting document older than 6 months,
+            tr: Hiçbir destekleyici belge 6 aydan eski değil}
+    severity: error
+    check:
+      kind: max_age
+      documents: [civil_registry_extract, bank_statement, payslip, employer_letter,
+                  sgk_employment_declaration, sgk_service_record, yok_student_certificate]
+      field: issue_date
+      amount: 6
+      unit: months
+    source: {source_id: no-checklist-c-visa-tr, section: "General rules",
+             passage: "No supporting document may be older than 6 months."}
+
+  - id: no-rule-passport-validity
+    title: {en: Passport valid 3 months beyond the stay, tr: Pasaport kalış süresinden sonra 3 ay geçerli}
+    severity: error
+    check: {kind: valid_after_trip, document: passport, field: expiry_date, months: 3}
+    source: {source_id: no-checklist-c-visa-tr, section: "1. Required for all applicants",
+             passage: "Valid at least three months beyond the intended stay."}
+
+  - id: no-rule-passport-blank-pages
+    title: {en: Passport has at least 2 blank pages, tr: Pasaportta en az 2 boş sayfa var}
+    severity: error
+    check: {kind: min_value, document: passport, field: blank_pages, value: 2}
+    source: {source_id: no-checklist-c-visa-tr, section: "1. Required for all applicants",
+             passage: "The passport has at least 2 blank pages."}
+
+  - id: no-rule-insurance-amount
+    title: {en: "Insurance covers at least EUR 30,000", tr: "Sigorta en az 30.000 EUR teminat veriyor"}
+    severity: error
+    check: {kind: min_amount, document: travel_insurance, field: coverage_amount,
+            amount: 30000, currency: EUR}
+    source: {source_id: no-checklist-c-visa-tr, section: "1. Required for all applicants",
+             passage: "Minimum EUR 30,000."}
+
+  - id: no-rule-insurance-period
+    title: {en: Insurance covers the full period, tr: Sigorta başvurulan tüm süreyi kapsıyor}
+    severity: error
+    check: {kind: period_covers_trip, document: travel_insurance,
+            start_field: coverage_start, end_field: coverage_end}
+    source: {source_id: no-checklist-c-visa-tr, section: "1. Required for all applicants",
+             passage: "For the full period applied for."}
+
+  - id: no-rule-insurance-territory
+    title: {en: Insurance valid in the whole Schengen area, tr: Sigorta tüm Schengen bölgesinde geçerli}
+    severity: error
+    check: {kind: field_true, documents: [travel_insurance], fields: [covers_all_schengen]}
+    source: {source_id: no-checklist-c-visa-tr, section: "1. Required for all applicants",
+             passage: "The policy covers the entire Schengen area."}

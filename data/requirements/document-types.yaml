@@ -1,0 +1,113 @@
+# Document types and the fields the applicant enters or confirms (FR-08).
+# Field types: text, date, int, bool, money, language.
+# Every uploaded document also has the common fields below; rules can use them for any type.
+
+common_fields:
+  - {id: language, type: language, title: {en: Language of the document, tr: Belgenin dili}}
+  - {id: translation_language, type: language, optional: true,
+     title: {en: Language of the attached translation, tr: Ekli tercümenin dili}}
+
+document_types:
+  - id: application_form
+    title: {en: Visa application form, tr: Vize başvuru formu}
+    fields:
+      - {id: signed, type: bool, title: {en: Signed by the applicant, tr: Başvuru sahibi imzaladı}}
+
+  - id: passport
+    title: {en: Passport, tr: Pasaport}
+    fields:
+      - {id: full_name, type: text, title: {en: Full name, tr: Ad soyad}}
+      - {id: passport_number, type: text, title: {en: Passport number, tr: Pasaport numarası}}
+      - {id: issue_date, type: date, title: {en: Date of issue, tr: Veriliş tarihi}}
+      - {id: expiry_date, type: date, title: {en: Date of expiry, tr: Geçerlilik bitiş tarihi}}
+      - {id: blank_pages, type: int, title: {en: Empty visa pages, tr: Boş vize sayfası}}
+      - {id: signed, type: bool, title: {en: Signed by the holder, tr: Sahibi tarafından imzalı}}
+
+  - id: photo
+    title: {en: Passport photo, tr: Vesikalık fotoğraf}
+    fields:
+      - {id: taken_on, type: date, title: {en: Date taken, tr: Çekildiği tarih}}
+
+  - id: civil_registry_extract
+    title: {en: Complete civil registry extract, tr: Tam tekmil vukuatlı nüfus kayıt örneği}
+    fields:
+      - {id: full_name, type: text, title: {en: Full name, tr: Ad soyad}}
+      - {id: issue_date, type: date, title: {en: Date of issue, tr: Düzenlenme tarihi}}
+
+  - id: travel_reservation
+    title: {en: Travel reservation, tr: Ulaşım rezervasyonu}
+    fields:
+      - {id: passenger_name, type: text, title: {en: Passenger name, tr: Yolcu adı}}
+      - {id: departure_date, type: date, title: {en: Outbound date, tr: Gidiş tarihi}}
+      - {id: return_date, type: date, title: {en: Return date, tr: Dönüş tarihi}}
+
+  - id: accommodation
+    title: {en: Proof of accommodation, tr: Konaklama belgesi}
+    fields:
+      - {id: guest_name, type: text, title: {en: Guest name, tr: Misafir adı}}
+      - {id: check_in, type: date, title: {en: Check-in, tr: Giriş tarihi}}
+      - {id: check_out, type: date, title: {en: Check-out, tr: Çıkış tarihi}}
+
+  - id: bank_statement
+    title: {en: Bank account statement, tr: Banka hesap dökümü}
+    fields:
+      - {id: holder_name, type: text, title: {en: Account holder, tr: Hesap sahibi}}
+      - {id: period_start, type: date, title: {en: Statement period start, tr: Döküm başlangıcı}}
+      - {id: period_end, type: date, title: {en: Statement period end, tr: Döküm bitişi}}
+      - {id: issue_date, type: date, title: {en: Date of issue, tr: Düzenlenme tarihi}}
+
+  - id: payslip
+    title: {en: Salary slip, tr: Maaş bordrosu}
+    multiple: true
+    fields:
+      - {id: employee_name, type: text, title: {en: Employee name, tr: Çalışan adı}}
+      - {id: pay_month, type: date, title: {en: Month paid (any day of the month), tr: Ödeme ayı}}
+      - {id: issue_date, type: date, title: {en: Date of issue, tr: Düzenlenme tarihi}}
+
+  - id: employer_letter
+    title: {en: Employer letter / leave approval, tr: İşveren yazısı / izin onayı}
+    fields:
+      - {id: employee_name, type: text, title: {en: Employee name, tr: Çalışan adı}}
+      - {id: passport_number, type: text, title: {en: Passport number, tr: Pasaport numarası}}
+      - {id: addressed_to_consulate, type: bool,
+         title: {en: Addressed to the consulate, tr: Konsolosluğa hitaben}}
+      - {id: employment_start, type: date, title: {en: Employment start date, tr: İşe başlama tarihi}}
+      - {id: job_title, type: text, title: {en: Job title, tr: Görev}}
+      - {id: leave_start, type: date, title: {en: Leave start, tr: İzin başlangıcı}}
+      - {id: leave_end, type: date, title: {en: Leave end, tr: İzin bitişi}}
+      - {id: leave_paid, type: bool, title: {en: Paid leave, tr: Ücretli izin}}
+      - {id: employer_contact, type: text, title: {en: Employer contact details, tr: İşveren iletişim bilgileri}}
+      - {id: signatory_name, type: text, title: {en: Signatory name and position, tr: İmzalayanın adı ve görevi}}
+      - {id: issue_date, type: date, title: {en: Date of issue, tr: Düzenlenme tarihi}}
+
+  - id: sgk_employment_declaration
+    title: {en: SGK employment declaration, tr: SGK sigortalı işe giriş bildirgesi}
+    fields:
+      - {id: full_name, type: text, title: {en: Full name, tr: Ad soyad}}
+      - {id: issue_date, type: date, title: {en: Date of issue, tr: Düzenlenme tarihi}}
+      - {id: qr_code_readable, type: bool, title: {en: QR code readable, tr: Karekod okunuyor}}
+
+  - id: sgk_service_record
+    title: {en: SGK registration and service record, tr: SGK tescil ve hizmet dökümü}
+    fields:
+      - {id: full_name, type: text, title: {en: Full name, tr: Ad soyad}}
+      - {id: issue_date, type: date, title: {en: Date of issue, tr: Düzenlenme tarihi}}
+      - {id: qr_code_readable, type: bool, title: {en: QR code readable, tr: Karekod okunuyor}}
+
+  - id: yok_student_certificate
+    title: {en: YÖK student certificate, tr: YÖK öğrenci belgesi}
+    fields:
+      - {id: full_name, type: text, title: {en: Full name, tr: Ad soyad}}
+      - {id: issue_date, type: date, title: {en: Date of issue, tr: Düzenlenme tarihi}}
+      - {id: qr_code_readable, type: bool, title: {en: QR code readable, tr: Karekod okunuyor}}
+
+  - id: travel_insurance
+    title: {en: Travel medical insurance, tr: Seyahat sağlık sigortası}
+    fields:
+      - {id: insured_name, type: text, title: {en: Insured person, tr: Sigortalı}}
+      - {id: coverage_start, type: date, title: {en: Cover start, tr: Teminat başlangıcı}}
+      - {id: coverage_end, type: date, title: {en: Cover end, tr: Teminat bitişi}}
+      - {id: coverage_amount, type: money, title: {en: Medical cover amount, tr: Tedavi teminat tutarı}}
+      - {id: covers_all_schengen, type: bool,
+         title: {en: Valid in all Schengen states, tr: Tüm Schengen ülkelerinde geçerli}}
+      - {id: covers_repatriation, type: bool, title: {en: Covers repatriation, tr: Ülkeye geri nakli kapsıyor}}
