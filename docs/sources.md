@@ -16,14 +16,16 @@ Snapshots of all sources are captured with `python -m app.sources.snapshot` and 
 
 | ID | Source | Layer | Format | Date stated by the source | Reviewed |
 | --- | --- | --- | --- | --- | --- |
-| `eu-harmonised-list-tr` | [Commission Implementing Decision C(2021) 5156, Annex III — supporting documents for applicants in Türkiye](https://udiregelverk.no/contentassets/82b696de16f6403a9c5a2b62b91e0683/c_2021_5156_annex-iii.pdf) | EU | PDF | 29 Jul 2021 | 23 Oct 2026 |
+| `eu-harmonised-list-tr` | [Commission Implementing Decision C(2021) 5156, Annex III — supporting documents for applicants in Türkiye](https://mzv.gov.cz/public/e3/a2/fb/4835381_2943202_Turecko_EN.PDF) | EU | PDF | 29 Jul 2021 | 23 Oct 2026 |
 | `nl-checklist-tourism-tr` | [NetherlandsWorldwide — Checklist: Schengen visa in Türkiye for tourism](https://www.netherlandsworldwide.nl/visa-the-netherlands/checklist-schengen-visa-tourism/turkiye) | NL | HTML | published 20 Aug 2025, modified 28 Aug 2025 | 23 Oct 2026 |
 | `nl-apply-tr` | [NetherlandsWorldwide — Applying for a Schengen visa in Türkiye](https://www.netherlandsworldwide.nl/visa-the-netherlands/schengen-visa/apply-turkiye) | NL | HTML | — | 23 Oct 2026 |
 | `no-checklist-c-visa-tr` | [Royal Norwegian Embassy in Ankara — Visa Application Checklist Turkey, All Categories](https://www.norway.no/contentassets/aa2ef9f22e8846c681cd15c9d6c60e09/checklist-turkey-january-2025.pdf) | NO | PDF | none inside the document; file name "january-2025" | 23 Oct 2026 |
 | `no-visitors-visa-tr` | [Royal Norwegian Embassy in Ankara — Visitor's visa](https://www.norway.no/en/turkiye/services-info/visitors-visa-res-permit/visitors-visa/) | NO | HTML | — | 23 Oct 2026 |
 
-The EU decision is read from the copy published by the Norwegian Directorate of Immigration
-(UDI), because the Commission does not publish the Türkiye annex as a separate page. The
+The Commission does not publish the Türkiye annex as a separate page, so the EU decision is read
+from the copy published by the Czech Ministry of Foreign Affairs. The identical copy of the
+Norwegian Directorate of Immigration ([UDI](https://udiregelverk.no/contentassets/82b696de16f6403a9c5a2b62b91e0683/c_2021_5156_annex-iii.pdf))
+was used for the review but refuses automated requests (HTTP 403), so it cannot be snapshotted. The
 Norwegian checklist is the one linked as "Checklist for C-visa" from the embassy's Visitor's
 visa page on the review date.
 
