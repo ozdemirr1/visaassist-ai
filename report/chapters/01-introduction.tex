@@ -1,0 +1,41 @@
+\chapter{Introduction}\label{ch:intro}
+
+\section{Problem and motivation}
+% Why visa preparation is hard: scattered official pages, national differences, documents that
+% must agree with each other, requirements that change. Who suffers (applicants without an agency).
+\todo{2--3 paragraphs. Use the national differences in Table~\ref{tab:nl-no} as the concrete example.}
+
+\section{Objectives}
+The project pursues the five objectives of the approved proposal:
+\begin{description}
+  \item[H1 Personalisation] a checklist for the applicant's destination, visa type, profile and dates;
+  \item[H2 Document pre-check] missing, outdated and mutually inconsistent documents are found before submission;
+  \item[H3 Up-to-date information] changes of official sources are detected and reviewed;
+  \item[H4 Source-grounded information] every requirement, finding and answer cites an official source;
+  \item[H5 Measurable AI performance] the AI components are evaluated against baselines.
+\end{description}
+
+\section{Research questions}\label{sec:rq}
+\begin{description}
+  \item[AS1] Does a hybrid approach (vision-language model and rule engine) detect missing and
+    inconsistent documents in multi-document application files better than an LLM-only approach,
+    per error type (precision, recall, F1)?
+  \item[AS2] How does the hybrid system compare with human reviewers in accuracy and time?
+  \item[AS3] How accurately does source monitoring separate meaningful requirement changes from
+    cosmetic page changes?
+\end{description}
+
+\section{Scope}
+% ADR 0001 and its amendment.
+The pilot covers the Schengen short-stay visa (type C) for tourism, applied for in Türkiye, for
+employed and student applicants. The Netherlands is the main destination; Norway is added as a
+second national layer because its checklist states a translation requirement. Predicting visa
+decisions, legal advice and submitting applications on the applicant's behalf are out of scope.
+
+\section{Contributions}
+\todo{What is new compared with Chapter~\ref{ch:background}: versioned source-linked rules;
+change detection that reaches only affected applicants; measured comparison with LLM-only and
+human reviewers. See docs/positioning.md.}
+
+\section{Organisation of the report}
+\todo{One sentence per chapter.}
