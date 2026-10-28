@@ -1,0 +1,47 @@
+\chapter{Background and Related Work}\label{ch:background}
+% Lecture 3: the review is the background of the research questions, not a list of papers.
+% Each section ends with what is missing for this project.
+
+\section{The Schengen short-stay visa in Türkiye}
+The supporting documents for applicants in Türkiye are harmonised by the European Commission
+\autocite{eu2021harmonised}; each member state adds national requirements, for example the
+Netherlands \autocite{nl2025checklist} and Norway \autocite{no2025checklist}.
+
+\begin{table}[ht]
+  \centering
+  \caption{National differences on top of the EU baseline (sources reviewed on 23 October 2026).}
+  \label{tab:nl-no}
+  \begin{tabularx}{\textwidth}{@{}lXX@{}}
+    \toprule
+    Topic & Netherlands & Norway \\
+    \midrule
+    Translation & not required & all documents in English or Norwegian \\
+    General document age & not stated (photo $\leq$ 6 months) & no document older than 6 months \\
+    Passport validity & 3 months after leaving the Schengen area & 3 months beyond the intended stay \\
+    Financial means & bank statements of 3 months or proof of income & salary slips and bank movements of 3 months \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\section{Document understanding and information extraction}
+\todo{Survey-level overview \autocite{ding2026mllm,cui2021documentai}; what is measured
+(single-document field extraction) and what is not (multi-document files).}
+
+\section{Consistency checking across documents}
+\todo{Closest work: DocChecker \autocite{chen2026contradictions}; limits of multimodal LLMs in
+finding inconsistencies \autocite{selch2025prismm}; name matching \autocite{christen2006names}.
+State the difference: external, versioned requirements plus document-to-document rules.}
+
+\section{Retrieval-augmented generation and citation}
+\todo{\textcite{gao2024ragsurvey}; citation quality \autocite{gao2023alce}; hallucination
+\autocite{ji2023hallucination}.}
+
+\section{Change detection of web pages}
+\todo{\textcite{mallawaarachchi2020change}; semantic vs textual change \autocite{zhang2004xml}.}
+
+\section{Similar systems}
+\todo{Table from docs/related-work.md: open-source visa assistants and change monitors; none
+reports measured accuracy.}
+
+\section{Research gap}
+\todo{3--4 sentences leading to AS1--AS3.}
