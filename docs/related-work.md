@@ -1,6 +1,6 @@
 # Related Work and Similar Projects
 
-Version 0.1 · 2026-10-23 · Living document, updated as papers are read
+Version 0.2 · 2026-10-29 · Living document, updated as papers are read
 
 The advisor asked for the closest related work and for similar projects that already exist
 (meeting of 23 October 2026). This file lists them with links and short descriptions so they
@@ -17,20 +17,20 @@ Research questions the literature serves (from the proposal):
 
 ## 1. Academic work
 
-Status: **read** = read in full with notes; **to read** = abstract checked, full reading planned.
+Status: **read** = read with notes (surveys: selected sections); **to read** = abstract checked, full reading planned.
 Preprints are marked; a peer-reviewed version is cited instead once it exists.
 
 ### 1.1 Closest to the project
 | Work | Why it matters | Question | Status |
 | --- | --- | --- | --- |
-| Chen, S., Fan, W., Jin, R., Ma, K. (2026). *Detecting Contradictions Within and Across Documents.* Proc. ACM Manag. Data 4(4), Art. 267. [doi:10.1145/3837105](https://doi.org/10.1145/3837105) (open access) | DocChecker combines an entity–relation graph and logic rules with ML/NLP to find contradictions within and across documents; average F1 about 0.90. The closest hybrid design to ours, so the report must state the difference: we check documents against **external, versioned official requirements** and against each other, on a fixed set of document types with field-level rules. | AS1 | to read (first) |
-| Selch, L. et al. (2025). *PRISMM-Bench: A Benchmark of Peer-Review Grounded Multimodal Inconsistencies.* [arXiv:2510.16505](https://arxiv.org/abs/2510.16505) (preprint) | 21 multimodal LLMs find real inconsistencies in scientific papers with only about 28–54 % accuracy: evidence that an LLM-only baseline is likely to struggle on cross-document consistency. | AS1 | to read |
-| Mallawaarachchi, V. et al. (2020). *Change Detection and Notification of Web Pages: A Survey.* ACM Computing Surveys 53(1), Art. 15. [arXiv version](https://arxiv.org/abs/1901.02660) | Main survey for AS3: change detection methods, crawling schedules, notification. | AS3 | to read |
+| Chen, S., Fan, W., Jin, R., Ma, K. (2026). *Detecting Contradictions Within and Across Documents.* Proc. ACM Manag. Data 4(4), Art. 267. [doi:10.1145/3837105](https://doi.org/10.1145/3837105) | DocChecker builds entity–relation graphs from text and finds seven kinds of contradiction within and across documents with logic rules combined with ML/NLP predicates; the concrete rules are learned with LLM help from candidate patterns, and external knowledge graphs (e.g. Wikidata) and incremental updates are supported. Average F1 about 0.90 over 15 text benchmarks (best 0.935 on ContractNLI); none are application files. **A hybrid rule + ML design is therefore not new.** Our difference: requirements taken from official, dated and versioned sources with the passage cited; checks on fields of visual documents (scans, photos); missing-document checks; and an approved source change reaching only the affected applications. | AS1 | read |
+| Selch, L. et al. (2026). *PRISMM-Bench: A Benchmark of Peer-Review Grounded Multimodal Inconsistencies.* ICLR 2026. [arXiv:2510.16505](https://arxiv.org/abs/2510.16505) | 384 reviewer-reported inconsistencies in 353 ICLR submissions, 15 categories, three multiple-choice tasks (chance 25 %). 21 multimodal models reach 27.8–53.9 % **accuracy** (not F1). Supports including an LLM-only baseline in AS1; it does not show that a hybrid system is better, which AS1 has to measure on our own error types. | AS1 | read |
+| Mallawaarachchi, V. et al. (2020). *Change Detection and Notification of Web Pages: A Survey.* ACM Computing Surveys 53(1), Art. 15. [doi:10.1145/3369876](https://doi.org/10.1145/3369876) ([arXiv version](https://arxiv.org/abs/1901.02660)) | Types of change (content, structure, presentation, behaviour), fixed vs adaptive check schedules, notification channels; filtering irrelevant DOM changes (e.g. ads) is known, but deciding that a change affects a visa requirement needs domain knowledge. No shared benchmark: AS3 measures precision, recall, F1, false-alarm rate and detection delay on our labelled page versions. | AS3 | read |
 
 ### 1.2 Document understanding and extraction (spring, FR-12, FR-13)
 | Work | Note | Status |
 | --- | --- | --- |
-| Ding, Y. et al. (2026). *A Survey on MLLM-based Visually Rich Document Understanding.* Findings of ACL 2026, 13319–13340. [doi:10.18653/v1/2026.findings-acl.652](https://doi.org/10.18653/v1/2026.findings-acl.652) | Most recent survey of multimodal-LLM document extraction. | to read |
+| Ding, Y. et al. (2026). *A Survey on MLLM-based Visually Rich Document Understanding.* Findings of ACL 2026, 13319–13340. [doi:10.18653/v1/2026.findings-acl.652](https://doi.org/10.18653/v1/2026.findings-acl.652) | OCR-based vs OCR-free approaches; known problems: OCR error propagation, complex layouts, multi-page links, English-heavy data. Lesson for spring: measure field extraction and rule violations separately; a high DocVQA score does not imply good application checking. | read (selected sections) |
 | Cui, L., Xu, Y., Lv, T., Wei, F. (2021). *Document AI: Benchmarks, Models and Applications.* [arXiv:2111.08609](https://arxiv.org/abs/2111.08609) (preprint) | Overview of benchmarks (FUNSD, CORD, DocVQA) and layout models. | to read |
 | Huang, Y. et al. (2022). *LayoutLMv3.* ACM Multimedia; Kim, G. et al. (2022). *Donut: OCR-free Document Understanding Transformer.* ECCV | Named in the proposal; Donut's SynthDoG is a reference for synthetic document generation (FR-22). | to read |
 | Livathinos, N. et al. (2024). *Docling Technical Report.* [arXiv:2408.09869](https://arxiv.org/abs/2408.09869) | Open-source document conversion toolkit (also a candidate component, see 3). | to read |
@@ -38,7 +38,7 @@ Preprints are marked; a peer-reviewed version is cited instead once it exists.
 ### 1.3 Name matching across documents (FR-09 name rule)
 | Work | Note | Status |
 | --- | --- | --- |
-| Christen, P. (2006). *A Comparison of Personal Name Matching: Techniques and Practical Issues.* ICDM Workshops. [doi:10.1109/ICDMW.2006.2](https://doi.org/10.1109/ICDMW.2006.2) | No single technique wins on all data sets; basis for normalising names before comparison (Turkish characters, order of given names). | to read |
+| Christen, P. (2006). *A Comparison of Personal Name Matching: Techniques and Practical Issues.* ICDM Workshops, 290–294. [doi:10.1109/ICDMW.2006.2](https://doi.org/10.1109/ICDMW.2006.2) (read: extended technical report TR-CS-06-02) | No single technique wins: the ranking changes with name part, word order and error type. Plan for the name rule (W12): keep the original name, normalise Turkish case and spacing, compare Jaro–Winkler and permuted Winkler on labelled local pairs, choose thresholds on validation data and send uncertain matches for review. No Turkish-specific evaluation exists in the paper. | read |
 
 ### 1.4 LLM limits, retrieval and citation (FR-15, AS1 baseline)
 | Work | Note | Status |
