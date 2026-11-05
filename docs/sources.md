@@ -104,3 +104,19 @@ Passages are paraphrased; the rule file cites the source ID and the section.
 - Re-read every source when its snapshot changes and at least once a month.
 - Record the review date in `data/sources.yaml` (`reviewed_on`) and here.
 - A changed requirement is updated in the rule file in a pull request that names the snapshot.
+
+## 6. Observed changes
+
+Each changed snapshot is reviewed by comparing the visible text (scripts, styles and markup
+removed). The label is the one AS3 will use: **meaningful** = a requirement or procedure
+changed; **minor** = content changed, no requirement affected; **cosmetic** = only markup changed.
+
+| Date | Source | Snapshot | Visible text change | Label | Rule change |
+| --- | --- | --- | --- | --- | --- |
+| 2026-11-05 | `nl-checklist-tourism-tr` | `b8929e9f4068` | none | cosmetic | none |
+| 2026-11-05 | `nl-apply-tr` | `f925e282675a` | link added: "Download the letter of authorisation" (for applications through a representative) | minor | none |
+| 2026-11-05 | `no-visitors-visa-tr` | `cb668d2f4ede` | none (same size, markup only) | cosmetic | none |
+
+`eu-harmonised-list-tr` and `no-checklist-c-visa-tr` were unchanged on 2026-11-05.
+Two of three "changed" pages had no visible change: a plain hash comparison over-reports
+changes, which supports the text-diff baseline and the cosmetic class planned for AS3.
