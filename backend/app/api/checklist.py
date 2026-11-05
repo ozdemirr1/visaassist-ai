@@ -54,6 +54,10 @@ class Translation(BaseModel):
     languages: list[str]
 
 
+class ErrorMessage(BaseModel):
+    detail: str
+
+
 class Checklist(BaseModel):
     requirement_set_id: str
     destination: str
@@ -80,7 +84,14 @@ def _in_scope(model: type[models.Requirement] | type[models.Rule], destination: 
     return or_(model.destination.is_(None), model.destination == destination)
 
 
-@router.get("/checklist", response_model=Checklist)
+@router.get(
+    "/checklist",
+    response_model=Checklist,
+    responses={
+        404: {"model": ErrorMessage, "description": "Unknown destination; lists available ones."},
+        503: {"model": ErrorMessage, "description": "No requirement set loaded; run the seed."},
+    },
+)
 def get_checklist(
     session: Annotated[Session, Depends(get_session)],
     destination: Annotated[str, Query(pattern=r"^[A-Z]{2}$", examples=["NL"])],
