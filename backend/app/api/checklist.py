@@ -4,7 +4,7 @@ from typing import Annotated, Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel
-from sqlalchemy import or_, select
+from sqlalchemy import any_, or_, select
 from sqlalchemy.orm import Session
 
 from app import models
@@ -122,7 +122,7 @@ def get_checklist(
         .where(
             models.Requirement.requirement_set_id == set_id,
             _in_scope(models.Requirement, destination),
-            models.Requirement.profiles.any(profile),
+            any_(models.Requirement.profiles) == profile,
         )
         .order_by(models.Requirement.position)
     ).all()
@@ -133,7 +133,7 @@ def get_checklist(
         .where(
             models.Rule.requirement_set_id == set_id,
             _in_scope(models.Rule, destination),
-            models.Rule.profiles.any(profile),
+            any_(models.Rule.profiles) == profile,
         )
         .order_by(models.Rule.position)
     ).all()
