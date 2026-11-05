@@ -4,6 +4,7 @@ from typing import Annotated
 
 from fastapi import Depends, FastAPI, Response, status
 
+from app.api.checklist import router as checklist_router
 from app.db import database_is_reachable
 
 APP_VERSION = "0.1.0"
@@ -33,6 +34,7 @@ def create_app() -> FastAPI:
             return {"status": "unavailable", "database": "unreachable"}
         return {"status": "ok", "database": "ok"}
 
+    app.include_router(checklist_router)
     return app
 
 

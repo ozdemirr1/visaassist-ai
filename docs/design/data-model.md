@@ -229,6 +229,18 @@ erDiagram
 | `source_changes`, `notifications` | | ✓ | FR-16, FR-17 |
 | Synthetic dataset and evaluation runs | | ✓, separate `research` schema | FR-22, AS1–AS2 |
 
+### Implementation notes (week 7)
+- The requirement tables are created by the first Alembic migration
+  (`backend/migrations/versions/0001_requirement_tables.py`) and filled by
+  `python -m app.requirements.seed`.
+- `document_types` and `document_fields` are versioned with the requirement set (primary key
+  includes `requirement_set_id`), unlike the diagram above. A changed title or a new field
+  therefore produces a new set, and an old check run still shows the catalogue it used.
+- Common fields (holder name, issue date, …) are stored once per document type with
+  `common = true`, so the field list of a type needs no join.
+- `sources` is not versioned: it is upserted from `data/sources.yaml`; the snapshot history stays
+  in `data/snapshots/` until `source_snapshots` is added.
+
 ## 4. How the main flows use the model
 - **Checklist (FR-02):** `requirements` of the active set where `destination` is null or the
   file's destination and the profile is in `profiles`, joined with `document_types` for titles in
