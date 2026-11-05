@@ -1,8 +1,10 @@
-"""Database engine and connectivity check."""
+"""Database engine, sessions and connectivity check."""
 
+from collections.abc import Iterator
 from functools import lru_cache
 
 from sqlalchemy import Engine, create_engine, text
+from sqlalchemy.orm import Session
 
 from app.config import get_settings
 
@@ -29,3 +31,9 @@ def database_is_reachable() -> bool:
     except Exception:
         return False
     return True
+
+
+def get_session() -> Iterator[Session]:
+    """FastAPI dependency: one session per request, closed afterwards."""
+    with Session(get_engine()) as session:
+        yield session

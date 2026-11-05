@@ -18,11 +18,30 @@ uv run uvicorn app.main:app --reload     # http://127.0.0.1:8000/docs
 Endpoints:
 - `GET /health` — liveness: the API process is up.
 - `GET /health/ready` — readiness: the API can reach the database (`503` if not).
+- `GET /checklist?destination=NL&profile=employed&lang=tr` — documents and rules for one
+  destination and profile, each with the official source passage it comes from. `404` for an
+  unknown destination, `503` if no requirement set has been loaded.
+
+## Database and requirement data
+```bash
+uv run alembic upgrade head                 # create or update the tables
+uv run python -m app.requirements.seed      # load data/requirements/ as a requirement set
+```
+
+The seed command identifies a requirement set by the SHA-256 of `data/requirements/*.yaml` and
+`data/sources.yaml`: running it again on unchanged files changes nothing; after a change it
+loads a new set and makes it the active one (older sets are kept, so earlier checks stay
+explainable). Design: `docs/design/data-model.md`.
+
+New migration after changing `app/models.py`:
+```bash
+uv run alembic revision --autogenerate -m "short description"   # then review the file
+```
 
 ## Checks
 ```bash
 uv run pytest                            # unit tests (no database needed)
-RUN_INTEGRATION=1 uv run pytest          # also database tests (needs docker compose up)
+RUN_INTEGRATION=1 uv run pytest          # also database, seed and checklist tests (docker compose up)
 uv run ruff check .
 uv run ruff format --check .
 ```
