@@ -30,6 +30,7 @@ have to change shape later, but they are created only when the feature is built.
 ```mermaid
 erDiagram
     USER ||--o{ CONSENT : gives
+    USER ||--o{ SESSION : "logs in with"
     USER ||--o{ APPLICATION_FILE : owns
     APPLICATION_FILE ||--o{ APPLICATION_EVENT : "moves through steps"
     APPLICATION_FILE ||--o{ DOCUMENT : contains
@@ -63,6 +64,20 @@ erDiagram
         text role "applicant | admin"
         text language "tr | en"
         timestamptz created_at
+    }
+    SESSION {
+        text token_hash PK "SHA-256 of the cookie token"
+        uuid user_id FK
+        timestamptz created_at
+        timestamptz last_seen_at
+        timestamptz expires_at
+    }
+    LOGIN_ATTEMPT {
+        bigint id PK
+        text email
+        text ip_address
+        boolean succeeded
+        timestamptz attempted_at
     }
     CONSENT {
         uuid id PK
@@ -220,7 +235,7 @@ erDiagram
 
 | Table | Fall | Spring | Requirement |
 | --- | --- | --- | --- |
-| `users`, `consents` | ✓ | | FR-04, NFR-01 |
+| `users`, `sessions`, `login_attempts`, `consents` | ✓ | | FR-04, NFR-01, NFR-02 (ADR 0004) |
 | `application_files`, `application_events` | ✓ | | FR-05, FR-06 |
 | `documents`, `document_field_values` | ✓ | extraction fields (`origin`, `confidence`) used | FR-07, FR-08, FR-13 |
 | `check_runs`, `findings` | ✓ | | FR-09, FR-10 |
