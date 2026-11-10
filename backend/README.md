@@ -38,6 +38,12 @@ uv run python -m app.users.create_admin --email admin@example.com
 uv run python -m app.users.create_admin --email someone@example.com --reset-password
 ```
 
+## Application files
+`POST /applications`, `GET /applications`, `GET /applications/{id}`, `PATCH /applications/{id}`,
+`DELETE /applications/{id}` (FR-05, FR-06). A file uses the requirement set that was active when
+it was created; a step change is recorded as an event. Every query is limited to the logged-in
+user, and another user's file answers `404`.
+
 ## Database and requirement data
 ```bash
 uv run alembic upgrade head                 # create or update the tables

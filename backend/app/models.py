@@ -1,8 +1,8 @@
 """Database tables (SQLAlchemy 2). Design: docs/design/data-model.md.
 
 Week 7 created the requirement tables: official sources and versioned requirement sets with
-their document types, checklist items and rules. Week 9 adds accounts and sessions (ADR 0004);
-application files, documents and findings follow.
+their document types, checklist items and rules. Week 9 adds accounts and sessions (ADR 0004)
+and application files; documents and findings follow.
 """
 
 import uuid
@@ -11,6 +11,7 @@ from datetime import date, datetime
 from sqlalchemy import (
     BigInteger,
     Boolean,
+    CheckConstraint,
     Date,
     DateTime,
     ForeignKey,
@@ -199,3 +200,41 @@ class LoginAttempt(Base):
     ip_address: Mapped[str] = mapped_column(Text)
     succeeded: Mapped[bool] = mapped_column(Boolean)
     attempted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
+class ApplicationFile(Base):
+    """One planned visa application of a user (FR-05), tied to the requirement set it uses."""
+
+    __tablename__ = "application_files"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), index=True
+    )
+    destination: Mapped[str] = mapped_column(String(2))
+    visa: Mapped[str] = mapped_column(String(16), default="schengen-c")
+    purpose: Mapped[str] = mapped_column(String(16), default="tourism")
+    profile: Mapped[str] = mapped_column(String(16))
+    trip_start: Mapped[date] = mapped_column(Date)
+    trip_end: Mapped[date] = mapped_column(Date)
+    application_date: Mapped[date] = mapped_column(Date)
+    step: Mapped[str] = mapped_column(String(16), default="draft")
+    requirement_set_id: Mapped[str] = mapped_column(ForeignKey("requirement_sets.id"))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    __table_args__ = (
+        CheckConstraint("trip_end >= trip_start", name="ck_application_files_trip_dates"),
+    )
+
+
+class ApplicationEvent(Base):
+    """A step the application file reached (FR-06): appointment, documents, submitted, decided."""
+
+    __tablename__ = "application_events"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    application_file_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("application_files.id", ondelete="CASCADE"), index=True
+    )
+    step: Mapped[str] = mapped_column(String(16))
+    occurred_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
