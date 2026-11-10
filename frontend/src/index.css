@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+/* Visual language: docs/design/ui-design.md */
+@theme {
+  --color-brand: #1849a9;
+  --color-brand-dark: #123a87;
+  --color-ink: #0e1726;
+  --color-muted: #4b5565;
+  --color-ground: #f5f7fa;
+  --color-line: #e3e8ef;
+  --color-error: #b42318;
+  --color-error-bg: #fef3f2;
+  --color-warning: #b54708;
+  --color-warning-bg: #fffaeb;
+  --color-ok: #067647;
+  --color-ok-bg: #ecfdf3;
+  --font-sans: "Plus Jakarta Sans Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+body {
+  @apply bg-ground text-ink font-sans antialiased;
+}
+
+:focus-visible {
+  @apply outline-2 outline-offset-2 outline-brand;
+}
+
+/* Native selects ignore min-height in Safari: draw our own arrow and keep 44 px targets. */
+.select {
+  appearance: none;
+  padding-block: 0.625rem;
+  padding-right: 2.25rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%234b5565' stroke-width='1.8'%3E%3Cpath d='M5.5 7.5 10 12l4.5-4.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1.25rem;
+}
