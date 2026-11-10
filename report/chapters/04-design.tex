@@ -1,22 +1,134 @@
 \chapter{System Design}\label{ch:design}
+% Draft v0.1, 10 November 2026. Sources: ADR 0002, ADR 0003, docs/design/data-model.md,
+% data/requirements/README.md, docs/design/ui-design.md. Status per component: built / planned.
 
 \section{Architecture}
-% ADR 0002: what runs in fall, what is deferred to spring and why.
-\todo{Component diagram: web client, FastAPI, PostgreSQL with pgvector, source snapshots;
-spring: job queue, AI service.}
+The system starts small and adds a component only together with the feature that needs it
+(ADR 0002). The fall prototype consists of a web client, an API and one PostgreSQL database; the
+job queue and the AI components follow in the spring (Figure~\ref{fig:architecture}).
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=\textwidth]{design-arch.png}
+  \caption{Components of \project{}. Solid arrows: fall prototype; dotted: spring.}
+  \label{fig:architecture}
+\end{figure}
+
+\begin{table}[ht]
+  \centering
+  \small
+  \caption{Components, technology and status on 10 November 2026.}
+  \label{tab:components}
+  \begin{tabularx}{\textwidth}{@{}lXl@{}}
+    \toprule
+    Component & Technology & Status \\
+    \midrule
+    API & FastAPI, Pydantic, Python 3.12 & built (health, checklist) \\
+    Database & PostgreSQL 17 with pgvector, SQLAlchemy 2, Alembic & built (requirement tables) \\
+    Requirement data & YAML files, schema validation, seed command & built \\
+    Source snapshots & weekly snapshot command, SHA-256 manifest & built \\
+    Accounts, application files, upload & encrypted local storage & planned, week 9 \\
+    Web client & React, TypeScript, Vite, TanStack Query, Tailwind CSS & planned, weeks 10--11 \\
+    Rule engine v0 & Python, rule kinds of Table~\ref{tab:rule-kinds} & planned, week 12 \\
+    Job queue and live updates & Celery, Redis, WebSocket & spring, B1 \\
+    Extraction, assistant & OpenAI models (ADR 0003), Tesseract & spring \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+Three simplifications keep the one-person schedule realistic: a small storage interface over a
+local volume with application-level encryption instead of an object store, direct pgvector
+queries instead of a retrieval framework, and Tesseract as the only OCR engine. Each can be
+replaced behind its interface later.
 
 \section{Requirement data and rule schema}
 Requirements are data, not code. A destination's rule set is the EU baseline plus one national
 layer; every checklist item and rule cites a source passage, and the loader rejects files whose
-sources, documents, fields or field types do not match.
-\todo{Rule kinds table (data/requirements/README.md) and one YAML example in a listing.}
+sources, documents, fields or field types do not match. A \emph{requirement} is a checklist item:
+one document, the profiles it applies to and how it is submitted. A \emph{rule} checks the fields
+the applicant enters, with a severity and one of twelve check kinds
+(Table~\ref{tab:rule-kinds}). Listing~\ref{lst:rule} shows a requirement and the rule that checks
+it, both citing the same passage of the EU list \autocite{eu2021harmonised}.
+
+\begin{table}[ht]
+  \centering
+  \small
+  \caption{Check kinds of the rule schema.}
+  \label{tab:rule-kinds}
+  \begin{tabularx}{\textwidth}{@{}lX@{}}
+    \toprule
+    Kind & Checks \\
+    \midrule
+    \texttt{max\_age} & a date field is not older than N months or years at the application date \\
+    \texttt{valid\_after\_trip} & a date (passport expiry) is at least N months after the trip ends \\
+    \texttt{min\_value}, \texttt{min\_amount} & a number or an amount in a currency reaches a minimum \\
+    \texttt{field\_true} & yes/no fields are confirmed (QR code readable, insurance territory) \\
+    \texttt{fields\_present} & the listed fields are filled in (contents of the employer letter) \\
+    \texttt{period\_covers\_trip} & a period (leave, insurance) covers the whole trip \\
+    \texttt{covers\_recent\_months} & a period (bank statement) covers the last N months \\
+    \texttt{recent\_monthly\_count} & one document per month for the last N months (payslips) \\
+    \texttt{names\_match}, \texttt{values\_match} & fields on other documents equal a reference field \\
+    \texttt{translation\_present} & every document not in the listed languages has a translation \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\begin{lstlisting}[caption={A requirement and its rule in \texttt{data/requirements/eu-tr.yaml}.},label={lst:rule}]
+- id: eu-req-payslips
+  document: payslip
+  profiles: [employed]
+  submit_as: copy
+  source: {source_id: eu-harmonised-list-tr, section: "I.4 Proof of means of subsistence",
+           passage: "Proof of regular income, such as salary slips for the last three months."}
+
+- id: eu-rule-payslips-last-3-months
+  severity: error
+  profiles: [employed]
+  check: {kind: recent_monthly_count, document: payslip, date_field: pay_month, months: 3}
+  source: {source_id: eu-harmonised-list-tr, section: "I.4 Proof of means of subsistence",
+           passage: "Proof of regular income, such as salary slips for the last three months."}
+\end{lstlisting}
+
+The current files hold 13 document types, 17 checklist items and 24 rules for the Netherlands and
+Norway. For an employed applicant to the Netherlands they give 12 documents and 16 rules; for a
+student, 9 documents and 11 rules.
 
 \section{Data model}
-\todo{ER diagram exported from docs/design/data-model.md; principle: YAML is the source of truth,
-the database keeps versioned copies so every finding can be explained later.}
+The YAML files are the source of truth; the database keeps versioned copies of them so that every
+finding can be explained later (Figure~\ref{fig:data-model}). A \emph{requirement set} is one
+loaded version of the files, identified by the SHA-256 of their contents. The seed command loads
+the files as a set; loading unchanged files again changes nothing, and changed files give a new
+set that becomes the only active one, enforced by a partial unique index. Older sets are kept,
+because each check run records the set it used. Document types and their fields are versioned
+with the set as well, so a renamed field does not change how an earlier finding is shown.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=\textwidth]{design-er.png}
+  \caption{Entities and relationships (attributes in \texttt{docs/design/data-model.md}). The
+    requirement tables are built; the application tables follow in weeks 9--12, source changes
+    and notifications in the spring.}
+  \label{fig:data-model}
+\end{figure}
+
+\section{Checklist service}
+\texttt{GET /checklist?destination=NL\&profile=employed\&lang=tr} returns the documents and rules
+of the active requirement set for one destination and profile (\reqid{FR-02}). Each item carries
+the document title in the chosen language, how it is submitted and its citation: the source's
+title, publisher and link, the section and the passage, and whether the rule is stated in the
+source or derived from it. For Norway the response also reports that documents must be
+translated into English or Norwegian. An unknown destination returns 404 with the available
+ones; a database without a loaded set returns 503. Thirteen integration tests check the counts
+above, the citations, both languages and the error responses against a real PostgreSQL database.
 
 \section{Source monitoring}
-\todo{Snapshot pipeline, manifest, administrator approval, notification of affected files only.}
+A weekly command fetches the five official sources, stores a page only when its SHA-256 has
+changed and appends every attempt to a manifest. Changed pages are reviewed by comparing their
+visible text and labelled meaningful, minor or cosmetic; only a meaningful change leads to an
+edit of the requirement files, which then produces a new requirement set. In the first three
+weeks five pages had a new hash: three without a visible change and two with a minor one.
+\todo{Spring (FR-16, FR-17): text-diff detection, administrator approval and notification of only
+the application files whose findings change.}
 
 \section{User interface}
 The interface is one responsive web application with Turkish and English text
@@ -29,4 +141,11 @@ The interface is one responsive web application with Turkish and English text
 \end{figure}
 
 \section{AI components and cost (spring)}
-\todo{ADR 0003: model per task, four-layer cost control, estimates checked against measurement.}
+All model calls go through one client module, and the model of each task is set in configuration
+(ADR 0003): a low-cost multimodal model for classification, field extraction, assistant answers
+and change summaries; a stronger model as a second pass for uncertain fields; and both models as
+the model-only baseline of AS1, so the comparison does not rest on a weak baseline. Spending is
+limited to USD 20 per month (\reqid{NFR-06}) by four layers: estimates before each run, a cache of
+results, a daily limit in the application and a hard limit in the provider account.
+\todo{Check the four layers against ADR 0003 wording and add the cost estimate table after the
+first 20 documents are measured.}
