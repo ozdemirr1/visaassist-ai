@@ -81,3 +81,54 @@ export function useApplicationFiles(enabled: boolean) {
     retry: (count, error) => !(error instanceof ApiError && error.status === 401) && count < 1,
   });
 }
+
+export interface NewApplicationFile {
+  destination: string;
+  profile: Profile;
+  trip_start: string;
+  trip_end: string;
+  application_date?: string;
+}
+
+export function useCreateApplicationFile() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (body: NewApplicationFile) =>
+      api<ApplicationFile>("/applications", { method: "POST", json: body }),
+    onSuccess: (file) => {
+      client.setQueryData(["applications", file.id], file);
+      void client.invalidateQueries({ queryKey: ["applications"], exact: true });
+    },
+  });
+}
+
+export function useApplicationFile(id: string) {
+  return useQuery({
+    queryKey: ["applications", id],
+    queryFn: ({ signal }) => api<ApplicationFile>(`/applications/${id}`, { signal }),
+    retry: (count, error) => !(error instanceof ApiError && error.status < 500) && count < 1,
+  });
+}
+
+export function useUpdateApplicationFile(id: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (body: Partial<Pick<ApplicationFile, "step" | "trip_start" | "trip_end">>) =>
+      api<ApplicationFile>(`/applications/${id}`, { method: "PATCH", json: body }),
+    onSuccess: (file) => {
+      client.setQueryData(["applications", id], file);
+      void client.invalidateQueries({ queryKey: ["applications"], exact: true });
+    },
+  });
+}
+
+export function useDeleteApplicationFile(id: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: () => api<void>(`/applications/${id}`, { method: "DELETE" }),
+    onSuccess: () => {
+      client.removeQueries({ queryKey: ["applications", id] });
+      void client.invalidateQueries({ queryKey: ["applications"], exact: true });
+    },
+  });
+}

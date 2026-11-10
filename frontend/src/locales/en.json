@@ -12,8 +12,14 @@
     "logout": "Log out",
     "language": "Language"
   },
-  "destination": { "NL": "Netherlands", "NO": "Norway" },
-  "profile": { "employed": "Employed", "student": "Student" },
+  "destination": {
+    "NL": "Netherlands",
+    "NO": "Norway"
+  },
+  "profile": {
+    "employed": "Employed",
+    "student": "Student"
+  },
   "home": {
     "title": "Which documents do you need?",
     "lead": "Choose your destination and your situation. Every document shows the official source it comes from.",
@@ -29,16 +35,27 @@
       "copy": "Copy",
       "original_and_copy": "Original and copy"
     },
-    "layer": { "eu": "EU harmonised list", "national": "National" },
+    "layer": {
+      "eu": "EU harmonised list",
+      "national": "National"
+    },
     "source": "Source",
     "derived": "Rule derived from the source",
     "openSource": "Open the official source",
     "translationRequired": "For this destination, documents not in {{languages}} need a translation.",
-    "severity": { "error": "Required", "warning": "Warning" },
+    "severity": {
+      "error": "Required",
+      "warning": "Warning"
+    },
     "loading": "Loading the checklist…",
     "error": "Could not load the checklist: {{message}}"
   },
-  "languageNames": { "en": "English", "no": "Norwegian", "tr": "Turkish", "nl": "Dutch" },
+  "languageNames": {
+    "en": "English",
+    "no": "Norwegian",
+    "tr": "Turkish",
+    "nl": "Dutch"
+  },
   "auth": {
     "loginTitle": "Log in",
     "registerTitle": "Create an account",
@@ -63,7 +80,44 @@
       "documents": "Documents",
       "submitted": "Submitted",
       "decided": "Decided"
-    }
+    },
+    "new": "New application"
   },
-  "notFound": "Page not found."
+  "notFound": "Page not found.",
+  "wizard": {
+    "title": "New application file",
+    "progress": "Steps",
+    "steps": {
+      "purpose": "Destination and situation",
+      "dates": "Dates",
+      "review": "Review"
+    },
+    "tripStart": "Departure date",
+    "tripEnd": "Return date",
+    "trip": "Trip",
+    "applicationDate": "Application (appointment) date",
+    "applicationDateHint": "How recent documents must be is counted from this date. If left empty, today is used.",
+    "today": "Today",
+    "days_one": "{{count}} day",
+    "days_other": "{{count}} days",
+    "problem": {
+      "missing": "Enter the departure and return dates.",
+      "endBeforeStart": "The return date cannot be before the departure date.",
+      "tooLong": "A short-stay visa covers a stay of at most {{max}} days."
+    },
+    "back": "Back",
+    "next": "Next",
+    "create": "Create application file"
+  },
+  "detail": {
+    "referenceDate": "document age counted at {{date}}",
+    "step": "Step",
+    "history": "Step history",
+    "deleteTitle": "Delete application file",
+    "deleteText": "The file, its step history and all documents you uploaded are deleted permanently.",
+    "delete": "Delete",
+    "deleteConfirm": "Yes, delete permanently",
+    "cancel": "Cancel",
+    "notFound": "Application file not found."
+  }
 }
