@@ -1,8 +1,8 @@
 """Database tables (SQLAlchemy 2). Design: docs/design/data-model.md.
 
 Week 7 created the requirement tables: official sources and versioned requirement sets with
-their document types, checklist items and rules. Week 9 adds accounts and sessions (ADR 0004)
-and application files; documents and findings follow.
+their document types, checklist items and rules. Week 9 adds accounts and sessions (ADR 0004),
+application files, consents and encrypted documents (ADR 0005); findings follow.
 """
 
 import uuid
@@ -23,7 +23,7 @@ from sqlalchemy import (
     func,
     text,
 )
-from sqlalchemy.dialects.postgresql import ARRAY, JSONB, UUID
+from sqlalchemy.dialects.postgresql import ARRAY, BYTEA, JSONB, UUID
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
@@ -238,3 +238,41 @@ class ApplicationEvent(Base):
     )
     step: Mapped[str] = mapped_column(String(16))
     occurred_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
+class Consent(Base):
+    """Consent to document processing, per version of the consent text (NFR-01, ADR 0005)."""
+
+    __tablename__ = "consents"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), index=True
+    )
+    version: Mapped[str] = mapped_column(String(32))
+    given_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    withdrawn_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class Document(Base):
+    """An uploaded document; the file itself is encrypted on the storage volume (ADR 0005)."""
+
+    __tablename__ = "documents"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    application_file_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("application_files.id", ondelete="CASCADE"), index=True
+    )
+    requirement_id: Mapped[str] = mapped_column(Text)
+    document_type_id: Mapped[str] = mapped_column(Text)
+    storage_key: Mapped[str] = mapped_column(String(32), unique=True)
+    wrapped_key: Mapped[bytes] = mapped_column(BYTEA)
+    key_id: Mapped[str] = mapped_column(String(16))
+    original_name_encrypted: Mapped[bytes] = mapped_column(BYTEA)
+    mime_type: Mapped[str] = mapped_column(String(32))
+    size_bytes: Mapped[int] = mapped_column(Integer)
+    sha256: Mapped[str] = mapped_column(String(64))
+    language: Mapped[str | None] = mapped_column(String(2))
+    translation_language: Mapped[str | None] = mapped_column(String(2))
+    uploaded_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    delete_after: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)

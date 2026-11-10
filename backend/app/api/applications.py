@@ -16,8 +16,10 @@ from sqlalchemy.orm import Session
 
 from app import models
 from app.api.auth import ErrorMessage, current_user, require_csrf_header
+from app.api.documents import StorageDep
 from app.db import get_session
 from app.requirements import queries
+from app.storage import documents as docs
 
 router = APIRouter(prefix="/applications", tags=["applications"])
 protected = [Depends(require_csrf_header)]
@@ -193,7 +195,10 @@ def update_application_file(
         Trip(trip_start=trip_start, trip_end=trip_end)
     except ValueError as error:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, str(error)) from error
-    application.trip_start, application.trip_end = trip_start, trip_end
+    if trip_end != application.trip_end:
+        application.trip_end = trip_end
+        docs.update_retention(session, application)
+    application.trip_start = trip_start
     if body.application_date is not None:
         application.application_date = body.application_date
     if body.step is not None and body.step != application.step:
@@ -208,7 +213,13 @@ def update_application_file(
     dependencies=protected,
     responses={404: {"model": ErrorMessage}},
 )
-def delete_application_file(file_id: uuid.UUID, session: SessionDep, user: UserDep) -> None:
-    """Delete the file and its events; its documents and stored files follow with FR-11."""
-    session.delete(_own_file(session, user, file_id))
+def delete_application_file(
+    file_id: uuid.UUID, session: SessionDep, user: UserDep, storage: StorageDep
+) -> None:
+    """Delete the file, its events and its documents with their stored files (FR-11)."""
+    application = _own_file(session, user, file_id)
+    keys = docs.delete_documents(session, docs.documents_of(session, application))
+    session.delete(application)
     session.commit()
+    for key in keys:
+        storage.delete(key)
