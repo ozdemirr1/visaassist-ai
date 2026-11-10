@@ -6,6 +6,7 @@
 # Personal / real documents — never committed
 data/private/
 uploads/
+/storage/
 
 # Python
 __pycache__/

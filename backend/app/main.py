@@ -7,7 +7,10 @@ from fastapi import Depends, FastAPI, Response, status
 from app.api.applications import router as applications_router
 from app.api.auth import router as auth_router
 from app.api.checklist import router as checklist_router
+from app.api.documents import router as documents_router
+from app.config import get_settings
 from app.db import database_is_reachable
+from app.storage.crypto import decode_master_key
 
 APP_VERSION = "0.1.0"
 
@@ -18,6 +21,8 @@ def create_app() -> FastAPI:
     A factory keeps app construction in one place, so tests and later
     configuration (database, routers) can create isolated instances.
     """
+    # Without the master key no document can be stored or read: refuse to start (ADR 0005).
+    decode_master_key(get_settings().document_master_key)
     app = FastAPI(title="VisaAssist AI API", version=APP_VERSION)
 
     @app.get("/health", tags=["system"])
@@ -38,6 +43,7 @@ def create_app() -> FastAPI:
 
     app.include_router(auth_router)
     app.include_router(applications_router)
+    app.include_router(documents_router)
     app.include_router(checklist_router)
     return app
 

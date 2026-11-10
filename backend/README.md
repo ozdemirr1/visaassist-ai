@@ -44,6 +44,27 @@ uv run python -m app.users.create_admin --email someone@example.com --reset-pass
 it was created; a step change is recorded as an event. Every query is limited to the logged-in
 user, and another user's file answers `404`.
 
+## Consent and documents
+Design: `docs/decisions/0005-document-storage-and-consent.md`.
+
+- `GET/POST/DELETE /consent`: upload is refused (`403`) until the current consent version is
+  accepted; withdrawing consent deletes all of the user's documents.
+- `POST /applications/{id}/documents` (multipart: `requirement_id`, `file`), `GET
+  /applications/{id}/documents`, `GET /documents/{id}/content`, `DELETE /documents/{id}`.
+- PDF, JPEG or PNG (checked from the first bytes), at most 10 MB; the item must be on the file's
+  checklist.
+- Each document is encrypted with its own AES-256-GCM key, wrapped with `DOCUMENT_MASTER_KEY`,
+  and stored under a random name in `storage/` (not committed). The API does not start without
+  the key. Losing the key makes the stored documents unreadable.
+- Known limitation: while an upload is being received, the web framework may buffer a large
+  file in a temporary file of the operating system before it is encrypted; it is removed when the
+  request ends.
+
+```bash
+uv run python -m app.storage.new_key        # once; put the printed line into ../.env
+uv run python -m app.storage.cleanup        # daily: expired documents and orphaned files
+```
+
 ## Database and requirement data
 ```bash
 uv run alembic upgrade head                 # create or update the tables
