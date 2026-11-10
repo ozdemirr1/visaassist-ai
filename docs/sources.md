@@ -116,7 +116,13 @@ changed; **minor** = content changed, no requirement affected; **cosmetic** = on
 | 2026-11-05 | `nl-checklist-tourism-tr` | `b8929e9f4068` | none | cosmetic | none |
 | 2026-11-05 | `nl-apply-tr` | `f925e282675a` | link added: "Download the letter of authorisation" (for applications through a representative) | minor | none |
 | 2026-11-05 | `no-visitors-visa-tr` | `cb668d2f4ede` | none (same size, markup only) | cosmetic | none |
+| 2026-11-10 | `nl-checklist-tourism-tr` | `9c10d4663d80` | none | cosmetic | none |
+| 2026-11-10 | `nl-apply-tr` | `522248a6f32e` | the separate "Download the letter of authorisation" line was removed; the words "letter of authorisation" in the sentence now carry the link (same link target) | minor | none |
 
 `eu-harmonised-list-tr` and `no-checklist-c-visa-tr` were unchanged on 2026-11-05.
-Two of three "changed" pages had no visible change: a plain hash comparison over-reports
-changes, which supports the text-diff baseline and the cosmetic class planned for AS3.
+`eu-harmonised-list-tr`, `no-checklist-c-visa-tr` and `no-visitors-visa-tr` were unchanged on
+2026-11-10.
+
+So far 5 snapshots had a new hash: 3 showed no visible change, 2 a minor change, none a
+requirement change. A plain hash comparison over-reports changes, which supports the text-diff
+baseline and the cosmetic class planned for AS3.
