@@ -1,0 +1,69 @@
+{
+  "app": {
+    "name": "VisaAssist AI",
+    "tagline": "Schengen kısa süreli vize başvurunuz için resmî kaynaklara dayalı belge listesi",
+    "disclaimer": "VisaAssist AI başvurunuzu hazırlamanıza yardım eder; vize kararını tahmin etmez veya garanti etmez. Kesin bilgi için her maddedeki resmî kaynağa bakın."
+  },
+  "nav": {
+    "home": "Belge listesi",
+    "applications": "Başvurularım",
+    "login": "Giriş",
+    "register": "Kayıt ol",
+    "logout": "Çıkış",
+    "language": "Dil"
+  },
+  "destination": { "NL": "Hollanda", "NO": "Norveç" },
+  "profile": { "employed": "Çalışan", "student": "Öğrenci" },
+  "home": {
+    "title": "Hangi belgeler gerekiyor?",
+    "lead": "Gideceğiniz ülkeyi ve durumunuzu seçin. Her belgenin hangi resmî kaynaktan geldiğini görürsünüz.",
+    "destinationLabel": "Gidilecek ülke",
+    "profileLabel": "Durumunuz",
+    "fromTurkiye": "Türkiye'den başvuru, turistik amaçlı kısa süreli (C) vize"
+  },
+  "checklist": {
+    "documents": "Belgeler ({{count}})",
+    "rules": "Kontrol edilecek kurallar ({{count}})",
+    "submitAs": {
+      "original": "Aslı",
+      "copy": "Fotokopi",
+      "original_and_copy": "Aslı ve fotokopisi"
+    },
+    "layer": { "eu": "AB ortak listesi", "national": "Ülkeye özel" },
+    "source": "Kaynak",
+    "derived": "Kaynaktan çıkarılan kural",
+    "openSource": "Resmî kaynağı aç",
+    "translationRequired": "Bu ülke için {{languages}} dışındaki belgelerin tercümesi gerekiyor.",
+    "severity": { "error": "Zorunlu", "warning": "Uyarı" },
+    "loading": "Belge listesi yükleniyor…",
+    "error": "Belge listesi alınamadı: {{message}}"
+  },
+  "languageNames": { "en": "İngilizce", "no": "Norveççe", "tr": "Türkçe", "nl": "Felemenkçe" },
+  "auth": {
+    "loginTitle": "Giriş yap",
+    "registerTitle": "Hesap oluştur",
+    "email": "E-posta",
+    "password": "Parola",
+    "passwordHint": "En az 10 karakter",
+    "submitLogin": "Giriş yap",
+    "submitRegister": "Hesap oluştur",
+    "noAccount": "Hesabınız yok mu?",
+    "haveAccount": "Zaten hesabınız var mı?",
+    "working": "Gönderiliyor…",
+    "loggedInAs": "{{email}} olarak giriş yapıldı"
+  },
+  "applications": {
+    "title": "Başvurularım",
+    "empty": "Henüz bir başvuru dosyanız yok.",
+    "trip": "{{start}} – {{end}}",
+    "loginRequired": "Başvurularınızı görmek için giriş yapın.",
+    "step": {
+      "draft": "Taslak",
+      "appointment": "Randevu",
+      "documents": "Belgeler",
+      "submitted": "Teslim edildi",
+      "decided": "Sonuçlandı"
+    }
+  },
+  "notFound": "Sayfa bulunamadı."
+}
