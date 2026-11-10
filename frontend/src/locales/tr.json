@@ -12,8 +12,14 @@
     "logout": "Çıkış",
     "language": "Dil"
   },
-  "destination": { "NL": "Hollanda", "NO": "Norveç" },
-  "profile": { "employed": "Çalışan", "student": "Öğrenci" },
+  "destination": {
+    "NL": "Hollanda",
+    "NO": "Norveç"
+  },
+  "profile": {
+    "employed": "Çalışan",
+    "student": "Öğrenci"
+  },
   "home": {
     "title": "Hangi belgeler gerekiyor?",
     "lead": "Gideceğiniz ülkeyi ve durumunuzu seçin. Her belgenin hangi resmî kaynaktan geldiğini görürsünüz.",
@@ -29,16 +35,27 @@
       "copy": "Fotokopi",
       "original_and_copy": "Aslı ve fotokopisi"
     },
-    "layer": { "eu": "AB ortak listesi", "national": "Ülkeye özel" },
+    "layer": {
+      "eu": "AB ortak listesi",
+      "national": "Ülkeye özel"
+    },
     "source": "Kaynak",
     "derived": "Kaynaktan çıkarılan kural",
     "openSource": "Resmî kaynağı aç",
     "translationRequired": "Bu ülke için {{languages}} dışındaki belgelerin tercümesi gerekiyor.",
-    "severity": { "error": "Zorunlu", "warning": "Uyarı" },
+    "severity": {
+      "error": "Zorunlu",
+      "warning": "Uyarı"
+    },
     "loading": "Belge listesi yükleniyor…",
     "error": "Belge listesi alınamadı: {{message}}"
   },
-  "languageNames": { "en": "İngilizce", "no": "Norveççe", "tr": "Türkçe", "nl": "Felemenkçe" },
+  "languageNames": {
+    "en": "İngilizce",
+    "no": "Norveççe",
+    "tr": "Türkçe",
+    "nl": "Felemenkçe"
+  },
   "auth": {
     "loginTitle": "Giriş yap",
     "registerTitle": "Hesap oluştur",
@@ -63,7 +80,44 @@
       "documents": "Belgeler",
       "submitted": "Teslim edildi",
       "decided": "Sonuçlandı"
-    }
+    },
+    "new": "Yeni başvuru"
   },
-  "notFound": "Sayfa bulunamadı."
+  "notFound": "Sayfa bulunamadı.",
+  "wizard": {
+    "title": "Yeni başvuru dosyası",
+    "progress": "Adımlar",
+    "steps": {
+      "purpose": "Ülke ve durum",
+      "dates": "Tarihler",
+      "review": "Kontrol"
+    },
+    "tripStart": "Gidiş tarihi",
+    "tripEnd": "Dönüş tarihi",
+    "trip": "Seyahat",
+    "applicationDate": "Başvuru (randevu) tarihi",
+    "applicationDateHint": "Belgelerin ne kadar yeni olması gerektiği bu tarihe göre hesaplanır. Boş bırakırsanız bugün kullanılır.",
+    "today": "Bugün",
+    "days_one": "{{count}} gün",
+    "days_other": "{{count}} gün",
+    "problem": {
+      "missing": "Gidiş ve dönüş tarihlerini girin.",
+      "endBeforeStart": "Dönüş tarihi gidiş tarihinden önce olamaz.",
+      "tooLong": "Kısa süreli vize en fazla {{max}} günlük kalış içindir."
+    },
+    "back": "Geri",
+    "next": "İleri",
+    "create": "Başvuru dosyasını oluştur"
+  },
+  "detail": {
+    "referenceDate": "belge yaşı {{date}} tarihine göre",
+    "step": "Adım",
+    "history": "Adım geçmişi",
+    "deleteTitle": "Başvuru dosyasını sil",
+    "deleteText": "Dosya, adım geçmişi ve yüklediğiniz bütün belgeler kalıcı olarak silinir.",
+    "delete": "Sil",
+    "deleteConfirm": "Evet, kalıcı olarak sil",
+    "cancel": "Vazgeç",
+    "notFound": "Başvuru dosyası bulunamadı."
+  }
 }
