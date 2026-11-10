@@ -1,11 +1,23 @@
 \chapter{Background and Related Work}\label{ch:background}
 % Lecture 3: the review is the background of the research questions, not a list of papers.
 % Each section ends with what is missing for this project.
+% Draft v0.1, 10 November 2026: selective reading of nine works (search log in the reference
+% manager). Sections marked TODO wait for works not yet read.
+
+This chapter places \project{} between four lines of work: understanding visually rich
+documents, checking documents for completeness and consistency, generating answers with
+citations, and detecting changes on web pages. Each section ends with what the work leaves open
+for a visa application file. The review is selective, not systematic: nine works were read in
+the sections relevant to the research questions, and the search terms and databases are logged
+in the reference manager.
 
 \section{The Schengen short-stay visa in Türkiye}
 The supporting documents for applicants in Türkiye are harmonised by the European Commission
 \autocite{eu2021harmonised}; each member state adds national requirements, for example the
 Netherlands \autocite{nl2025checklist} and Norway \autocite{no2025checklist}.
+Table~\ref{tab:nl-no} shows that the two national layers differ in exactly the kind of detail an
+applicant can miss: a translation requirement, a general limit on document age and the way
+passport validity is counted.
 
 \begin{table}[ht]
   \centering
@@ -23,25 +35,129 @@ Netherlands \autocite{nl2025checklist} and Norway \autocite{no2025checklist}.
   \end{tabularx}
 \end{table}
 
-\section{Document understanding and information extraction}
-\todo{Survey-level overview \autocite{ding2026mllm,cui2021documentai}; what is measured
-(single-document field extraction) and what is not (multi-document files).}
+The official pages also change. In the snapshot of 5 November 2026, three of the five source
+pages differed from their first snapshot of 23 October; on inspection, two of them had no visible
+change and one had gained a link to a letter of authorisation (Section~\ref{sec:change-detection}).
 
-\section{Consistency checking across documents}
-\todo{Closest work: DocChecker \autocite{chen2026contradictions}; limits of multimodal LLMs in
-finding inconsistencies \autocite{selch2025prismm}; name matching \autocite{christen2006names}.
-State the difference: external, versioned requirements plus document-to-document rules.}
+\section{Document understanding and information extraction}
+Extracting fields from scans and photos of documents is a mature research area.
+\textcite{ding2026mllm} survey methods built on multimodal large language models and separate
+OCR-based pipelines, which read the text first and then reason over it, from OCR-free models,
+which map the image directly to structured output. They list the recurring problems: errors of
+the OCR step carried into later steps, complex layouts, links across pages and training data
+dominated by English.
+
+Donut \autocite{kim2022donut} is a representative OCR-free model: an image encoder and a text
+decoder turn a document image into JSON. It reaches a field-level F1 of 84.1 on receipts (CORD)
+but does not beat OCR-based models on every task (DocVQA ANLS 67.5 against 78.1 for LayoutLMv2),
+and no Turkish documents are tested. Its synthetic generator, SynthDoG, renders text on varied
+backgrounds with noise, blur and perspective; it creates visual variety, not the missing or
+contradictory documents that \project{} has to detect.
+\todo{Kazamel, Kocasarı and Alıcı (2025), Turkish ID cards: add once the full text is read.}
+
+\paragraph{What is open.} These works measure extraction from one document at a time. Whether
+an application file as a whole is complete and consistent with the requirements is not their
+question, so this project reports field extraction and error finding as separate measures (AS1).
+
+\section{Checking documents for completeness and consistency}
+The closest work is DocChecker \autocite{chen2026contradictions}. It builds entity--relation
+graphs from text and finds seven kinds of contradiction within and across documents, combining
+logic rules with machine-learned predicates; the rules are learned with the help of a language
+model, and external knowledge graphs can be attached. It reaches an average F1 of about 0.90 on
+15 text benchmarks, none of which are application files. A hybrid of rules and learning is
+therefore not new.
+
+Nor is validation after extraction. \textcite{bulatov2022identity} describe a framework for
+identity documents read from scans, photos and video, in which field syntax and relations between
+fields (an issue date cannot precede the date of birth) are kept in configuration and the result
+is checked for completeness. The rules are configured by hand, and the paper reports no new
+end-to-end experiment.
+
+Whether a language model alone can do this work is doubtful. On PRISMM-Bench
+\autocite{selch2025prismm}, 384 inconsistencies reported by reviewers in scientific papers, 21
+multimodal models reach an accuracy of 27.8 to 53.9\,\% in multiple-choice tasks where chance is
+25\,\%. This supports including a model-only baseline in AS1; it does not show that a hybrid
+system does better, which AS1 has to measure on this project's own error types.
+
+Comparing names across documents is a problem of its own. \textcite{christen2006names} finds
+that no single matching technique is best: the ranking changes with the part of the name, word
+order and the kind of error. The name rule of this project therefore keeps the original name,
+normalises Turkish letters and spacing, and chooses its threshold on labelled pairs.
+
+\paragraph{What is open.} In these works the rules are configured or learned for one domain; none
+of them takes requirements from official, dated sources with the passage cited, checks that every
+required document of a multi-document file is present, or follows a change of those requirements
+to the files it affects.
 
 \section{Retrieval-augmented generation and citation}
-\todo{\textcite{gao2024ragsurvey}; citation quality \autocite{gao2023alce}; hallucination
-\autocite{ji2023hallucination}.}
+An assistant that answers questions about requirements has to show where each statement comes
+from. ALCE \autocite{gao2023alce} measures this: a sentence counts as supported when its cited
+passages entail it (citation recall), and a citation counts as precise when it is needed for that
+support (citation precision), both judged by an inference model. Even strong models leave many
+sentences unsupported; on long-form questions (ELI5), GPT-4 with 20 passages reaches a citation
+recall of 48.5\,\% and a precision of 53.4\,\%.
+\todo{Survey of retrieval-augmented generation \autocite{gao2024ragsurvey} and of hallucination
+\autocite{ji2023hallucination}: add once read.}
 
-\section{Change detection of web pages}
-\todo{\textcite{mallawaarachchi2020change}; semantic vs textual change \autocite{zhang2004xml}.}
+\paragraph{What is open.} ALCE asks whether a passage supports a sentence, not whether the source
+is official, current or the version in force. This project adds the second part by tying each
+requirement to a versioned requirement set built from dated snapshots of official pages.
+
+\section{Change detection of web pages}\label{sec:change-detection}
+\textcite{mallawaarachchi2020change} survey change detection and notification: kinds of change
+(content, structure, presentation, behaviour), fixed and adaptive check schedules, and filtering
+of irrelevant parts such as advertisements. There is no shared benchmark. \textcite{adar2009web}
+crawled about 55,000 frequently revisited pages every hour for five weeks; 11.5\,\% of them
+already differed between two simultaneous requests, because of advertisements, timestamps and
+counters. A changed hash is therefore only a candidate change, which matches the first
+observation on the official visa pages above.
+\todo{Semantic change detection \autocite{zhang2004xml}: add once read.}
+
+\paragraph{What is open.} Deciding whether a change affects a visa requirement needs knowledge of
+the requirements. AS3 labels pairs of snapshots as meaningful, minor or cosmetic and measures
+precision, recall and F1 per class; small edits such as a changed number of months can matter,
+so changes are not filtered by size alone.
 
 \section{Similar systems}
-\todo{Table from docs/related-work.md: open-source visa assistants and change monitors; none
-reports measured accuracy.}
+A search of public repositories on 23 October 2026 found several open-source visa and
+document-check assistants (Table~\ref{tab:similar}). None of the repositories inspected reports a
+measured error rate.
+
+\begin{table}[ht]
+  \centering
+  \small
+  \caption{Similar open-source systems (repositories inspected on 23 October 2026).}
+  \label{tab:similar}
+  \begin{tabularx}{\textwidth}{@{}lXX@{}}
+    \toprule
+    System & Approach & Difference from \project{} \\
+    \midrule
+    VISAPATH &
+      Completeness and consistency checks of visa documents with retrieval and a language
+      model as judge; scans uploads for prompt injection &
+      Sources not named; no explicit, tested rules \\
+    UK Visa Auditor &
+      JSON rule engine, OCR and fuzzy matching for UK student visas &
+      Links to official pages in chat only; no versioning \\
+    Visa-Agent &
+      Model proposes facts, Python rules decide; versioned rule snapshots &
+      Same principle; sources and change detection not documented \\
+    changedetection.io &
+      General web page monitor with selector filters, text diff and notifications &
+      Detects changes but cannot tell which requirements or applicants they affect \\
+    \bottomrule
+  \end{tabularx}
+
+  \raggedright\footnotesize Repositories: \url{https://github.com/sankeerthanayerubandi-gif/VISAPATH}; \url{https://github.com/taimoorcodes-cmd/uk-visa-auditor}; \url{https://github.com/Sanssssssssssssssss/Visa-Agent}; \url{https://github.com/dgtlmoon/changedetection.io}.
+\end{table}
 
 \section{Research gap}
-\todo{3--4 sentences leading to AS1--AS3.}
+Hybrid checking with rules and learned components exists \autocite{chen2026contradictions}, and
+so does validation of extracted fields \autocite{bulatov2022identity}. What the works reviewed
+here do not show together is a check of a multi-document visa application against requirements
+taken from official, dated and versioned sources with the passage cited, which reports missing
+documents as well as inconsistent fields, and which carries an approved change of a source to the
+applications it affects. Whether such a hybrid finds errors better than a language model alone
+(AS1), how it compares with human reviewers (AS2), and how well source monitoring separates
+meaningful from cosmetic changes (AS3) are the questions this project measures. The claim is
+limited to the works reviewed; it is not the result of a systematic review.
