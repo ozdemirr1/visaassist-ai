@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 
 from app import models
 from app.db import get_session
+from app.requirements import queries
 
 router = APIRouter(tags=["checklist"])
 
@@ -99,23 +100,14 @@ def get_checklist(
     lang: Language = "tr",
 ) -> Checklist:
     """Checklist items and rules of the active requirement set for one destination and profile."""
-    set_id = session.scalar(select(models.RequirementSet.id).where(models.RequirementSet.active))
+    set_id = queries.active_set_id(session)
     if set_id is None:
         raise HTTPException(
             status.HTTP_503_SERVICE_UNAVAILABLE,
             "No active requirement set; run `python -m app.requirements.seed`.",
         )
 
-    destinations = set(
-        session.scalars(
-            select(models.Requirement.destination)
-            .where(
-                models.Requirement.requirement_set_id == set_id,
-                models.Requirement.destination.is_not(None),
-            )
-            .distinct()
-        )
-    )
+    destinations = queries.destinations(session, set_id)
     if destination not in destinations:
         raise HTTPException(
             status.HTTP_404_NOT_FOUND,
