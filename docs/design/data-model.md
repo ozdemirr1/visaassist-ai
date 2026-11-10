@@ -112,6 +112,9 @@ erDiagram
         text requirement_id FK
         text document_type_id FK
         text storage_key "random, encrypted file"
+        bytea wrapped_key "data key, encrypted with the master key (ADR 0005)"
+        text key_id "master key that wrapped it"
+        bytea original_name_encrypted
         text mime_type
         int size_bytes
         text sha256
