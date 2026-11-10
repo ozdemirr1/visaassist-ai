@@ -1,13 +1,15 @@
 """Database tables (SQLAlchemy 2). Design: docs/design/data-model.md.
 
-Week 7 creates the requirement tables: official sources and versioned requirement sets with
-their document types, checklist items and rules. Application files, documents and findings
-follow in week 9.
+Week 7 created the requirement tables: official sources and versioned requirement sets with
+their document types, checklist items and rules. Week 9 adds accounts and sessions (ADR 0004);
+application files, documents and findings follow.
 """
 
+import uuid
 from datetime import date, datetime
 
 from sqlalchemy import (
+    BigInteger,
     Boolean,
     Date,
     DateTime,
@@ -20,7 +22,7 @@ from sqlalchemy import (
     func,
     text,
 )
-from sqlalchemy.dialects.postgresql import ARRAY, JSONB
+from sqlalchemy.dialects.postgresql import ARRAY, JSONB, UUID
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
@@ -154,3 +156,46 @@ class Rule(_Cited, Base):
     title_tr: Mapped[str] = mapped_column(Text)
     check: Mapped[dict] = mapped_column(JSONB)
     position: Mapped[int] = mapped_column(Integer)
+
+
+class User(Base):
+    """An account: an applicant or an administrator (FR-04)."""
+
+    __tablename__ = "users"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    email: Mapped[str] = mapped_column(Text, unique=True)
+    password_hash: Mapped[str] = mapped_column(Text)
+    role: Mapped[str] = mapped_column(String(16), default="applicant")
+    language: Mapped[str] = mapped_column(String(2), default="tr")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class AuthSession(Base):
+    """A login session. Only the SHA-256 of the cookie token is stored (ADR 0004)."""
+
+    __tablename__ = "sessions"
+
+    token_hash: Mapped[str] = mapped_column(String(64), primary_key=True)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), index=True
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    last_seen_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
+class LoginAttempt(Base):
+    """One login attempt, counted per e-mail and per IP address to slow down guessing."""
+
+    __tablename__ = "login_attempts"
+    __table_args__ = (
+        Index("ix_login_attempts_email_time", "email", "attempted_at"),
+        Index("ix_login_attempts_ip_time", "ip_address", "attempted_at"),
+    )
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    email: Mapped[str] = mapped_column(Text)
+    ip_address: Mapped[str] = mapped_column(Text)
+    succeeded: Mapped[bool] = mapped_column(Boolean)
+    attempted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))

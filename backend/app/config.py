@@ -17,6 +17,10 @@ class Settings(BaseSettings):
     # Required on purpose: there is no safe default for credentials.
     database_url: str
 
+    # Session cookie (ADR 0004). Secure by default; set COOKIE_SECURE=false only for a browser
+    # that refuses Secure cookies on http://localhost during development.
+    cookie_secure: bool = True
+
 
 @lru_cache
 def get_settings() -> Settings:

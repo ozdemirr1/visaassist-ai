@@ -22,6 +22,22 @@ Endpoints:
   destination and profile, each with the official source passage it comes from. `404` for an
   unknown destination, `503` if no requirement set has been loaded.
 
+## Accounts and sessions
+Design: `docs/decisions/0004-authentication.md`.
+
+- `POST /auth/register`, `POST /auth/login`, `POST /auth/logout`, `GET /auth/me`.
+- The session is an opaque token in the HttpOnly cookie `visaassist_session`; the database keeps
+  only its SHA-256. Sessions end after 7 days, or after 2 days without use.
+- Every `POST`, `PUT`, `PATCH` and `DELETE` needs the header `X-Requested-With: visaassist`.
+- Five failed logins within 15 minutes, per e-mail or per IP address, return `429` until the
+  oldest of them is 15 minutes old.
+- Administrators are created on the command line (the password is asked for, not passed):
+
+```bash
+uv run python -m app.users.create_admin --email admin@example.com
+uv run python -m app.users.create_admin --email someone@example.com --reset-password
+```
+
 ## Database and requirement data
 ```bash
 uv run alembic upgrade head                 # create or update the tables
