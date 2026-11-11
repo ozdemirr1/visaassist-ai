@@ -176,5 +176,38 @@
     "sourcesText": "Her madde, resmî kaynağındaki cümleyle birlikte gösterilir.",
     "ruleSet": "kural kümesi {{id}}",
     "newShort": "Yeni"
+  },
+  "consent": {
+    "title": "Belge yükleme onayı",
+    "intro": "Belge yükleyebilmek için aşağıdakileri kabul etmeniz gerekir.",
+    "points": {
+      "purpose": "Yüklediğiniz belgeler kişisel veri içerir; yalnızca başvuru hazırlığınız için kullanılır.",
+      "storage": "Her belge ayrı bir anahtarla şifrelenerek saklanır; uygulamada yalnızca siz görüntüleyip indirebilirsiniz.",
+      "photos": "Fotoğraflardaki konum bilgisi saklanmadan önce çıkarılır.",
+      "retention": "Belgeler seyahatinizin bitiminden 30 gün sonra kendiliğinden silinir; dilediğiniz an kendiniz de silebilirsiniz.",
+      "withdraw": "Onayı istediğiniz zaman geri çekebilirsiniz; bu durumda yüklediğiniz bütün belgeler silinir."
+    },
+    "accept": "Okudum, kabul ediyorum",
+    "version": "Onay metni sürümü: {{version}}",
+    "withdraw": "Onayı geri çek",
+    "withdrawWarning": "Onayı geri çekerseniz bütün başvuru dosyalarınızdaki belgeler kalıcı olarak silinir.",
+    "withdrawConfirm": "Evet, onayı geri çek ve belgeleri sil"
+  },
+  "upload": {
+    "kicker": "Bu belgeyi yükle",
+    "drop": "Dosyayı buraya bırakın ya da dosya seçin",
+    "hint": "PDF, JPEG veya PNG · en fazla {{max}} MB",
+    "working": "Yükleniyor…",
+    "uploaded": "Yüklenen dosyalar",
+    "none": "Bu madde için henüz dosya yüklenmedi.",
+    "download": "İndir",
+    "delete": "Sil",
+    "deleteConfirm": "Evet, sil",
+    "retention": "Bu belgeler {{date}} tarihinde kendiliğinden silinir.",
+    "error": {
+      "tooLarge": "Dosya en fazla {{max}} MB olabilir.",
+      "type": "Yalnızca PDF, JPEG ve PNG dosyaları yüklenebilir.",
+      "consent": "Belge yüklemeden önce onay metnini kabul edin."
+    }
   }
 }

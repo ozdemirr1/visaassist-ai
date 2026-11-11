@@ -1,7 +1,7 @@
-import { useMemo, useState } from "react";
+import { type ReactNode, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import type { Checklist } from "../api/types";
+import type { Checklist, ChecklistItem } from "../api/types";
 import { IconSearch } from "./icons";
 import { type SourceEntry, SourcePanel } from "./SourcePanel";
 
@@ -11,15 +11,23 @@ interface Props {
   checklist: Checklist;
   /** Checklist items that have an uploaded document. Without it, no status is shown. */
   readyIds?: ReadonlySet<string>;
+  /** Shown under the source of the selected document (the upload panel of an application). */
+  itemPanel?: (item: ChecklistItem) => ReactNode;
 }
 
 /** Documents as a table, the rules below, and the official source of the selected entry. */
-export function ChecklistView({ checklist, readyIds }: Props) {
+export function ChecklistView({ checklist, readyIds, itemPanel }: Props) {
   const { t, i18n } = useTranslation();
   const [filter, setFilter] = useState<Filter>("all");
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const side = useRef<HTMLDivElement>(null);
   const withStatus = readyIds !== undefined;
+  // On a narrow screen the side column is below the lists: bring it into view on selection.
+  const select = (id: string) => {
+    setSelectedId(id);
+    side.current?.scrollIntoView?.({ block: "nearest" });
+  };
   const isReady = (id: string) => readyIds?.has(id) ?? false;
 
   const languages = checklist.translation.languages
@@ -61,6 +69,8 @@ export function ChecklistView({ checklist, readyIds }: Props) {
     (selectedId && entries.get(selectedId)) ||
     entries.get((firstMissing ?? checklist.items[0])?.id ?? "") ||
     null;
+
+  const selectedItem = checklist.items.find((item) => item.id === selected?.id);
 
   const columns = withStatus
     ? "grid-cols-[minmax(0,2.2fr)_minmax(0,1.7fr)_150px_84px]"
@@ -150,7 +160,7 @@ export function ChecklistView({ checklist, readyIds }: Props) {
                       key={item.id}
                       type="button"
                       aria-pressed={selected?.id === item.id}
-                      onClick={() => setSelectedId(item.id)}
+                      onClick={() => select(item.id)}
                       className={`${rowClass(item.id)} grid ${columns} min-h-[52px] items-center gap-3 px-3.5 py-1.5`}
                       style={{ animationDelay: `${0.4 + index * 0.045}s` }}
                     >
@@ -198,7 +208,7 @@ export function ChecklistView({ checklist, readyIds }: Props) {
                   <button
                     type="button"
                     aria-pressed={selected?.id === rule.id}
-                    onClick={() => setSelectedId(rule.id)}
+                    onClick={() => select(rule.id)}
                     className={`${rowClass(rule.id)} flex min-h-11 items-center justify-between gap-3 px-3.5 py-1.5`}
                   >
                     <span className="text-sm font-semibold">{rule.title}</span>
@@ -216,7 +226,15 @@ export function ChecklistView({ checklist, readyIds }: Props) {
           </section>
         </div>
 
-        {selected && <SourcePanel entry={selected} />}
+        {selected && (
+          <div
+            ref={side}
+            className="flex min-w-0 flex-[1_1_320px] flex-col gap-4 xl:sticky xl:top-4 xl:max-h-[calc(100vh-2rem)] xl:overflow-y-auto"
+          >
+            <SourcePanel entry={selected} />
+            {selectedItem && itemPanel?.(selectedItem)}
+          </div>
+        )}
       </div>
     </div>
   );

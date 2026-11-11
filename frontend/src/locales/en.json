@@ -176,5 +176,38 @@
     "sourcesText": "Every item is shown with the passage of its official source.",
     "ruleSet": "requirement set {{id}}",
     "newShort": "New"
+  },
+  "consent": {
+    "title": "Consent for uploading documents",
+    "intro": "To upload documents you need to accept the following.",
+    "points": {
+      "purpose": "The documents you upload contain personal data; they are used only to prepare your application.",
+      "storage": "Each document is stored encrypted with its own key; in the application only you can view and download it.",
+      "photos": "Location data in photos is removed before they are stored.",
+      "retention": "Documents are deleted automatically 30 days after your trip ends; you can delete them yourself at any time.",
+      "withdraw": "You can withdraw your consent at any time; all documents you uploaded are then deleted."
+    },
+    "accept": "I have read and accept this",
+    "version": "Consent text version: {{version}}",
+    "withdraw": "Withdraw consent",
+    "withdrawWarning": "If you withdraw your consent, the documents in all your application files are deleted permanently.",
+    "withdrawConfirm": "Yes, withdraw consent and delete the documents"
+  },
+  "upload": {
+    "kicker": "Upload this document",
+    "drop": "Drop the file here or choose a file",
+    "hint": "PDF, JPEG or PNG · at most {{max}} MB",
+    "working": "Uploading…",
+    "uploaded": "Uploaded files",
+    "none": "No file has been uploaded for this item yet.",
+    "download": "Download",
+    "delete": "Delete",
+    "deleteConfirm": "Yes, delete",
+    "retention": "These documents are deleted automatically on {{date}}.",
+    "error": {
+      "tooLarge": "A file can have at most {{max}} MB.",
+      "type": "Only PDF, JPEG and PNG files can be uploaded.",
+      "consent": "Accept the consent text before uploading documents."
+    }
   }
 }

@@ -5,12 +5,14 @@ import { Link, useNavigate, useParams } from "react-router";
 import {
   useApplicationFile,
   useChecklist,
+  useConsent,
   useDeleteApplicationFile,
   useDocuments,
   useUpdateApplicationFile,
 } from "../api/hooks";
 import type { ApplicationFile, Language, Step } from "../api/types";
 import { ChecklistView } from "../components/ChecklistView";
+import { DocumentPanel } from "../components/DocumentPanel";
 import { ReadinessRing } from "../components/ReadinessRing";
 import { RequireLogin } from "../components/RequireLogin";
 import { RouteArc } from "../components/RouteArc";
@@ -44,6 +46,7 @@ function Detail({ file }: { file: ApplicationFile }) {
   const [confirming, setConfirming] = useState(false);
   const checklist = useChecklist(file.destination, file.profile, i18n.language as Language);
   const documents = useDocuments(file.id);
+  const consent = useConsent();
 
   const items = checklist.data?.items ?? [];
   const readyIds = new Set(documents.data?.map((document) => document.requirement_id));
@@ -153,7 +156,21 @@ function Detail({ file }: { file: ApplicationFile }) {
         )}
       </section>
 
-      {checklist.data && <ChecklistView checklist={checklist.data} readyIds={readyIds} />}
+      {checklist.data && (
+        <ChecklistView
+          checklist={checklist.data}
+          readyIds={readyIds}
+          itemPanel={(item) => (
+            <DocumentPanel
+              key={item.id}
+              applicationFileId={file.id}
+              item={item}
+              documents={(documents.data ?? []).filter((document) => document.requirement_id === item.id)}
+              consent={consent.data}
+            />
+          )}
+        />
+      )}
       {checklist.isError && (
         <p role="alert" className="rounded-xl bg-error-bg p-3 text-error">
           {t("checklist.error", { message: checklist.error.message })}

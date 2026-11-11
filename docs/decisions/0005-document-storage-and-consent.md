@@ -31,8 +31,11 @@ Compose; there are no backups and no real personal documents in development or t
    when complete, so a failed upload leaves no half-written file.
 4. **Validation before storing.** At most 10 MB, checked while reading; the type is taken from the
    file's first bytes (PDF `%PDF-`, JPEG `FF D8 FF`, PNG `89 50 4E 47`), not from the name or the
-   browser's content type; anything else is refused with `415`. Location data in photos (EXIF)
-   is removed when phone-camera upload is added in week 11.
+   browser's content type; anything else is refused with `415`. Location data in photos is
+   removed before the file is hashed and stored: the GPS block of the EXIF data and the XMP
+   packet in JPEG, the EXIF GPS block in PNG (`app/storage/metadata.py`, in place, without an
+   image library, so the orientation and the file length stay as they were). Metadata inside PDF
+   files is not touched (added 11 November 2026 with the upload screen).
 5. **Deletion.** Deleting a document removes its row and its encrypted file at once; deleting an
    application file, withdrawing consent or deleting the account does the same for all their
    documents. Because the data key lives only in the row, a file left on disk by a crash cannot

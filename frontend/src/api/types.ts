@@ -75,3 +75,8 @@ export interface DocumentInfo {
   uploaded_at: string;
   delete_after: string;
 }
+
+export interface ConsentState {
+  version: string;
+  given: boolean;
+}
