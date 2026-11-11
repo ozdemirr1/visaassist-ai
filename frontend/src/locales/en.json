@@ -48,7 +48,27 @@
       "warning": "Warning"
     },
     "loading": "Loading the checklist…",
-    "error": "Could not load the checklist: {{message}}"
+    "error": "Could not load the checklist: {{message}}",
+    "filter": {
+      "all": "All",
+      "missing": "Missing",
+      "ready": "Ready"
+    },
+    "status": {
+      "ready": "Ready",
+      "missing": "Missing"
+    },
+    "columns": {
+      "document": "Document",
+      "source": "Source",
+      "submit": "Submit as",
+      "status": "Status"
+    },
+    "search": "Search documents",
+    "noMatch": "No matching document.",
+    "filterLabel": "Filter documents",
+    "sourceOf": "Source of the selected item",
+    "ruleLayer": "Rule"
   },
   "languageNames": {
     "en": "English",
@@ -118,6 +138,30 @@
     "delete": "Delete",
     "deleteConfirm": "Yes, delete permanently",
     "cancel": "Cancel",
-    "notFound": "Application file not found."
+    "notFound": "Application file not found.",
+    "summary": "Application summary",
+    "kind": "Schengen · short stay (C) · tourism",
+    "title": "{{destination}} application",
+    "daysLeft": "Until the appointment",
+    "days": "days",
+    "appointment": "Appointment date",
+    "rules": "Rules to check",
+    "missing": "Missing documents",
+    "readiness": "Readiness",
+    "readinessLabel": "{{ready}} of {{total}} documents ready",
+    "ofDocs": "{{ready}} / {{total}} documents",
+    "next": "Next:",
+    "allReady": "All documents are ready.",
+    "routeLabel": "Route from Türkiye to {{destination}}",
+    "steps": "Application steps",
+    "current": "in progress"
+  },
+  "shell": {
+    "files": "Application files",
+    "menu": "Menu",
+    "sourcesTitle": "Based on official sources",
+    "sourcesText": "Every item is shown with the passage of its official source.",
+    "ruleSet": "requirement set {{id}}",
+    "newShort": "New"
   }
 }
