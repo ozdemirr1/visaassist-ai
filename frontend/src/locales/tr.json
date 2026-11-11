@@ -48,7 +48,27 @@
       "warning": "Uyarı"
     },
     "loading": "Belge listesi yükleniyor…",
-    "error": "Belge listesi alınamadı: {{message}}"
+    "error": "Belge listesi alınamadı: {{message}}",
+    "filter": {
+      "all": "Tümü",
+      "missing": "Eksik",
+      "ready": "Hazır"
+    },
+    "status": {
+      "ready": "Hazır",
+      "missing": "Eksik"
+    },
+    "columns": {
+      "document": "Belge",
+      "source": "Kaynak",
+      "submit": "Teslim şekli",
+      "status": "Durum"
+    },
+    "search": "Belge ara",
+    "noMatch": "Eşleşen belge yok.",
+    "filterLabel": "Belgeleri süz",
+    "sourceOf": "Seçili maddenin kaynağı",
+    "ruleLayer": "Kural"
   },
   "languageNames": {
     "en": "İngilizce",
@@ -118,6 +138,30 @@
     "delete": "Sil",
     "deleteConfirm": "Evet, kalıcı olarak sil",
     "cancel": "Vazgeç",
-    "notFound": "Başvuru dosyası bulunamadı."
+    "notFound": "Başvuru dosyası bulunamadı.",
+    "summary": "Başvuru özeti",
+    "kind": "Schengen · kısa süreli (C) · turistik",
+    "title": "{{destination}} başvurusu",
+    "daysLeft": "Randevuya kalan",
+    "days": "gün",
+    "appointment": "Randevu tarihi",
+    "rules": "Kontrol edilecek kural",
+    "missing": "Eksik belge",
+    "readiness": "Hazırlık",
+    "readinessLabel": "{{total}} belgeden {{ready}} tanesi hazır",
+    "ofDocs": "{{ready}} / {{total}} belge",
+    "next": "Sıradaki:",
+    "allReady": "Bütün belgeler hazır.",
+    "routeLabel": "Türkiye'den {{destination}} yönüne rota",
+    "steps": "Başvuru adımları",
+    "current": "sürüyor"
+  },
+  "shell": {
+    "files": "Başvuru dosyaları",
+    "menu": "Menü",
+    "sourcesTitle": "Resmî kaynaklara dayalı",
+    "sourcesText": "Her madde, resmî kaynağındaki cümleyle birlikte gösterilir.",
+    "ruleSet": "kural kümesi {{id}}",
+    "newShort": "Yeni"
   }
 }

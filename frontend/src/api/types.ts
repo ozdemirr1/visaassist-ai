@@ -63,3 +63,15 @@ export interface ApplicationFile {
   created_at: string;
   events: { step: Step; occurred_at: string }[];
 }
+
+export interface DocumentInfo {
+  id: string;
+  application_file_id: string;
+  requirement_id: string;
+  document_type_id: string;
+  original_name: string;
+  mime_type: string;
+  size_bytes: number;
+  uploaded_at: string;
+  delete_after: string;
+}

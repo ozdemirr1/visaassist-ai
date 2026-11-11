@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { ApiError, api } from "./client";
-import type { ApplicationFile, Checklist, Language, Profile, User } from "./types";
+import type { ApplicationFile, Checklist, DocumentInfo, Language, Profile, User } from "./types";
 
 export function useChecklist(destination: string, profile: Profile, lang: Language) {
   return useQuery({
@@ -130,5 +130,14 @@ export function useDeleteApplicationFile(id: string) {
       client.removeQueries({ queryKey: ["applications", id] });
       void client.invalidateQueries({ queryKey: ["applications"], exact: true });
     },
+  });
+}
+
+/** Documents uploaded to an application file (which checklist items are ready). */
+export function useDocuments(applicationFileId: string) {
+  return useQuery({
+    queryKey: ["applications", applicationFileId, "documents"],
+    queryFn: ({ signal }) =>
+      api<DocumentInfo[]>(`/applications/${applicationFileId}/documents`, { signal }),
   });
 }

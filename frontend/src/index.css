@@ -1,19 +1,27 @@
 @import "tailwindcss";
 
-/* Visual language: docs/design/ui-design.md */
+/* Visual language: docs/design/ui-design.md (v0.2: light ground, navy panel, one blue accent). */
 @theme {
-  --color-brand: #1849a9;
-  --color-brand-dark: #123a87;
+  --color-brand: #2450e6;
+  --color-brand-dark: #1a3bb0;
+  --color-brand-soft: #f4f7ff;
   --color-ink: #0e1726;
   --color-muted: #4b5565;
-  --color-ground: #f5f7fa;
-  --color-line: #e3e8ef;
+  --color-ground: #f2f4f8;
+  --color-line: #e4e8f0;
+  --color-navy: #0b1324;
+  --color-navy-2: #131d33;
+  --color-navy-line: #22304f;
+  --color-navy-text: #c7d0e0;
+  --color-navy-muted: #9fb0cf;
   --color-error: #b42318;
   --color-error-bg: #fef3f2;
   --color-warning: #b54708;
   --color-warning-bg: #fffaeb;
   --color-ok: #067647;
   --color-ok-bg: #ecfdf3;
+  --color-amber: #f5b14c;
+  --color-mint: #3ddc97;
   --font-sans: "Plus Jakarta Sans Variable", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
@@ -35,4 +43,72 @@ body {
   background-repeat: no-repeat;
   background-position: right 0.75rem center;
   background-size: 1.25rem;
+}
+
+/* Motion. Entrances play once; the few loops are small status signals. */
+@keyframes va-rise {
+  from { opacity: 0; transform: translateY(18px) scale(0.985); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes va-slide {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes va-seg {
+  from { opacity: 0; stroke-width: 2; }
+  to { opacity: 1; stroke-width: 10; }
+}
+@keyframes va-draw {
+  from { stroke-dashoffset: 620; }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes va-fly {
+  from { offset-distance: 0%; }
+  to { offset-distance: 100%; }
+}
+@keyframes va-grow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+@keyframes va-pulse {
+  0% { box-shadow: 0 0 0 0 rgb(36 80 230 / 0.45); }
+  100% { box-shadow: 0 0 0 14px rgb(36 80 230 / 0); }
+}
+@keyframes va-live {
+  0% { box-shadow: 0 0 0 0 rgb(61 220 151 / 0.55); }
+  100% { box-shadow: 0 0 0 10px rgb(61 220 151 / 0); }
+}
+@keyframes va-scan {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(400%); }
+}
+
+.va-rise { animation: va-rise 0.6s cubic-bezier(0.16, 0.8, 0.2, 1) both; }
+.va-slide { animation: va-slide 0.55s cubic-bezier(0.16, 0.8, 0.2, 1) both; }
+.va-seg { animation: va-seg 0.4s ease both; }
+.va-draw { stroke-dasharray: 620; animation: va-draw 1.8s cubic-bezier(0.2, 0.7, 0.2, 1) 0.4s both; }
+.va-fly { animation: va-fly 5.5s cubic-bezier(0.45, 0.05, 0.55, 0.95) 2s infinite; }
+.va-grow { transform-origin: left center; animation: va-grow 1.3s cubic-bezier(0.2, 0.7, 0.2, 1) 0.5s both; }
+.va-pulse { animation: va-pulse 1.8s ease-out infinite; }
+.va-live { animation: va-live 1.8s ease-out infinite; }
+.va-scan { animation: va-scan 3.6s linear infinite; }
+
+.va-card { transition: transform 0.22s ease, box-shadow 0.22s ease; }
+.va-card:hover { transform: translateY(-3px); box-shadow: 0 18px 40px rgb(14 23 38 / 0.12); }
+.va-row { transition: background-color 0.16s ease, transform 0.16s ease; }
+.va-row:hover { transform: translateX(3px); }
+.va-btn { transition: transform 0.15s ease, filter 0.15s ease; }
+.va-btn:hover { transform: translateY(-1px); filter: brightness(1.08); }
+.va-btn:active { transform: translateY(0); }
+
+.va-dots {
+  background-image: radial-gradient(#22304f 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
 }

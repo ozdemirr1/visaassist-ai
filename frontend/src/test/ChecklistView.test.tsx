@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import type { Checklist } from "../api/types";
@@ -47,13 +47,41 @@ describe("ChecklistView", () => {
     await i18n.changeLanguage("tr");
     render(<ChecklistView checklist={checklist} />);
     expect(screen.getByText("Belgeler (1)")).toBeInTheDocument();
-    expect(screen.getByText("Pasaport")).toBeInTheDocument();
-    expect(screen.getByText(/Aslı ve fotokopisi/)).toBeInTheDocument();
-    expect(screen.getAllByText(source.passage)).toHaveLength(2);
-    const links = screen.getAllByRole("link", { name: "Resmî kaynağı aç" });
-    expect(links[0]).toHaveAttribute("href", source.url);
-    expect(links[0]).toHaveAttribute("rel", "noopener noreferrer");
+    expect(screen.getAllByText("Pasaport")).toHaveLength(2); // table row and source panel
+    expect(screen.getByText("Aslı ve fotokopisi")).toBeInTheDocument();
+    expect(screen.getByText(source.passage)).toBeInTheDocument();
+    const link = screen.getByRole("link", { name: "Resmî kaynağı aç" });
+    expect(link).toHaveAttribute("href", source.url);
+    expect(link).toHaveAttribute("rel", "noopener noreferrer");
     expect(screen.getByRole("note")).toHaveTextContent("İngilizce / Norveççe");
+    expect(screen.queryByText("Eksik")).not.toBeInTheDocument(); // no status without uploads
+  });
+
+  it("shows the source of a rule when it is selected", async () => {
+    await i18n.changeLanguage("tr");
+    render(<ChecklistView checklist={checklist} />);
+    fireEvent.click(screen.getByRole("button", { name: /Tercüme/ }));
+    expect(screen.getByText("Kural")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Tercüme" })).toBeInTheDocument();
+  });
+
+  it("shows upload status and filters by it when ready items are known", async () => {
+    await i18n.changeLanguage("tr");
+    const { rerender } = render(<ChecklistView checklist={checklist} readyIds={new Set()} />);
+    expect(screen.getByRole("button", { name: /Pasaport/ })).toHaveTextContent("Eksik");
+    fireEvent.click(screen.getByRole("button", { name: /Hazır/ }));
+    expect(screen.getByText("Eşleşen belge yok.")).toBeInTheDocument();
+    rerender(<ChecklistView checklist={checklist} readyIds={new Set(["nl-req-passport"])} />);
+    expect(screen.getByRole("button", { name: /Pasaport/ })).toHaveTextContent("Hazır");
+  });
+
+  it("filters documents by the search text", async () => {
+    await i18n.changeLanguage("tr");
+    render(<ChecklistView checklist={checklist} />);
+    fireEvent.change(screen.getByRole("searchbox"), { target: { value: "sigorta" } });
+    expect(screen.getByText("Eşleşen belge yok.")).toBeInTheDocument();
+    fireEvent.change(screen.getByRole("searchbox"), { target: { value: "pasa" } });
+    expect(screen.getByRole("button", { name: /Pasaport/ })).toBeInTheDocument();
   });
 
   it("switches the interface text to English", async () => {
