@@ -37,9 +37,8 @@ describe("new application wizard", () => {
     );
     vi.stubGlobal("fetch", fetchMock);
     const { container } = renderWizard();
-    const [destination, profile] = container.querySelectorAll("select");
-    fireEvent.change(destination, { target: { value: "NO" } });
-    fireEvent.change(profile, { target: { value: "student" } });
+    fireEvent.click(screen.getByRole("radio", { name: /Norveç/ }));
+    fireEvent.click(screen.getByRole("radio", { name: /Öğrenci/ }));
     fireEvent.click(screen.getByRole("button", { name: "İleri" }));
     const [start, end] = container.querySelectorAll<HTMLInputElement>('input[type="date"]');
     fireEvent.change(start, { target: { value: "2027-04-10" } });

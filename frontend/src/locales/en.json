@@ -87,7 +87,13 @@
     "noAccount": "No account yet?",
     "haveAccount": "Already have an account?",
     "working": "Sending…",
-    "loggedInAs": "Logged in as {{email}}"
+    "loggedInAs": "Logged in as {{email}}",
+    "sideTitle": "Prepare your application from official sources",
+    "points": {
+      "sources": "Every document and rule is shown with the sentence from its official source.",
+      "documents": "The documents you upload are stored encrypted and deleted 30 days after your trip ends.",
+      "decision": "It does not predict the visa decision; it helps you organise your preparation."
+    }
   },
   "applications": {
     "title": "My applications",
@@ -101,7 +107,11 @@
       "submitted": "Submitted",
       "decided": "Decided"
     },
-    "new": "New application"
+    "new": "New application",
+    "lead": "Each application file is for one trip; your steps and documents are kept in the file.",
+    "total": "Files",
+    "stepOf": "Step {{current}}/{{total}}",
+    "emptyLead": "For your first file, choose the country, your situation and the trip dates."
   },
   "notFound": "Page not found.",
   "wizard": {
@@ -127,7 +137,10 @@
     },
     "back": "Back",
     "next": "Next",
-    "create": "Create application file"
+    "create": "Create application file",
+    "lead": "Create your application file in three steps; your document list follows your choices.",
+    "summary": "Summary",
+    "stay": "Length of stay"
   },
   "detail": {
     "referenceDate": "document age counted at {{date}}",

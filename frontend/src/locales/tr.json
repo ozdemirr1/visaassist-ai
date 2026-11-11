@@ -87,7 +87,13 @@
     "noAccount": "Hesabınız yok mu?",
     "haveAccount": "Zaten hesabınız var mı?",
     "working": "Gönderiliyor…",
-    "loggedInAs": "{{email}} olarak giriş yapıldı"
+    "loggedInAs": "{{email}} olarak giriş yapıldı",
+    "sideTitle": "Başvurunuzu resmî kaynaklarla hazırlayın",
+    "points": {
+      "sources": "Her belge ve kural, resmî kaynağındaki cümleyle birlikte gösterilir.",
+      "documents": "Yüklediğiniz belgeler şifreli saklanır ve seyahatinizin bitiminden 30 gün sonra silinir.",
+      "decision": "Vize kararını tahmin etmez; hazırlığınızı düzenlemenize yardım eder."
+    }
   },
   "applications": {
     "title": "Başvurularım",
@@ -101,7 +107,11 @@
       "submitted": "Teslim edildi",
       "decided": "Sonuçlandı"
     },
-    "new": "Yeni başvuru"
+    "new": "Yeni başvuru",
+    "lead": "Her başvuru dosyası tek bir seyahat içindir; adımlarınız ve belgeleriniz dosyada tutulur.",
+    "total": "Dosya",
+    "stepOf": "Adım {{current}}/{{total}}",
+    "emptyLead": "İlk dosyanız için ülkeyi, durumunuzu ve seyahat tarihlerini seçmeniz yeterli."
   },
   "notFound": "Sayfa bulunamadı.",
   "wizard": {
@@ -127,7 +137,10 @@
     },
     "back": "Geri",
     "next": "İleri",
-    "create": "Başvuru dosyasını oluştur"
+    "create": "Başvuru dosyasını oluştur",
+    "lead": "Üç adımda başvuru dosyanızı oluşturun; belge listeniz seçimlerinize göre hazırlanır.",
+    "summary": "Özet",
+    "stay": "Kalış süresi"
   },
   "detail": {
     "referenceDate": "belge yaşı {{date}} tarihine göre",
