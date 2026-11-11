@@ -15,7 +15,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app import models
-from app.storage import crypto
+from app.storage import crypto, metadata
 from app.storage.files import LocalStorage
 
 CONSENT_VERSION = "consent-v1"
@@ -146,6 +146,8 @@ def store(
     mime_type = detect_type(data)
     if mime_type is None:
         raise UnsupportedType("Only PDF, JPEG and PNG files can be uploaded.")
+    # Photos lose their location data before anything is stored or hashed.
+    data = metadata.remove_location(data, mime_type)
 
     document_id = uuid.uuid4()
     data_key = crypto.new_key()

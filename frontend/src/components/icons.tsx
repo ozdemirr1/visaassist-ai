@@ -63,3 +63,25 @@ export const IconSearch = () => (
     <path d="M20 20l-3.5-3.5" />
   </Svg>
 );
+export const IconUpload = () => (
+  <Svg size={22}>
+    <path d="M12 16V5M7.5 9.5 12 5l4.5 4.5M5 19h14" />
+  </Svg>
+);
+export const IconDownload = () => (
+  <Svg size={16} strokeWidth={2}>
+    <path d="M12 5v11M7.5 11.5 12 16l4.5-4.5M5 19h14" />
+  </Svg>
+);
+export const IconLock = () => (
+  <Svg size={22}>
+    <rect x="5" y="10.5" width="14" height="9.5" rx="2.5" />
+    <path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5" />
+  </Svg>
+);
+export const IconFile = () => (
+  <Svg>
+    <path d="M7 3h7l5 5v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" />
+    <path d="M14 3v5h5" />
+  </Svg>
+);

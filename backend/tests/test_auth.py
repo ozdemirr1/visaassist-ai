@@ -77,7 +77,11 @@ def test_register_creates_an_applicant_and_logs_in(client: TestClient, session: 
 def test_only_the_token_hash_is_stored(client: TestClient, session: Session) -> None:
     register(client)
     token = client.cookies.get(SESSION_COOKIE)
-    stored = session.scalars(select(models.AuthSession.token_hash)).all()
+    # Only this user's sessions: the development database may hold sessions of real logins.
+    user = session.scalar(select(models.User).where(models.User.email == EMAIL))
+    stored = session.scalars(
+        select(models.AuthSession.token_hash).where(models.AuthSession.user_id == user.id)
+    ).all()
     assert token not in stored
     assert len(stored) == 1 and len(stored[0]) == 64
 

@@ -28,7 +28,7 @@ function detailOf(body: unknown, fallback: string): string {
 
 export async function api<T>(
   path: string,
-  options: { method?: string; json?: unknown; signal?: AbortSignal } = {},
+  options: { method?: string; json?: unknown; form?: FormData; signal?: AbortSignal } = {},
 ): Promise<T> {
   const method = options.method ?? "GET";
   const headers: Record<string, string> = { Accept: "application/json" };
@@ -39,7 +39,8 @@ export async function api<T>(
     method,
     headers,
     credentials: "include",
-    body: options.json === undefined ? undefined : JSON.stringify(options.json),
+    // A form (file upload) is sent as it is: the browser sets the multipart content type.
+    body: options.form ?? (options.json === undefined ? undefined : JSON.stringify(options.json)),
     signal: options.signal,
   });
   if (response.status === 204) return undefined as T;

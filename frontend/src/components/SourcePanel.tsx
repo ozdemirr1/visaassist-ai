@@ -17,7 +17,7 @@ export function SourcePanel({ entry }: { entry: SourceEntry }) {
   return (
     <aside
       aria-label={t("checklist.sourceOf")}
-      className="va-rise flex min-w-0 flex-[1_1_320px] flex-col gap-3.5 rounded-[22px] border border-line bg-white p-5"
+      className="va-rise flex min-w-0 flex-col gap-3.5 rounded-[22px] border border-line bg-white p-5"
       style={{ animationDelay: "0.42s" }}
     >
       <span className="font-mono text-[10px] tracking-[0.12em] text-muted uppercase">{entry.kicker}</span>

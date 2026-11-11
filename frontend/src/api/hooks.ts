@@ -1,7 +1,15 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { ApiError, api } from "./client";
-import type { ApplicationFile, Checklist, DocumentInfo, Language, Profile, User } from "./types";
+import type {
+  ApplicationFile,
+  Checklist,
+  ConsentState,
+  DocumentInfo,
+  Language,
+  Profile,
+  User,
+} from "./types";
 
 export function useChecklist(destination: string, profile: Profile, lang: Language) {
   return useQuery({
@@ -59,6 +67,7 @@ export function useLogout() {
     onSuccess: () => {
       client.setQueryData(["me"], null);
       client.removeQueries({ queryKey: ["applications"] });
+      client.removeQueries({ queryKey: ["consent"] });
     },
   });
 }
@@ -139,5 +148,74 @@ export function useDocuments(applicationFileId: string) {
     queryKey: ["applications", applicationFileId, "documents"],
     queryFn: ({ signal }) =>
       api<DocumentInfo[]>(`/applications/${applicationFileId}/documents`, { signal }),
+  });
+}
+
+const documentsKey = (applicationFileId: string) => ["applications", applicationFileId, "documents"];
+
+/** Whether the user accepted the current consent text (ADR 0005). */
+export function useConsent() {
+  return useQuery({
+    queryKey: ["consent"],
+    queryFn: ({ signal }) => api<ConsentState>("/consent", { signal }),
+  });
+}
+
+export function useGiveConsent() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: () => api<ConsentState>("/consent", { method: "POST" }),
+    onSuccess: (state) => client.setQueryData(["consent"], state),
+  });
+}
+
+/** Withdrawing consent deletes every document of the user on the server. */
+export function useWithdrawConsent() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: () => api<void>("/consent", { method: "DELETE" }),
+    onSuccess: () => {
+      void client.invalidateQueries({ queryKey: ["consent"] });
+      void client.invalidateQueries({
+        predicate: (query) => query.queryKey[0] === "applications" && query.queryKey[2] === "documents",
+      });
+    },
+  });
+}
+
+export function useUploadDocument(applicationFileId: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: ({ requirementId, file }: { requirementId: string; file: File }) => {
+      const form = new FormData();
+      form.append("requirement_id", requirementId);
+      form.append("file", file);
+      return api<DocumentInfo>(`/applications/${applicationFileId}/documents`, {
+        method: "POST",
+        form,
+      });
+    },
+    onSuccess: (document) =>
+      client.setQueryData<DocumentInfo[]>(documentsKey(applicationFileId), (old) => [
+        ...(old ?? []),
+        document,
+      ]),
+    onError: (error) => {
+      // The consent was withdrawn elsewhere or its version changed: ask again.
+      if (error instanceof ApiError && error.status === 403) {
+        void client.invalidateQueries({ queryKey: ["consent"] });
+      }
+    },
+  });
+}
+
+export function useDeleteDocument(applicationFileId: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (documentId: string) => api<void>(`/documents/${documentId}`, { method: "DELETE" }),
+    onSuccess: (_, documentId) =>
+      client.setQueryData<DocumentInfo[]>(documentsKey(applicationFileId), (old) =>
+        old?.filter((document) => document.id !== documentId),
+      ),
   });
 }

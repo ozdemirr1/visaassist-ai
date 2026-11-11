@@ -31,6 +31,17 @@ describe("api client", () => {
     expect(init.body).toBe('{"email":"a@example.com"}');
   });
 
+  it("sends a form as it is, without a JSON content type", async () => {
+    const fetchMock = mockFetch(201, {});
+    const form = new FormData();
+    form.append("requirement_id", "eu-req-bank-statement");
+    await api("/applications/f1/documents", { method: "POST", form });
+    const [, init] = fetchMock.mock.calls[0];
+    expect(init.body).toBe(form);
+    expect(init.headers["Content-Type"]).toBeUndefined();
+    expect(init.headers["X-Requested-With"]).toBe("visaassist");
+  });
+
   it("turns an error response into an ApiError with the server's message", async () => {
     mockFetch(401, { detail: "Wrong e-mail address or password." });
     await expect(api("/auth/login", { method: "POST" })).rejects.toEqual(

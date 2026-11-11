@@ -27,6 +27,7 @@ from app.requirements.seed import requirement_set_id, seed
 from app.sources.registry import DEFAULT_REGISTRY, load_registry
 from app.storage import documents as docs
 from app.storage.files import LocalStorage
+from tests.test_metadata import exif, jpeg, segment
 
 pytestmark = pytest.mark.skipif(
     os.getenv("RUN_INTEGRATION") != "1",
@@ -162,6 +163,16 @@ def test_download_returns_the_original_bytes(consenting: TestClient) -> None:
     assert response.headers["x-content-type-options"] == "nosniff"
     assert response.headers["cache-control"] == "no-store"
     assert "attachment" in response.headers["content-disposition"]
+
+
+def test_a_photo_is_stored_without_its_location(consenting: TestClient) -> None:
+    block = exif()
+    photo = jpeg(segment(0xE1, b"Exif\x00\x00" + block))
+    body = upload(consenting, new_file(consenting), data=photo, name="passport.jpg").json()
+    assert body["mime_type"] == "image/jpeg" and body["size_bytes"] == len(photo)
+    stored = consenting.get(f"/documents/{body['id']}/content").content
+    assert block[68:] not in stored  # the coordinates
+    assert stored != photo and len(stored) == len(photo)
 
 
 def test_type_is_checked_from_content_not_name(consenting: TestClient) -> None:
