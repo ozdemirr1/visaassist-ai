@@ -137,6 +137,10 @@ def _check_rule_fields(rule: Rule, catalog: DocumentCatalog) -> list[str]:
                 f"{rule.id}: {document_id}.{field_id} is {field.type}, "
                 f"{rule.check.kind} needs {' or '.join(allowed)}"
             )
+    if rule.check.kind == "translation_present":
+        for document_id in rule.check.exempt:
+            if catalog.document(document_id) is None:
+                problems.append(f"{rule.id}: unknown document '{document_id}'")
     if rule.check.kind == "recent_monthly_count":
         document = catalog.document(rule.check.document)
         if document is not None and not document.multiple:

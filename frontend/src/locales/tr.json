@@ -74,7 +74,9 @@
     "en": "İngilizce",
     "no": "Norveççe",
     "tr": "Türkçe",
-    "nl": "Felemenkçe"
+    "nl": "Felemenkçe",
+    "de": "Almanca",
+    "fr": "Fransızca"
   },
   "auth": {
     "loginTitle": "Giriş yap",
@@ -208,6 +210,56 @@
       "tooLarge": "Dosya en fazla {{max}} MB olabilir.",
       "type": "Yalnızca PDF, JPEG ve PNG dosyaları yüklenebilir.",
       "consent": "Belge yüklemeden önce onay metnini kabul edin."
+    }
+  },
+  "fields": {
+    "open": "Bilgileri gir",
+    "close": "Bilgileri kapat",
+    "lead": "Belgede yazanları girin; kurallar bu bilgilerle kontrol edilir.",
+    "yes": "Evet",
+    "no": "Hayır",
+    "currency": "Para birimi",
+    "optional": "isteğe bağlı",
+    "choose": "Seçin",
+    "progress": "{{filled}} / {{total}} alan dolu",
+    "save": "Kaydet",
+    "saved": "Kaydedildi",
+    "loading": "Alanlar yükleniyor…"
+  },
+  "check": {
+    "kicker": "Ön kontrol sonucu",
+    "status": {
+      "passed": "Geçti",
+      "failed": "Sorun var",
+      "incomplete": "Bilgi eksik",
+      "skipped": "Belge yok"
+    },
+    "explain": {
+      "passed": "Girdiğiniz bilgiler bu kuralı karşılıyor.",
+      "failed": "Girdiğiniz bir bilgi bu kuralı karşılamıyor.",
+      "incomplete": "Bu kuralın baktığı bir bilgi henüz girilmedi.",
+      "skipped": "Bu kuralın baktığı belge henüz yüklenmedi."
+    },
+    "disclaimer": "Bu bir ön kontroldür; vize kararı hakkında bir şey söylemez.",
+    "issue": {
+      "value_missing": "{{document}}: “{{field}}” henüz girilmedi.",
+      "too_old": "{{document}}: {{field}} {{value}}; en erken {{expected}} olmalı.",
+      "expires_too_soon": "{{document}}: {{field}} {{value}}; en az {{expected}} tarihine kadar geçerli olmalı.",
+      "below_minimum": "{{document}}: {{field}} {{value}}; en az {{expected}} olmalı.",
+      "other_currency": "{{document}}: {{field}} {{value}} olarak girildi; {{expected}} ile karşılaştırılamıyor (kur çevirisi yapılmıyor).",
+      "amount_too_low": "{{document}}: {{field}} {{value}}; en az {{expected}} olmalı.",
+      "not_confirmed": "{{document}}: “{{field}}” için Hayır seçildi.",
+      "not_stated": "{{document}}: “{{field}}” belgede yer almalı, ama girilmedi.",
+      "period_starts_late": "{{document}}: {{field}} {{value}}; seyahat {{expected}} tarihinde başlıyor.",
+      "period_ends_early": "{{document}}: {{field}} {{value}}; seyahat {{expected}} tarihinde bitiyor.",
+      "period_too_short": "{{document}}: {{field}} {{value}}; dönemin en geç {{expected}} tarihinde başlaması gerekir.",
+      "period_not_recent": "{{document}}: {{field}} {{value}}; en erken {{expected}} olmalı.",
+      "newest_too_old": "{{document}}: en yeni belge {{value}} ayına ait; en az {{expected}} ayına ait bir belge gerekir.",
+      "month_missing": "{{document}}: {{value}} ayı için belge yok.",
+      "reference_missing": "{{document}}: “{{field}}” girilmeden karşılaştırma yapılamaz.",
+      "name_differs": "{{document}}: {{field}} “{{value}}”; pasaportta “{{expected}}” yazıyor.",
+      "value_differs": "{{document}}: {{field}} “{{value}}”; pasaportta “{{expected}}” yazıyor.",
+      "translation_missing": "{{document}}: belgenin dili {{value}}; şu dillerden birine tercümesi gerekli: {{expected}}."
     }
   }
 }

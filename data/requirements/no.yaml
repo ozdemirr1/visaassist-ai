@@ -39,7 +39,10 @@ rules:
     title: {en: Documents translated into English or Norwegian,
             tr: Belgeler İngilizceye veya Norveççeye tercüme edilmiş}
     severity: error
-    check: {kind: translation_present, languages: [en, "no"]}
+    # exempt: documents with no text of their own to translate (the form is filled in on the
+    # UDI portal in English or Norwegian); our reading, the source makes no exception.
+    check: {kind: translation_present, languages: [en, "no"],
+            exempt: [application_form, passport, photo]}
     source: {source_id: no-checklist-c-visa-tr, section: "General rules",
              passage: "All documents must be translated into English or Norwegian."}
 

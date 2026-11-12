@@ -3,9 +3,12 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ApiError, api } from "./client";
 import type {
   ApplicationFile,
+  CheckResult,
   Checklist,
   ConsentState,
+  DocumentFields,
   DocumentInfo,
+  FieldValue,
   Language,
   Profile,
   User,
@@ -152,6 +155,7 @@ export function useDocuments(applicationFileId: string) {
 }
 
 const documentsKey = (applicationFileId: string) => ["applications", applicationFileId, "documents"];
+const checkKey = (applicationFileId: string) => ["applications", applicationFileId, "check"];
 
 /** Whether the user accepted the current consent text (ADR 0005). */
 export function useConsent() {
@@ -177,7 +181,9 @@ export function useWithdrawConsent() {
     onSuccess: () => {
       void client.invalidateQueries({ queryKey: ["consent"] });
       void client.invalidateQueries({
-        predicate: (query) => query.queryKey[0] === "applications" && query.queryKey[2] === "documents",
+        predicate: (query) =>
+          query.queryKey[0] === "applications" &&
+          (query.queryKey[2] === "documents" || query.queryKey[2] === "check"),
       });
     },
   });
@@ -195,11 +201,13 @@ export function useUploadDocument(applicationFileId: string) {
         form,
       });
     },
-    onSuccess: (document) =>
+    onSuccess: (document) => {
       client.setQueryData<DocumentInfo[]>(documentsKey(applicationFileId), (old) => [
         ...(old ?? []),
         document,
-      ]),
+      ]);
+      void client.invalidateQueries({ queryKey: checkKey(applicationFileId) });
+    },
     onError: (error) => {
       // The consent was withdrawn elsewhere or its version changed: ask again.
       if (error instanceof ApiError && error.status === 403) {
@@ -213,9 +221,52 @@ export function useDeleteDocument(applicationFileId: string) {
   const client = useQueryClient();
   return useMutation({
     mutationFn: (documentId: string) => api<void>(`/documents/${documentId}`, { method: "DELETE" }),
-    onSuccess: (_, documentId) =>
+    onSuccess: (_, documentId) => {
       client.setQueryData<DocumentInfo[]>(documentsKey(applicationFileId), (old) =>
         old?.filter((document) => document.id !== documentId),
+      );
+      client.removeQueries({ queryKey: ["documents", documentId] });
+      void client.invalidateQueries({ queryKey: checkKey(applicationFileId) });
+    },
+  });
+}
+
+/** The fields to enter for a document, with the values entered so far (FR-08). */
+export function useDocumentFields(documentId: string, lang: Language) {
+  return useQuery({
+    queryKey: ["documents", documentId, "fields", lang],
+    queryFn: ({ signal }) =>
+      api<DocumentFields>(`/documents/${documentId}/fields?${new URLSearchParams({ lang })}`, {
+        signal,
+      }),
+    // On a change of language the form stays (with the old titles) until the new ones arrive.
+    placeholderData: (previous) => previous,
+  });
+}
+
+export function useSaveDocumentFields(applicationFileId: string, documentId: string, lang: Language) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (values: Record<string, FieldValue>) =>
+      api<DocumentFields>(`/documents/${documentId}/fields?${new URLSearchParams({ lang })}`, {
+        method: "PUT",
+        json: { values },
+      }),
+    onSuccess: (fields) => {
+      client.setQueryData(["documents", documentId, "fields", lang], fields);
+      void client.invalidateQueries({ queryKey: checkKey(applicationFileId) });
+    },
+  });
+}
+
+/** Missing documents and the result of every rule on the values entered so far (FR-09, FR-10). */
+export function useCheck(applicationFileId: string, lang: Language) {
+  return useQuery({
+    queryKey: [...checkKey(applicationFileId), lang],
+    queryFn: ({ signal }) =>
+      api<CheckResult>(
+        `/applications/${applicationFileId}/check?${new URLSearchParams({ lang })}`,
+        { signal },
       ),
   });
 }

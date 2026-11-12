@@ -2,7 +2,8 @@
 
 Week 7 created the requirement tables: official sources and versioned requirement sets with
 their document types, checklist items and rules. Week 9 adds accounts and sessions (ADR 0004),
-application files, consents and encrypted documents (ADR 0005); findings follow.
+application files, consents and encrypted documents (ADR 0005). Week 12 adds the field values
+of documents; check results are computed on request and not stored yet.
 """
 
 import uuid
@@ -276,3 +277,22 @@ class Document(Base):
     translation_language: Mapped[str | None] = mapped_column(String(2))
     uploaded_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     delete_after: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
+
+
+class DocumentFieldValue(Base):
+    """A field of a document as the applicant entered it (FR-08).
+
+    The value is encrypted with the document's own key, like its file and name (ADR 0005): names,
+    passport numbers and dates are personal data. The two common fields about language are plain
+    columns of `documents`.
+    """
+
+    __tablename__ = "document_field_values"
+
+    document_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("documents.id", ondelete="CASCADE"), primary_key=True
+    )
+    field_id: Mapped[str] = mapped_column(Text, primary_key=True)
+    value_encrypted: Mapped[bytes] = mapped_column(BYTEA)
+    origin: Mapped[str] = mapped_column(String(16), default="entered")
+    confirmed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

@@ -195,6 +195,8 @@ class TranslationPresent(Strict):
 
     kind: Literal["translation_present"]
     languages: list[LanguageCode] = Field(min_length=1)
+    # Document types with nothing to translate (a passport, a photo).
+    exempt: list[Id] = Field(default_factory=list)
 
     def field_refs(self) -> list[FieldRef]:
         return []  # uses the common fields `language` and `translation_language`
