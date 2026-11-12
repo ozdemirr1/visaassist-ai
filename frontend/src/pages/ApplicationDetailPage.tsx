@@ -129,6 +129,12 @@ function Detail({ file }: { file: ApplicationFile }) {
               items.length > 0 && t("detail.allReady")
             )}
           </p>
+          <Link
+            to={`/applications/${file.id}/findings`}
+            className="va-btn inline-flex min-h-11 items-center rounded-xl bg-brand px-4 text-sm font-bold text-white"
+          >
+            {t("findings.open")}
+          </Link>
         </div>
       </section>
 

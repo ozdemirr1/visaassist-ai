@@ -3,7 +3,7 @@
 Week 7 created the requirement tables: official sources and versioned requirement sets with
 their document types, checklist items and rules. Week 9 adds accounts and sessions (ADR 0004),
 application files, consents and encrypted documents (ADR 0005). Week 12 adds the field values
-of documents; check results are computed on request and not stored yet.
+of documents and stored check runs.
 """
 
 import uuid
@@ -296,3 +296,24 @@ class DocumentFieldValue(Base):
     value_encrypted: Mapped[bytes] = mapped_column(BYTEA)
     origin: Mapped[str] = mapped_column(String(16), default="entered")
     confirmed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class CheckRun(Base):
+    """A check of an application file the applicant chose to keep (FR-09, FR-10).
+
+    It records the state of every rule and which document and field each issue is about, but not
+    the values compared: those are personal data and stay encrypted with their documents
+    (ADR 0005). The current values are shown by running the check again.
+    """
+
+    __tablename__ = "check_runs"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    application_file_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("application_files.id", ondelete="CASCADE"), index=True
+    )
+    requirement_set_id: Mapped[str] = mapped_column(ForeignKey("requirement_sets.id"))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    missing_documents: Mapped[list[str]] = mapped_column(ARRAY(Text))
+    results: Mapped[list[dict]] = mapped_column(JSONB)
+    summary: Mapped[dict] = mapped_column(JSONB)

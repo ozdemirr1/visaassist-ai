@@ -1,10 +1,12 @@
 """Field entry and the check of an application file (FR-08, FR-09, FR-10).
 
 The check is computed on request from the entered values with the rules of the file's own
-requirement set; results are not stored in this version.
+requirement set. The applicant can keep a run: its rule states are stored, the compared values
+are not (ADR 0005).
 """
 
 import uuid
+from datetime import datetime
 from typing import Annotated, Any, Literal
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -237,19 +239,9 @@ def _titles(
     return documents, fields
 
 
-@router.get(
-    "/applications/{file_id}/check",
-    response_model=CheckResult,
-    responses={404: {"model": ErrorMessage}},
-)
-def check_application(
-    file_id: uuid.UUID, session: SessionDep, user: UserDep, keys: KeysDep, lang: Language = "tr"
+def _check(
+    session: Session, keys: docs.Keys, application: models.ApplicationFile, lang: Language
 ) -> CheckResult:
-    """Missing documents and the result of every rule on the values entered so far.
-
-    A preliminary check of the file's preparation; it says nothing about the visa decision.
-    """
-    application = own_application(session, user, file_id)
     rules = _rules(session, application)
     required = dict(
         session.execute(
@@ -318,3 +310,108 @@ def check_application(
             },
         ),
     )
+
+
+@router.get(
+    "/applications/{file_id}/check",
+    response_model=CheckResult,
+    responses={404: {"model": ErrorMessage}},
+)
+def check_application(
+    file_id: uuid.UUID, session: SessionDep, user: UserDep, keys: KeysDep, lang: Language = "tr"
+) -> CheckResult:
+    """Missing documents and the result of every rule on the values entered so far.
+
+    A preliminary check of the file's preparation; it says nothing about the visa decision.
+    """
+    return _check(session, keys, own_application(session, user, file_id), lang)
+
+
+# Kept runs
+
+
+class StoredIssue(BaseModel):
+    code: str
+    document_type: str | None
+    field: str | None
+
+
+class StoredRule(BaseModel):
+    rule_id: str
+    severity: Literal["error", "warning"]
+    status: engine.Status
+    issues: list[StoredIssue]
+
+
+class CheckRunOut(BaseModel):
+    id: uuid.UUID
+    created_at: datetime
+    requirement_set_id: str
+    missing_documents: list[str]
+    rules: list[StoredRule]
+    summary: Summary
+
+
+def _run_out(run: models.CheckRun) -> CheckRunOut:
+    return CheckRunOut(
+        id=run.id,
+        created_at=run.created_at,
+        requirement_set_id=run.requirement_set_id,
+        missing_documents=run.missing_documents,
+        rules=[StoredRule.model_validate(result) for result in run.results],
+        summary=Summary.model_validate(run.summary),
+    )
+
+
+@router.post(
+    "/applications/{file_id}/checks",
+    status_code=status.HTTP_201_CREATED,
+    response_model=CheckRunOut,
+    dependencies=protected,
+    responses={404: {"model": ErrorMessage}},
+)
+def keep_check(
+    file_id: uuid.UUID, session: SessionDep, user: UserDep, keys: KeysDep
+) -> CheckRunOut:
+    """Run the check and keep its result, so a later run can be compared with it."""
+    application = own_application(session, user, file_id)
+    result = _check(session, keys, application, "en")
+    run = models.CheckRun(
+        application_file_id=application.id,
+        requirement_set_id=result.requirement_set_id,
+        created_at=docs.utcnow(),
+        missing_documents=result.missing_documents,
+        # Which document and field, never the values: those stay encrypted with the documents.
+        results=[
+            StoredRule(
+                rule_id=rule.rule_id,
+                severity=rule.severity,
+                status=rule.status,
+                issues=[
+                    StoredIssue(code=i.code, document_type=i.document_type, field=i.field)
+                    for i in rule.issues
+                ],
+            ).model_dump()
+            for rule in result.rules
+        ],
+        summary=result.summary.model_dump(),
+    )
+    session.add(run)
+    session.commit()
+    return _run_out(run)
+
+
+@router.get(
+    "/applications/{file_id}/checks",
+    response_model=list[CheckRunOut],
+    responses={404: {"model": ErrorMessage}},
+)
+def list_checks(file_id: uuid.UUID, session: SessionDep, user: UserDep) -> list[CheckRunOut]:
+    """The kept runs of the file, newest first."""
+    application = own_application(session, user, file_id)
+    runs = session.scalars(
+        select(models.CheckRun)
+        .where(models.CheckRun.application_file_id == application.id)
+        .order_by(models.CheckRun.created_at.desc())
+    )
+    return [_run_out(run) for run in runs]

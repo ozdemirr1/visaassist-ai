@@ -10,7 +10,8 @@
     "login": "Giriş",
     "register": "Kayıt ol",
     "logout": "Çıkış",
-    "language": "Dil"
+    "language": "Dil",
+    "destinations": "Ülkeler"
   },
   "destination": {
     "NL": "Hollanda",
@@ -261,5 +262,34 @@
       "value_differs": "{{document}}: {{field}} “{{value}}”; pasaportta “{{expected}}” yazıyor.",
       "translation_missing": "{{document}}: belgenin dili {{value}}; şu dillerden birine tercümesi gerekli: {{expected}}."
     }
+  },
+  "destinations": {
+    "kicker": "Başvurmadan önce",
+    "title": "Nereye, ne zaman, nasıl başvurulur?",
+    "lead": "Pilot ülkeler için başvurunun pratik bilgileri. Her bilginin yanında alındığı resmî sayfa var; tutarlar ve süreler değişebilir.",
+    "schengen": "Schengen üyesi",
+    "checked": "Resmî sayfalar {{date}} tarihinde okundu",
+    "checklist": "Belge listesini gör",
+    "loading": "Bilgiler yükleniyor…"
+  },
+  "findings": {
+    "open": "Ön kontrol sonuçları",
+    "title": "Ön kontrol",
+    "back": "Başvuruya dön",
+    "lead": "Yüklediğiniz belgeler ve girdiğiniz bilgiler, resmî kaynaklardan çıkarılan kurallarla karşılaştırıldı.",
+    "missing": "Eksik belgeler",
+    "failed": "Sorunlar",
+    "incomplete": "Bilgisi eksik kurallar",
+    "passed": "Geçen kurallar",
+    "skipped": "{{count}} kural, belgesi yüklenmediği için henüz kontrol edilmedi.",
+    "none": "Bu grupta bir şey yok.",
+    "keep": "Bu sonucu kaydet",
+    "kept": "Kaydedildi",
+    "history": "Kayıtlı kontroller",
+    "historyLead": "Kayıtlarda kuralların durumu tutulur; girdiğiniz değerler tutulmaz.",
+    "historyEmpty": "Henüz kayıtlı kontrol yok. Sonucu kaydederseniz sonraki kontrolle karşılaştırabilirsiniz.",
+    "run": "{{missing}} eksik belge · {{failed}} sorun · {{incomplete}} bilgi eksik · {{passed}} geçti",
+    "improved": "Öncekine göre {{count}} kural düzeldi",
+    "worsened": "Öncekine göre {{count}} kural geriledi"
   }
 }
