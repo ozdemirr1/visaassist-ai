@@ -1,0 +1,2 @@
+# Snapshots of official pages are data, not source code: keep them out of the language statistics.
+data/snapshots/** linguist-vendored

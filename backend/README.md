@@ -65,6 +65,17 @@ uv run python -m app.storage.new_key        # once; put the printed line into ..
 uv run python -m app.storage.cleanup        # daily: expired documents and orphaned files
 ```
 
+## Field entry and checks
+- `GET/PUT /documents/{id}/fields`: the fields to enter for a document and their values (FR-08).
+  Values are encrypted with the document's own key.
+- `GET /applications/{id}/check`: missing documents and the state of every rule on the entered
+  values: `passed`, `failed`, `incomplete` (a value is missing) or `skipped` (its document is not
+  uploaded). Computed on request by the rule engine (`app/rules/engine.py`, pure functions).
+- `POST/GET /applications/{id}/checks`: keep a check and list the kept ones. A kept check holds
+  rule states and where each issue is, never the entered values.
+- `GET /destinations?lang=tr`: practical facts of applying to each destination, each with its
+  official source (`data/destinations.yaml`).
+
 ## Database and requirement data
 ```bash
 uv run alembic upgrade head                 # create or update the tables
