@@ -10,7 +10,8 @@
     "login": "Log in",
     "register": "Sign up",
     "logout": "Log out",
-    "language": "Language"
+    "language": "Language",
+    "destinations": "Countries"
   },
   "destination": {
     "NL": "Netherlands",
@@ -261,5 +262,34 @@
       "value_differs": "{{document}}: {{field}} is “{{value}}”; the passport says “{{expected}}”.",
       "translation_missing": "{{document}}: the document is in {{value}}; a translation into one of these is needed: {{expected}}."
     }
+  },
+  "destinations": {
+    "kicker": "Before you apply",
+    "title": "Where, when and how to apply?",
+    "lead": "The practical facts of applying to the pilot countries. Each fact shows the official page it comes from; amounts and deadlines can change.",
+    "schengen": "Schengen member",
+    "checked": "Official pages read on {{date}}",
+    "checklist": "See the document list",
+    "loading": "Loading…"
+  },
+  "findings": {
+    "open": "Preliminary check results",
+    "title": "Preliminary check",
+    "back": "Back to the application",
+    "lead": "The documents you uploaded and the details you entered were compared with the rules taken from the official sources.",
+    "missing": "Missing documents",
+    "failed": "Problems",
+    "incomplete": "Rules with missing details",
+    "passed": "Rules passed",
+    "skipped": "{{count}} rules have not been checked yet because their document is not uploaded.",
+    "none": "Nothing in this group.",
+    "keep": "Keep this result",
+    "kept": "Kept",
+    "history": "Kept checks",
+    "historyLead": "A kept check holds the state of the rules, not the values you entered.",
+    "historyEmpty": "No kept check yet. If you keep a result, you can compare it with the next check.",
+    "run": "{{missing}} missing documents · {{failed}} problems · {{incomplete}} with missing details · {{passed}} passed",
+    "improved": "{{count}} rules improved since the previous one",
+    "worsened": "{{count}} rules got worse since the previous one"
   }
 }

@@ -128,3 +128,31 @@ export interface CheckResult {
   rules: RuleResult[];
   summary: Record<RuleStatus | "missing_documents", number>;
 }
+
+export interface DestinationFact {
+  id: string;
+  title: string;
+  text: string;
+  source: Citation;
+}
+
+export interface DestinationInfo {
+  id: string;
+  schengen: boolean;
+  facts: DestinationFact[];
+}
+
+export interface Destinations {
+  checked_on: string;
+  destinations: DestinationInfo[];
+}
+
+/** A kept check: rule states and where each issue is, without the compared values. */
+export interface CheckRun {
+  id: string;
+  created_at: string;
+  requirement_set_id: string;
+  missing_documents: string[];
+  rules: { rule_id: string; severity: "error" | "warning"; status: RuleStatus; issues: unknown[] }[];
+  summary: Record<RuleStatus | "missing_documents", number>;
+}

@@ -4,6 +4,8 @@ import { Route, Routes } from "react-router";
 import { Layout } from "./components/Layout";
 import { ApplicationDetailPage } from "./pages/ApplicationDetailPage";
 import { ApplicationsPage } from "./pages/ApplicationsPage";
+import { DestinationsPage } from "./pages/DestinationsPage";
+import { FindingsPage } from "./pages/FindingsPage";
 import { HomePage } from "./pages/HomePage";
 import { LoginPage } from "./pages/LoginPage";
 import { NewApplicationPage } from "./pages/NewApplicationPage";
@@ -24,6 +26,8 @@ export function App() {
         <Route path="applications" element={<ApplicationsPage />} />
         <Route path="applications/new" element={<NewApplicationPage />} />
         <Route path="applications/:id" element={<ApplicationDetailPage />} />
+        <Route path="applications/:id/findings" element={<FindingsPage />} />
+        <Route path="destinations" element={<DestinationsPage />} />
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>

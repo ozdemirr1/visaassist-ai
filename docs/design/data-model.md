@@ -266,9 +266,12 @@ erDiagram
   unchanged (`backend/app/rules/values.py`). `confidence` is added with extraction in spring.
 - The two common fields (`language`, `translation_language`) are the plain columns of `documents`
   and are asked only where a translation rule of the file's destination reads them.
-- `check_runs` and `findings` are not created yet: `GET /applications/{id}/check` computes the
-  result on request from the entered values (rule engine v0, `backend/app/rules/engine.py`).
-  Storing runs comes with the findings page, so an earlier result can be shown and compared.
+- `check_runs` (week 13) keeps a check the applicant chose to keep: the missing documents, the
+  state of every rule and, for each issue, its code, document type and field in a `results jsonb`
+  column. The compared values are not stored, because they are personal data that stays encrypted
+  with its document (ADR 0005); the page shows them by running the check again. A separate
+  `findings` table is therefore not needed yet. `GET /applications/{id}/check` still computes the
+  current result on request (`backend/app/rules/engine.py`).
 
 ## 4. How the main flows use the model
 - **Checklist (FR-02):** `requirements` of the active set where `destination` is null or the

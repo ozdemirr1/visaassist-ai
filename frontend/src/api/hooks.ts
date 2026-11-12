@@ -4,7 +4,9 @@ import { ApiError, api } from "./client";
 import type {
   ApplicationFile,
   CheckResult,
+  CheckRun,
   Checklist,
+  Destinations,
   ConsentState,
   DocumentFields,
   DocumentInfo,
@@ -268,5 +270,35 @@ export function useCheck(applicationFileId: string, lang: Language) {
         `/applications/${applicationFileId}/check?${new URLSearchParams({ lang })}`,
         { signal },
       ),
+  });
+}
+
+/** What to know before applying to each pilot destination, with sources. */
+export function useDestinations(lang: Language) {
+  return useQuery({
+    queryKey: ["destinations", lang],
+    queryFn: ({ signal }) =>
+      api<Destinations>(`/destinations?${new URLSearchParams({ lang })}`, { signal }),
+    staleTime: 60 * 60_000,
+  });
+}
+
+const runsKey = (applicationFileId: string) => ["applications", applicationFileId, "runs"];
+
+/** The kept check runs of an application file, newest first. */
+export function useCheckRuns(applicationFileId: string) {
+  return useQuery({
+    queryKey: runsKey(applicationFileId),
+    queryFn: ({ signal }) =>
+      api<CheckRun[]>(`/applications/${applicationFileId}/checks`, { signal }),
+  });
+}
+
+export function useKeepCheck(applicationFileId: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: () => api<CheckRun>(`/applications/${applicationFileId}/checks`, { method: "POST" }),
+    onSuccess: (run) =>
+      client.setQueryData<CheckRun[]>(runsKey(applicationFileId), (old) => [run, ...(old ?? [])]),
   });
 }

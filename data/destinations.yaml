@@ -1,0 +1,99 @@
+# What an applicant in Türkiye needs to know before starting: where and when to apply, fingerprints
+# and fees, per destination (proposal 4.1). Every fact cites an official source from
+# data/sources.yaml; passages are paraphrased. Read from the snapshots of 5 and 10 November 2026
+# (data/snapshots/); fees and deadlines change, so the page shows the source next to each fact.
+
+checked_on: 2026-11-12
+
+destinations:
+  - id: NL
+    schengen: true
+    facts:
+      - id: stay
+        title: {en: Length of stay, tr: Kalış süresi}
+        text:
+          en: A Schengen visa allows at most 90 days in any 180-day period, in the Netherlands or another Schengen country; the visa itself may be valid for a shorter period.
+          tr: Schengen vizesi, Hollanda'da veya başka bir Schengen ülkesinde herhangi bir 180 günlük dönemde en fazla 90 gün kalmaya izin verir; vizenin kendisi daha kısa süreli olabilir.
+        source: {source_id: nl-apply-tr, section: "Step 6: Prepare for your trip",
+                 passage: "The visa allows a stay in the Schengen area of at most 90 days in any 180-day period."}
+      - id: where
+        title: {en: Where to apply, tr: Nereye başvurulur}
+        text:
+          en: Only at a VFS Global application centre (Ankara, Antalya, Bodrum, Bursa, Edirne, Gaziantep, Istanbul or Izmir), with an appointment made online. Book the appointment yourself, one per person.
+          tr: Yalnızca VFS Global başvuru merkezlerinden (Ankara, Antalya, Bodrum, Bursa, Edirne, Gaziantep, İstanbul veya İzmir), internetten alınan randevuyla. Randevuyu kendiniz alın; her kişi için ayrı randevu gerekir.
+        source: {source_id: nl-apply-tr, section: "Step 3: Make an appointment",
+                 passage: "VFS Global is the only place in Türkiye to apply; make a separate appointment for each person and do not use an intermediary."}
+      - id: when
+        title: {en: When to apply, tr: Ne zaman başvurulur}
+        text:
+          en: At the earliest 6 months and at the latest 15 calendar days before the day you travel.
+          tr: Seyahat tarihinden en erken 6 ay, en geç 15 takvim günü önce.
+        source: {source_id: nl-apply-tr, section: "Step 3: Make an appointment",
+                 passage: "Apply up to 6 months before the trip and at least 15 calendar days before travelling."}
+      - id: form
+        title: {en: Application form, tr: Başvuru formu}
+        text:
+          en: Fill in the form online yourself, so that it carries a unique code; print and sign it. A form without the code can cause problems.
+          tr: Formu internetten kendiniz doldurun; böylece form benzersiz bir kod taşır. Yazdırıp imzalayın. Kodsuz form sorun çıkarabilir.
+        source: {source_id: nl-apply-tr, section: "Step 2: Gather the documents you need",
+                 passage: "Complete your own form online to receive a form with a unique code; print and submit it."}
+      - id: biometrics
+        title: {en: Fingerprints, tr: Parmak izi}
+        text:
+          en: Taken at the appointment. Not needed if they were taken for a Schengen visa application in the past 59 months, or for children under 12 (who must still be present).
+          tr: Randevuda alınır. Son 59 ay içinde bir Schengen vizesi başvurusunda alındıysa veya 12 yaşından küçük çocuklar için gerekmez (çocuğun yine de randevuda bulunması gerekir).
+        source: {source_id: nl-apply-tr, section: "Step 4: Go to your appointment",
+                 passage: "Fingerprints are given at the appointment; exceptions include children under 12 and applicants whose fingerprints were taken in the past 59 months."}
+      - id: fee
+        title: {en: Fees, tr: Ücretler}
+        text:
+          en: The visa fee and a VFS Global service charge are paid at the appointment. The page does not state the amounts; it links to the overview of consular fees in Türkiye.
+          tr: Vize ücreti ve VFS Global hizmet bedeli randevuda ödenir. Sayfa tutarları vermez; Türkiye'deki konsolosluk ücretleri sayfasına yönlendirir.
+        source: {source_id: nl-apply-tr, section: "Step 4: Go to your appointment",
+                 passage: "The visa fee is in the overview of consular fees; service costs to VFS Global are always paid."}
+
+  - id: "NO"
+    schengen: true
+    facts:
+      - id: stay
+        title: {en: Length of stay, tr: Kalış süresi}
+        text:
+          en: A visitor's visa allows up to 90 days within a period of 180 days, in Norway or other Schengen countries.
+          tr: Ziyaretçi vizesi, Norveç'te veya diğer Schengen ülkelerinde 180 günlük dönem içinde en fazla 90 gün kalmaya izin verir.
+        source: {source_id: no-visitors-visa-tr, section: "Visitor's visa",
+                 passage: "A visitor's visa allows a stay in Norway or other Schengen countries of up to 90 days over 180 days."}
+      - id: where
+        title: {en: Where to apply, tr: Nereye başvurulur}
+        text:
+          en: First register the application online in the application portal and pay the fee; then hand in the printed form and the documents at a VFS Global centre. Only applications with Norway as the main destination are accepted.
+          tr: Önce başvuruyu internetteki başvuru portalında kaydedip ücreti ödeyin; sonra yazdırdığınız formu ve belgeleri bir VFS Global merkezine teslim edin. Yalnızca ana varış ülkesi Norveç olan başvurular kabul edilir.
+        source: {source_id: no-visitors-visa-tr, section: "3 Online registration and payment",
+                 passage: "Register the application online and pay the fee before handing in the passport and documents; print the form and submit it with the documents."}
+      - id: when
+        title: {en: When to apply, tr: Ne zaman başvurulur}
+        text:
+          en: At the earliest six months before departure and as a rule no later than 15 days before; the embassy recommends at least 4 weeks.
+          tr: Yola çıkıştan en erken altı ay önce, kural olarak en geç 15 gün önce; büyükelçilik en az 4 hafta önce başvurmayı öneriyor.
+        source: {source_id: no-visitors-visa-tr, section: "1 Before you apply",
+                 passage: "Apply as a rule no later than 15 days before travel, at least 4 weeks is recommended; up to six months before departure."}
+      - id: biometrics
+        title: {en: Fingerprints, tr: Parmak izi}
+        text:
+          en: Taken when you hand in the application, unless they were collected within the last 59 months.
+          tr: Başvuruyu teslim ederken alınır; son 59 ay içinde alındıysa gerekmez.
+        source: {source_id: no-visitors-visa-tr, section: "1 Before you apply",
+                 passage: "Fingerprints are taken when handing in the application unless collected within the last 59 months."}
+      - id: fee
+        title: {en: Fees, tr: Ücretler}
+        text:
+          en: "The visa fee is EUR 90, paid online at registration; EUR 45 for children aged 6 to 11, none under six. VFS Global charges a separate service fee."
+          tr: "Vize ücreti 90 EUR'dur ve kayıt sırasında internetten ödenir; 6–11 yaş arası çocuklar için 45 EUR, altı yaşından küçükler için ücret yoktur. VFS Global ayrıca hizmet bedeli alır."
+        source: {source_id: no-visitors-visa-tr, section: "3 Online registration and payment",
+                 passage: "The visa fee is EUR 90; children under six pay nothing and children from six to under 12 pay EUR 45; VFS Global charges a service fee."}
+      - id: translation
+        title: {en: Translation, tr: Tercüme}
+        text:
+          en: The documents named in the checklist must be in English or Norwegian; without translations the application can take longer or be rejected.
+          tr: Kontrol listesinde belirtilen belgeler İngilizce veya Norveççe olmalıdır; tercüme yoksa başvuru uzayabilir veya reddedilebilir.
+        source: {source_id: no-visitors-visa-tr, section: "2 Gather the necessary documentation",
+                 passage: "Certain documents according to the checklist must be in English or Norwegian; otherwise longer processing or rejection is a risk."}

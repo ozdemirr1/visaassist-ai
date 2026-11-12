@@ -1,9 +1,31 @@
 \chapter{Introduction}\label{ch:intro}
 
 \section{Problem and motivation}
-% Why visa preparation is hard: scattered official pages, national differences, documents that
-% must agree with each other, requirements that change. Who suffers (applicants without an agency).
-\todo{2--3 paragraphs. Use the national differences in Table~\ref{tab:nl-no} as the concrete example.}
+An applicant for a Schengen short-stay visa in Türkiye prepares a file of about a dozen documents:
+a passport, a photograph, an application form, travel and accommodation bookings, insurance, bank
+statements and proof of employment or study. What exactly is required is spread over several
+official pages. A Commission decision lists the supporting documents common to all Schengen
+states for applicants in Türkiye~\autocite{eu2021harmonised}, and each state adds its own
+checklist with its own wording, limits and exceptions. Table~\ref{tab:nl-no} shows how two states
+differ on the same points: Norway asks for translations into English or Norwegian and refuses
+supporting documents older than six months, while the checklist of the Netherlands states neither
+rule~\autocite{nl2025checklist,no2025checklist}.
+
+The documents must also agree with each other and with the trip. The insurance has to cover every
+day of the stay, the leave in the employer's letter has to cover the trip, the passport has to
+remain valid for three months after the return, and the name on a booking has to be the name in
+the passport. None of these checks is difficult, but there are many of them, they depend on dates
+that change when the trip changes, and a single miss can mean a refused or delayed application
+after the fee has been paid and an appointment has been used. Applicants who do not pay an agency
+make these checks by hand.
+
+A general-purpose AI assistant does not solve this. It answers fluently, but it does not show
+which official sentence a requirement comes from, it cannot tell whether that sentence is still in
+force, and it has no view of the applicant's whole file. VisaAssist AI takes the opposite route:
+requirements are written down once, from official sources, with the passage they rely on; the
+applicant's documents are checked against them by rules that give the same answer every time; and
+every result points back to its source. The system helps to prepare a file. It does not predict
+or influence the decision, which rests with the consulate.
 
 \section{Objectives}
 The project pursues the five objectives of the approved proposal:
@@ -33,9 +55,36 @@ second national layer because its checklist states a translation requirement. Pr
 decisions, legal advice and submitting applications on the applicant's behalf are out of scope.
 
 \section{Contributions}
-\todo{What is new compared with Chapter~\ref{ch:background}: versioned source-linked rules;
-change detection that reaches only affected applicants; measured comparison with LLM-only and
-human reviewers. See docs/positioning.md.}
+Chapter~\ref{ch:background} shows that the building blocks exist separately: document
+understanding models extract fields, rule frameworks validate identity documents, and
+retrieval-augmented systems cite passages. The project does not claim any of these as new. Its
+contribution is their combination for one concrete task, and the measurement of that combination:
+\begin{itemize}
+  \item \textbf{Versioned, source-linked requirements.} Every checklist item and every rule
+    stores the official source, the section and the passage it relies on, and belongs to a
+    requirement set identified by the hash of its files, so an earlier check stays explainable
+    after the rules change.
+  \item \textbf{Checks across a multi-document file.} Missing documents and disagreements between
+    documents (names, dates, amounts, periods) are found on the fields of visual documents such as
+    scans and photographs, not on text that is already machine-readable.
+  \item \textbf{Change detection that reaches only the affected applicants.} Official pages are
+    snapshotted weekly; a change approved by a reviewer becomes a new requirement set, and only
+    the files whose results change are notified.
+  \item \textbf{A measured comparison.} The hybrid system is compared with an LLM-only baseline
+    and with human reviewers on a synthetic data set with controlled errors
+    (Section~\ref{sec:rq}).
+\end{itemize}
+The fall semester delivers the first two items without the AI layer: the applicant enters the
+fields, and the rule engine checks them. Field extraction, source monitoring with review, and the
+evaluation follow in the spring semester.
 
 \section{Organisation of the report}
-\todo{One sentence per chapter.}
+Chapter~\ref{ch:background} describes the visa process and the related work.
+Chapter~\ref{ch:requirements} states the functional and non-functional requirements.
+Chapter~\ref{ch:design} presents the architecture, the data model and the rule kinds.
+Chapter~\ref{ch:implementation} describes what has been built so far.
+Chapter~\ref{ch:evaluation} sets out how the system is tested and how the research questions will
+be answered. Chapter~\ref{ch:management} covers the plan, the risks and the progress against the
+plan. Chapter~\ref{ch:ethics} discusses personal data, consent and the limits of what the system
+may claim. Chapter~\ref{ch:conclusion} summarises the state of the work and the plan for the
+spring semester.

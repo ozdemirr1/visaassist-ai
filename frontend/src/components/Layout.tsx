@@ -4,7 +4,7 @@ import { Link, NavLink, Outlet, useNavigate } from "react-router";
 import { useApplicationFiles, useChecklist, useCurrentUser, useLogout } from "../api/hooks";
 import type { Language } from "../api/types";
 import { formatShortDate } from "./format";
-import { IconBrand, IconFolder, IconList, IconLogin, IconLogout, IconPlus } from "./icons";
+import { IconBrand, IconFolder, IconGlobe, IconList, IconLogin, IconLogout, IconPlus } from "./icons";
 import { LanguageSwitch } from "./LanguageSwitch";
 
 const sideLink = ({ isActive }: { isActive: boolean }) =>
@@ -87,6 +87,10 @@ function Sidebar({ loggedIn }: { loggedIn: boolean }) {
           <IconList />
           {t("nav.home")}
         </NavLink>
+        <NavLink to="/destinations" className={sideLink}>
+          <IconGlobe />
+          {t("nav.destinations")}
+        </NavLink>
         <NavLink to="/applications" end className={sideLink}>
           <IconFolder />
           {t("nav.applications")}
@@ -168,11 +172,15 @@ export function Layout() {
 
       <nav
         aria-label={t("shell.menu")}
-        className="fixed inset-x-4 bottom-4 z-10 grid grid-cols-3 gap-1 rounded-[22px] bg-navy p-1.5 shadow-[0_12px_30px_rgb(11_19_36/0.35)] lg:hidden"
+        className="fixed inset-x-4 bottom-4 z-10 grid grid-cols-4 gap-1 rounded-[22px] bg-navy p-1.5 shadow-[0_12px_30px_rgb(11_19_36/0.35)] lg:hidden"
       >
         <NavLink to="/" end className={tabLink}>
           <IconList />
           {t("nav.home")}
+        </NavLink>
+        <NavLink to="/destinations" className={tabLink}>
+          <IconGlobe />
+          {t("nav.destinations")}
         </NavLink>
         <NavLink to="/applications" end className={tabLink}>
           <IconFolder />

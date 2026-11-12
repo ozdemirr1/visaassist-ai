@@ -307,3 +307,56 @@ def test_names_are_compared_with_the_passport(ayse: TestClient) -> None:
     result = rule(ayse, file_id, "eu-rule-names-match")
     assert result["status"] == "failed"
     assert result["issues"][0]["expected"] == "Ayşe Yılmaz"
+
+
+# Kept runs
+
+
+def test_a_kept_run_records_rule_states_but_no_entered_values(
+    ayse: TestClient, session: Session
+) -> None:
+    file_id = new_file(ayse)
+    passport = upload(ayse, file_id, "nl-req-passport")
+    bank = upload(ayse, file_id)
+    put(ayse, passport, {"full_name": "Ayşe Yılmaz"})
+    put(ayse, bank, {"holder_name": "Ayşe Kaya", **GOOD_PERIOD})
+
+    response = ayse.post(f"/applications/{file_id}/checks")
+    assert response.status_code == 201
+    run = response.json()
+    assert run["requirement_set_id"] == SET_ID and len(run["missing_documents"]) == 10
+    names = next(r for r in run["rules"] if r["rule_id"] == "eu-rule-names-match")
+    assert names["status"] == "failed"
+    assert names["issues"] == [
+        {"code": "name_differs", "document_type": "bank_statement", "field": "holder_name"}
+    ]
+    assert run["summary"]["failed"] == 1
+
+    stored = session.scalars(select(models.CheckRun)).one()
+    assert "Kaya" not in str(stored.results) and "Yılmaz" not in str(stored.results)
+
+
+def test_kept_runs_are_listed_newest_first_and_show_the_change(ayse: TestClient) -> None:
+    file_id = new_file(ayse)
+    bank = upload(ayse, file_id)
+    assert ayse.get(f"/applications/{file_id}/checks").json() == []
+    first = ayse.post(f"/applications/{file_id}/checks").json()
+    put(ayse, bank, GOOD_PERIOD)
+    second = ayse.post(f"/applications/{file_id}/checks").json()
+
+    runs = ayse.get(f"/applications/{file_id}/checks").json()
+    assert [run["id"] for run in runs] == [second["id"], first["id"]]
+    states = [next(r["status"] for r in run["rules"] if r["rule_id"] == BANK_RULE) for run in runs]
+    assert states == ["passed", "incomplete"]
+
+
+def test_kept_runs_belong_to_the_owner_and_go_with_the_file(
+    ayse: TestClient, mehmet: TestClient, session: Session
+) -> None:
+    file_id = new_file(ayse)
+    assert ayse.post(f"/applications/{file_id}/checks").status_code == 201
+    assert mehmet.post(f"/applications/{file_id}/checks").status_code == 404
+    assert mehmet.get(f"/applications/{file_id}/checks").status_code == 404
+    assert ayse.delete(f"/applications/{file_id}").status_code == 204
+    session.expire_all()
+    assert session.scalar(select(func.count()).select_from(models.CheckRun)) == 0
