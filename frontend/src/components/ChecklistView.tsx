@@ -85,8 +85,10 @@ export function ChecklistView({ checklist, readyIds, itemPanel, ruleResults, rul
   const selectedRule = checklist.rules.find((rule) => rule.id === selected?.id);
 
   const columns = withStatus
-    ? "grid-cols-[minmax(0,2.2fr)_minmax(0,1.7fr)_150px_84px]"
-    : "grid-cols-[minmax(0,2.2fr)_minmax(0,1.7fr)_150px]";
+    ? "grid-cols-[minmax(0,1fr)_84px] sm:grid-cols-[minmax(0,2.2fr)_minmax(0,1.7fr)_150px_84px]"
+    : "grid-cols-1 sm:grid-cols-[minmax(0,2.2fr)_minmax(0,1.7fr)_150px]";
+  // On a phone the table keeps the document and its status; the source is in the panel below.
+  const wide = "hidden sm:block";
   const filters: { id: Filter; count: number }[] = [
     { id: "all", count: checklist.items.length },
     { id: "missing", count: checklist.items.length - readyCount },
@@ -155,14 +157,14 @@ export function ChecklistView({ checklist, readyIds, itemPanel, ruleResults, rul
             </div>
 
             <div className="overflow-x-auto">
-              <div className="flex min-w-[600px] flex-col gap-0.5">
+              <div className="flex flex-col gap-0.5 sm:min-w-[600px]">
                 <div
                   aria-hidden="true"
                   className={`grid ${columns} gap-3 border-b border-line px-3.5 pb-2 font-mono text-[10px] tracking-widest text-muted uppercase`}
                 >
                   <span>{t("checklist.columns.document")}</span>
-                  <span>{t("checklist.columns.source")}</span>
-                  <span>{t("checklist.columns.submit")}</span>
+                  <span className={wide}>{t("checklist.columns.source")}</span>
+                  <span className={wide}>{t("checklist.columns.submit")}</span>
                   {withStatus && <span className="text-right">{t("checklist.columns.status")}</span>}
                 </div>
                 {rows.map((item, index) => {
@@ -183,10 +185,10 @@ export function ChecklistView({ checklist, readyIds, itemPanel, ruleResults, rul
                             !withStatus ? "bg-brand" : ready ? "bg-ok" : "bg-warning"
                           }`}
                         />
-                        <span className="truncate font-bold">{item.document.title}</span>
+                        <span className="font-bold sm:truncate">{item.document.title}</span>
                       </span>
-                      <span className="truncate font-mono text-xs text-muted">{item.source.section}</span>
-                      <span className="text-[13px] text-muted">
+                      <span className={`${wide} truncate font-mono text-xs text-muted`}>{item.source.section}</span>
+                      <span className={`${wide} text-[13px] text-muted`}>
                         {t(`checklist.submitAs.${item.submit_as}`, { defaultValue: item.submit_as })}
                       </span>
                       {withStatus && (

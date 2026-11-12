@@ -45,6 +45,22 @@ body {
   background-size: 1.25rem;
 }
 
+/* Phones. iOS Safari zooms the page when a focused field has text under 16 px, and its date
+   fields keep a native width that overflows a narrow card. */
+@media (max-width: 1023px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
+input[type="date"] {
+  -webkit-appearance: none;
+  appearance: none;
+  min-width: 0;
+  max-width: 100%;
+}
+
 /* Motion. Entrances play once; the few loops are small status signals. */
 @keyframes va-rise {
   from { opacity: 0; transform: translateY(18px) scale(0.985); }
