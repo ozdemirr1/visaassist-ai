@@ -3,8 +3,8 @@
 Fall semester week 8, a buffer week in the roadmap. Prepared for the advisor meeting on Friday,
 13 November 2026 (the meetings of 30 October and 6 November did not take place; the eight open
 questions of weeks 6 and 7 were sent to the advisor by e-mail on 10 November). The planned
-backlog was cleared early in the week and the work of weeks 9, 10 and 11 was done ahead of
-schedule. Thirteen pull requests were merged (#52 to #76).
+backlog was cleared early in the week and the work of weeks 9 to 12, and the findings page of week
+13, was done ahead of schedule. Seventeen pull requests were merged (#52 to #84).
 
 ## Completed this week
 **Planned for week 8**
@@ -46,13 +46,32 @@ schedule. Thirteen pull requests were merged (#52 to #76).
 - **Location data removed from photos** before storing: the GPS block of the EXIF data and the
   XMP packet in JPEG, the EXIF GPS block in PNG, without an image library (#75, PR #76).
 
+**Weeks 12 and 13, done ahead (field entry, rule engine, findings)**
+- **Field entry:** the applicant enters the key fields of each uploaded document; the values are
+  encrypted with the document's own key (ADR 0005, amendment) (#79, PR #80).
+- **Rule engine v0:** all twelve rule kinds of `data/requirements/` as pure functions; a rule ends
+  as passed, failed, incomplete (a value is missing) or skipped (its document is not uploaded).
+  Dates are compared with the trip and the application date of the file, never with the day the
+  check runs. Names are compared without case, Turkish letters or order (#79, PR #80).
+- **Findings page with kept checks:** missing documents, problems and passed rules in groups,
+  each problem with the official passage; a kept check stores the state of the rules and where
+  each issue is, not the entered values, and shows the change since the one before (#81, PR #82).
+- **Destination page:** where and when to apply, fingerprints, fees and translation for the
+  Netherlands and Norway, each fact with its official source, read from the snapshots of 5 and
+  10 November (`data/destinations.yaml`) (#81, PR #82).
+- **Report chapter 1** (introduction: problem, contributions, organisation) (#81, PR #82).
+- **Tried on a phone** (iPhone, Safari), including a photo taken with the camera; three layout
+  problems found and fixed; screenshots of the application as built added to
+  `docs/design/ui-design.md` (#83, PR #84).
+
 ## Demonstrable output
 - `docker compose up -d`, `uv run uvicorn app.main:app` and `npm run dev`: register → new
   application (Netherlands, employed) → accept the consent text → upload a PDF for "transport
-  reservation" → the item turns "ready", the ring shows 1 of 12 → download → delete.
+  reservation" → the item turns "ready", the ring shows 1 of 12 → enter its fields → the rules
+  change state → findings page → keep the result → download → delete.
 - The checklist page works without an account, in Turkish and English, with the official passage
   of each document and rule.
-- Tests: backend 125 (44 last week), frontend 29 (new); both run in CI on every pull request.
+- Tests: backend 186 (44 last week), frontend 39 (new); both run in CI on every pull request.
 
 ## Literature read
 No new paper this week. Kazamel et al. (2025) is still waiting for library access; the tenth paper
@@ -67,25 +86,40 @@ is not chosen yet.
 - `npm install` failed with a certificate error caused by a half-finished OpenSSL upgrade on the
   development machine; solved by pointing Node to the system certificate file.
 - The first web pages looked too plain; a redesign was done before more pages were built on them.
+- The data model planned to store the compared values with each finding; that contradicts keeping
+  field values encrypted, so a kept check stores rule states and issue locations only.
+- On an iPhone, date fields were wider than their card, the page zoomed when a field was focused,
+  and the document table hid its status column; fixed in PR #84.
 
 ## Limits of this week's work
-- The upload flow was tried in a desktop browser only; the roadmap's test on a phone is open.
+- No AI layer yet: the applicant enters the fields by hand; extraction follows in spring.
+- Assumptions of the rule engine where the sources are silent: a bank statement covers at least
+  three months and ends at most one month before the application; payslips are for three months
+  in a row, the newest from the application month or the two before; an insurance amount in
+  another currency than EUR is not compared; for Norway the application form, the passport and the
+  photo are exempt from translation (our reading, the source makes no exception).
+- Demo data and a one-command setup (the rest of week 13) are not done.
 - The consent text describes what the system does, but has not been reviewed for the Turkish
   data-protection law (KVKK).
 - Location removal does not cover metadata inside PDF files or XMP in PNG; HEIC photos are refused.
-- The screenshots in `docs/design/ui-design.md` still show the earlier design.
 
 ## Questions for the advisor
 1. The eight questions of weeks 6 and 7 (sent by e-mail on 10 November) are still open; the work
    follows the proposals written next to them until they are answered.
-2. Weeks 9–11 are finished three weeks early. Continue with week 12 (field entry, rule engine),
-   or use the time for the report and a usability check with a few applicants?
+2. The work is about four weeks ahead of the plan. Proposal: first demo data and the one-command
+   setup, then the report and a usability check with three applicants, then an early start on the
+   synthetic data set of spring. Agreed?
 3. Is a consent text written by the student enough for a prototype with synthetic documents, or
    should it be reviewed against KVKK before the demo?
 4. Retention: documents are deleted 30 days after the trip ends. Is that period acceptable?
+5. Are the assumptions of the rule engine listed above acceptable, if they stay marked as
+   assumptions in the code and the report?
+6. In weeks without a meeting, how should progress be reported? Proposal: the weekly note and the
+   meeting document by e-mail on Thursday evening.
 
 ## Goals for next week (week 9, 16 – 22 November)
-- Week 12 work, first half: entering and confirming the key fields of each document (FR-08).
-- Upload flow tried on a phone; new screenshots in `docs/design/ui-design.md`.
+- Demo data: two synthetic application files marked "SAMPLE" with controlled errors.
+- One-command setup with Docker Compose and the steps in the README.
+- Report chapter 5 (implementation), first draft.
 - Kazamel et al. (2025) full text and a tenth paper; report chapter 2 updated.
 - Weekly source snapshot.
