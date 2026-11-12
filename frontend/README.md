@@ -34,4 +34,8 @@ npm run build
 | --- | --- |
 | `/` | Destination and profile → checklist with the official source of every item (FR-02, FR-03) |
 | `/login`, `/register` | Log in, create an account |
+| `/destinations` | Where, when and how to apply, each fact with its official source |
 | `/applications` | The user's application files |
+| `/applications/new` | Wizard: destination, profile, trip dates |
+| `/applications/:id` | Route, readiness, steps, checklist with upload, field entry and rule states |
+| `/applications/:id/findings` | Preliminary check: missing documents, problems, kept checks |
