@@ -1,7 +1,7 @@
 import { type ReactNode, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import type { Checklist, ChecklistItem } from "../api/types";
+import type { Checklist, ChecklistItem, RuleResult, RuleSummary } from "../api/types";
 import { IconSearch } from "./icons";
 import { type SourceEntry, SourcePanel } from "./SourcePanel";
 
@@ -13,10 +13,21 @@ interface Props {
   readyIds?: ReadonlySet<string>;
   /** Shown under the source of the selected document (the upload panel of an application). */
   itemPanel?: (item: ChecklistItem) => ReactNode;
+  /** Results of the check by rule ID. Without it, the rules show only how strict they are. */
+  ruleResults?: ReadonlyMap<string, RuleResult>;
+  /** Shown under the source of the selected rule (what the check found). */
+  rulePanel?: (rule: RuleSummary) => ReactNode;
 }
 
+const STATUS_STYLE = {
+  passed: "bg-ok-bg text-ok",
+  failed: "bg-error-bg text-error",
+  incomplete: "bg-warning-bg text-warning",
+  skipped: "bg-ground text-muted",
+} as const;
+
 /** Documents as a table, the rules below, and the official source of the selected entry. */
-export function ChecklistView({ checklist, readyIds, itemPanel }: Props) {
+export function ChecklistView({ checklist, readyIds, itemPanel, ruleResults, rulePanel }: Props) {
   const { t, i18n } = useTranslation();
   const [filter, setFilter] = useState<Filter>("all");
   const [query, setQuery] = useState("");
@@ -71,6 +82,7 @@ export function ChecklistView({ checklist, readyIds, itemPanel }: Props) {
     null;
 
   const selectedItem = checklist.items.find((item) => item.id === selected?.id);
+  const selectedRule = checklist.rules.find((rule) => rule.id === selected?.id);
 
   const columns = withStatus
     ? "grid-cols-[minmax(0,2.2fr)_minmax(0,1.7fr)_150px_84px]"
@@ -212,6 +224,15 @@ export function ChecklistView({ checklist, readyIds, itemPanel }: Props) {
                     className={`${rowClass(rule.id)} flex min-h-11 items-center justify-between gap-3 px-3.5 py-1.5`}
                   >
                     <span className="text-sm font-semibold">{rule.title}</span>
+                    {ruleResults?.has(rule.id) && (
+                      <span
+                        className={`ml-auto shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-bold ${
+                          STATUS_STYLE[ruleResults.get(rule.id)!.status]
+                        }`}
+                      >
+                        {t(`check.status.${ruleResults.get(rule.id)!.status}`)}
+                      </span>
+                    )}
                     <span
                       className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-bold ${
                         rule.severity === "error" ? "bg-error-bg text-error" : "bg-warning-bg text-warning"
@@ -233,6 +254,7 @@ export function ChecklistView({ checklist, readyIds, itemPanel }: Props) {
           >
             <SourcePanel entry={selected} />
             {selectedItem && itemPanel?.(selectedItem)}
+            {selectedRule && rulePanel?.(selectedRule)}
           </div>
         )}
       </div>

@@ -46,6 +46,11 @@ Compose; there are no backups and no real personal documents in development or t
    (404 for anyone else, as in ADR 0004), with `Content-Disposition: attachment`,
    `X-Content-Type-Options: nosniff` and `Cache-Control: no-store`.
 
+**Amendment (11 November 2026, field entry):** the values the applicant enters for a document
+(names, passport number, dates, amounts) are encrypted with the same data key as the file, each
+bound to its document and field, and are deleted with the document. They are decrypted only to
+show them to their owner and to run the check of the owner's application file.
+
 ## Alternatives considered
 - **Disk encryption only (FileVault, an encrypted volume):** protects a stolen laptop but not a
   copied volume, a backup or a mistake in file permissions; NFR-01 asks for encryption by the

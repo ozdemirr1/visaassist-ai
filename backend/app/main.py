@@ -7,6 +7,7 @@ from fastapi import Depends, FastAPI, Response, status
 from app.api.applications import router as applications_router
 from app.api.auth import router as auth_router
 from app.api.checklist import router as checklist_router
+from app.api.checks import router as checks_router
 from app.api.documents import router as documents_router
 from app.config import get_settings
 from app.db import database_is_reachable
@@ -44,6 +45,7 @@ def create_app() -> FastAPI:
     app.include_router(auth_router)
     app.include_router(applications_router)
     app.include_router(documents_router)
+    app.include_router(checks_router)
     app.include_router(checklist_router)
     return app
 

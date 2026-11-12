@@ -259,6 +259,17 @@ erDiagram
 - `sources` is not versioned: it is upserted from `data/sources.yaml`; the snapshot history stays
   in `data/snapshots/` until `source_snapshots` is added.
 
+### Implementation notes (week 12)
+- `document_field_values` stores each value encrypted with the document's own key
+  (`value_encrypted bytea` instead of `value jsonb`): names, passport numbers and dates are
+  personal data, like the file and its name (ADR 0005). The JSON form of each field type is
+  unchanged (`backend/app/rules/values.py`). `confidence` is added with extraction in spring.
+- The two common fields (`language`, `translation_language`) are the plain columns of `documents`
+  and are asked only where a translation rule of the file's destination reads them.
+- `check_runs` and `findings` are not created yet: `GET /applications/{id}/check` computes the
+  result on request from the entered values (rule engine v0, `backend/app/rules/engine.py`).
+  Storing runs comes with the findings page, so an earlier result can be shown and compared.
+
 ## 4. How the main flows use the model
 - **Checklist (FR-02):** `requirements` of the active set where `destination` is null or the
   file's destination and the profile is in `profiles`, joined with `document_types` for titles in

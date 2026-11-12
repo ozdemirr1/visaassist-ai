@@ -74,7 +74,9 @@
     "en": "English",
     "no": "Norwegian",
     "tr": "Turkish",
-    "nl": "Dutch"
+    "nl": "Dutch",
+    "de": "German",
+    "fr": "French"
   },
   "auth": {
     "loginTitle": "Log in",
@@ -208,6 +210,56 @@
       "tooLarge": "A file can have at most {{max}} MB.",
       "type": "Only PDF, JPEG and PNG files can be uploaded.",
       "consent": "Accept the consent text before uploading documents."
+    }
+  },
+  "fields": {
+    "open": "Enter details",
+    "close": "Close details",
+    "lead": "Enter what the document says; the rules are checked with these details.",
+    "yes": "Yes",
+    "no": "No",
+    "currency": "Currency",
+    "optional": "optional",
+    "choose": "Choose",
+    "progress": "{{filled}} of {{total}} fields filled",
+    "save": "Save",
+    "saved": "Saved",
+    "loading": "Loading fields…"
+  },
+  "check": {
+    "kicker": "Preliminary check",
+    "status": {
+      "passed": "Passed",
+      "failed": "Problem",
+      "incomplete": "Details missing",
+      "skipped": "No document"
+    },
+    "explain": {
+      "passed": "The details you entered satisfy this rule.",
+      "failed": "A detail you entered does not satisfy this rule.",
+      "incomplete": "A detail this rule reads has not been entered yet.",
+      "skipped": "The document this rule reads has not been uploaded yet."
+    },
+    "disclaimer": "This is a preliminary check; it says nothing about the visa decision.",
+    "issue": {
+      "value_missing": "{{document}}: “{{field}}” has not been entered yet.",
+      "too_old": "{{document}}: {{field}} is {{value}}; it must be {{expected}} or later.",
+      "expires_too_soon": "{{document}}: {{field}} is {{value}}; it must be valid until at least {{expected}}.",
+      "below_minimum": "{{document}}: {{field}} is {{value}}; at least {{expected}} is needed.",
+      "other_currency": "{{document}}: {{field}} was entered as {{value}}; it cannot be compared with {{expected}} (no currency conversion).",
+      "amount_too_low": "{{document}}: {{field}} is {{value}}; at least {{expected}} is needed.",
+      "not_confirmed": "{{document}}: “{{field}}” was answered No.",
+      "not_stated": "{{document}}: “{{field}}” must be in the document, but was not entered.",
+      "period_starts_late": "{{document}}: {{field}} is {{value}}; the trip starts on {{expected}}.",
+      "period_ends_early": "{{document}}: {{field}} is {{value}}; the trip ends on {{expected}}.",
+      "period_too_short": "{{document}}: {{field}} is {{value}}; the period must start on {{expected}} at the latest.",
+      "period_not_recent": "{{document}}: {{field}} is {{value}}; it must be {{expected}} or later.",
+      "newest_too_old": "{{document}}: the newest document is for {{value}}; one for {{expected}} or later is needed.",
+      "month_missing": "{{document}}: no document for {{value}}.",
+      "reference_missing": "{{document}}: nothing can be compared until “{{field}}” is entered.",
+      "name_differs": "{{document}}: {{field}} is “{{value}}”; the passport says “{{expected}}”.",
+      "value_differs": "{{document}}: {{field}} is “{{value}}”; the passport says “{{expected}}”.",
+      "translation_missing": "{{document}}: the document is in {{value}}; a translation into one of these is needed: {{expected}}."
     }
   }
 }

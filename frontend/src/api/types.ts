@@ -80,3 +80,51 @@ export interface ConsentState {
   version: string;
   given: boolean;
 }
+
+export type FieldType = "text" | "date" | "int" | "bool" | "money" | "language";
+export interface Money {
+  amount: number;
+  currency: string;
+}
+export type FieldValue = string | number | boolean | Money | null;
+
+export interface FieldInfo {
+  id: string;
+  type: FieldType;
+  title: string;
+  optional: boolean;
+  value: FieldValue;
+}
+
+export interface DocumentFields {
+  document_id: string;
+  document_type_id: string;
+  fields: FieldInfo[];
+}
+
+export type RuleStatus = "passed" | "failed" | "incomplete" | "skipped";
+
+export interface CheckIssue {
+  code: string;
+  document_id: string | null;
+  document_type: string | null;
+  document_title: string | null;
+  field: string | null;
+  field_title: string | null;
+  value: unknown;
+  expected: unknown;
+}
+
+export interface RuleResult {
+  rule_id: string;
+  severity: "error" | "warning";
+  status: RuleStatus;
+  issues: CheckIssue[];
+}
+
+export interface CheckResult {
+  requirement_set_id: string;
+  missing_documents: string[];
+  rules: RuleResult[];
+  summary: Record<RuleStatus | "missing_documents", number>;
+}

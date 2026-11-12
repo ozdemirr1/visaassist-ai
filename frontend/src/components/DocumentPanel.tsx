@@ -5,6 +5,7 @@ import { API_BASE, ApiError } from "../api/client";
 import { useDeleteDocument, useGiveConsent, useUploadDocument, useWithdrawConsent } from "../api/hooks";
 import type { ChecklistItem, ConsentState, DocumentInfo } from "../api/types";
 import { ACCEPTED_TYPES, MAX_UPLOAD_MB, formatSize, uploadProblem } from "../upload";
+import { FieldForm } from "./FieldForm";
 import { formatDate, formatShortDate } from "./format";
 import { IconCheck, IconDownload, IconFile, IconLock, IconUpload } from "./icons";
 
@@ -62,6 +63,7 @@ function DocumentRow({ applicationFileId, document }: { applicationFileId: strin
   const { t, i18n } = useTranslation();
   const remove = useDeleteDocument(applicationFileId);
   const [confirming, setConfirming] = useState(false);
+  const [entering, setEntering] = useState(false);
   return (
     <li className="flex flex-col gap-2 rounded-[14px] bg-ground p-3">
       <div className="flex items-center gap-2.5">
@@ -99,6 +101,14 @@ function DocumentRow({ applicationFileId, document }: { applicationFileId: strin
           </>
         ) : (
           <>
+            <button
+              type="button"
+              aria-expanded={entering}
+              onClick={() => setEntering(!entering)}
+              className="va-btn min-h-11 rounded-xl bg-brand px-3 text-sm font-bold text-white"
+            >
+              {t(entering ? "fields.close" : "fields.open")}
+            </button>
             <a
               href={`${API_BASE}/documents/${document.id}/content`}
               aria-label={`${t("upload.download")}: ${document.original_name}`}
@@ -118,6 +128,7 @@ function DocumentRow({ applicationFileId, document }: { applicationFileId: strin
           </>
         )}
       </div>
+      {entering && <FieldForm applicationFileId={applicationFileId} documentId={document.id} />}
     </li>
   );
 }

@@ -114,7 +114,7 @@ def own_application(
     return application
 
 
-def _own_document(session: Session, user: models.User, document_id: uuid.UUID) -> models.Document:
+def own_document(session: Session, user: models.User, document_id: uuid.UUID) -> models.Document:
     document = session.scalar(
         select(models.Document)
         .join(
@@ -211,7 +211,7 @@ def download_document(
     document_id: uuid.UUID, session: SessionDep, user: UserDep, storage: StorageDep, keys: KeysDep
 ) -> Response:
     """The decrypted file, only for its owner."""
-    document = _own_document(session, user, document_id)
+    document = own_document(session, user, document_id)
     try:
         data = docs.read(storage, keys, document)
     except (crypto.DecryptionError, FileNotFoundError) as error:
@@ -244,7 +244,7 @@ def delete_document(
     document_id: uuid.UUID, session: SessionDep, user: UserDep, storage: StorageDep
 ) -> None:
     """Delete the document and its stored file at once (FR-11)."""
-    keys = docs.delete_documents(session, [_own_document(session, user, document_id)])
+    keys = docs.delete_documents(session, [own_document(session, user, document_id)])
     session.commit()
     for key in keys:
         storage.delete(key)

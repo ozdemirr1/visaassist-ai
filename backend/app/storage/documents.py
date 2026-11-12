@@ -181,7 +181,7 @@ def store(
 # Reading
 
 
-def _data_key(keys: Keys, document: models.Document) -> bytes:
+def data_key(keys: Keys, document: models.Document) -> bytes:
     if document.key_id != keys.key_id:
         raise crypto.DecryptionError(f"Master key {document.key_id} is not configured.")
     return crypto.unwrap_key(keys.master, document.wrapped_key, document.id, document.key_id)
@@ -189,13 +189,13 @@ def _data_key(keys: Keys, document: models.Document) -> bytes:
 
 def original_name(keys: Keys, document: models.Document) -> str:
     return crypto.decrypt(
-        _data_key(keys, document), document.original_name_encrypted, document.id, "name"
+        data_key(keys, document), document.original_name_encrypted, document.id, "name"
     ).decode()
 
 
 def read(storage: LocalStorage, keys: Keys, document: models.Document) -> bytes:
     return crypto.decrypt(
-        _data_key(keys, document), storage.read(document.storage_key), document.id, "file"
+        data_key(keys, document), storage.read(document.storage_key), document.id, "file"
     )
 
 

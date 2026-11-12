@@ -30,7 +30,12 @@ A destination's rule set is `eu-tr.yaml` plus its national file.
 | `covers_recent_months` | a period (bank statement) covers the last N months |
 | `recent_monthly_count` | one document per month for the last N months (payslips) |
 | `names_match` / `values_match` | fields on other documents equal a reference field (passport) |
-| `translation_present` | every document not in the listed languages has a translation into one |
+| `translation_present` | every document not in the listed languages has a translation into one; `exempt` lists document types with nothing to translate |
+
+- **Result of a rule** (`backend/app/rules/engine.py`): `passed`, `failed` (an entered value breaks
+  it), `incomplete` (a value it needs is not entered yet) or `skipped` (its document is not
+  uploaded; the missing document is reported instead). Dates are compared with the trip and the
+  application date of the file, never with the day the check runs.
 
 - **Citation** — every requirement and rule has `source`: the source ID from
   `data/sources.yaml`, the section and a paraphrased passage. `basis: derived` marks a rule that

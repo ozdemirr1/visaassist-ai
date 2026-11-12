@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams } from "react-router";
 
 import {
   useApplicationFile,
+  useCheck,
   useChecklist,
   useConsent,
   useDeleteApplicationFile,
@@ -13,6 +14,7 @@ import {
 import type { ApplicationFile, Language, Step } from "../api/types";
 import { ChecklistView } from "../components/ChecklistView";
 import { DocumentPanel } from "../components/DocumentPanel";
+import { FindingsPanel } from "../components/FindingsPanel";
 import { ReadinessRing } from "../components/ReadinessRing";
 import { RequireLogin } from "../components/RequireLogin";
 import { RouteArc } from "../components/RouteArc";
@@ -47,6 +49,8 @@ function Detail({ file }: { file: ApplicationFile }) {
   const checklist = useChecklist(file.destination, file.profile, i18n.language as Language);
   const documents = useDocuments(file.id);
   const consent = useConsent();
+  const check = useCheck(file.id, i18n.language as Language);
+  const ruleResults = new Map(check.data?.rules.map((result) => [result.rule_id, result]));
 
   const items = checklist.data?.items ?? [];
   const readyIds = new Set(documents.data?.map((document) => document.requirement_id));
@@ -160,6 +164,11 @@ function Detail({ file }: { file: ApplicationFile }) {
         <ChecklistView
           checklist={checklist.data}
           readyIds={readyIds}
+          ruleResults={check.data ? ruleResults : undefined}
+          rulePanel={(rule) => {
+            const result = ruleResults.get(rule.id);
+            return result ? <FindingsPanel key={rule.id} result={result} /> : null;
+          }}
           itemPanel={(item) => (
             <DocumentPanel
               key={item.id}
