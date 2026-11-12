@@ -58,6 +58,32 @@ screens below still show the first version and are replaced as pages are rebuilt
 <img src="ui/09-mobile-consent.png" width="260" alt="Mobile consent">
 </p>
 
+## The application as built (12 November 2026)
+Screenshots of the running application, taken in Chrome and on an iPhone with synthetic data.
+The screens above are the design; these show how far the implementation has come. Not built yet:
+the administrator's review of a source change (screen 5, spring) and the photo capture screen with
+extracted fields (screen 7, spring).
+
+### Web
+![Checklist with the official source of the selected document](ui/app-01-web-checklist.png)
+![Destination page: where, when and how to apply, each fact with its source](ui/app-02-web-destinations.png)
+![New application wizard with the live summary](ui/app-03-web-wizard.png)
+![Application page: route, readiness ring and steps](ui/app-04-web-application.png)
+![Document table with status and the upload panel](ui/app-05-web-upload.png)
+![Rules with the state of the preliminary check](ui/app-06-web-rules.png)
+
+### Mobile
+<p>
+<img src="ui/app-07-mobile-checklist.jpg" width="240" alt="Checklist on a phone">
+<img src="ui/app-08-mobile-destinations.jpg" width="240" alt="Destination page on a phone">
+<img src="ui/app-09-mobile-application.jpg" width="240" alt="Application page on a phone">
+<img src="ui/app-10-mobile-upload.jpg" width="240" alt="Upload panel on a phone">
+</p>
+
+Found while trying the flow on a phone and fixed afterwards: date fields wider than their card and
+the page zooming on focus in iOS Safari; the document table needing a sideways scroll to show the
+status (it now shows the document and its status, the source is in the panel below).
+
 ## Design decisions
 - **Evidence on every item:** checklist rows carry the source tag; a finding shows the values
   compared and the quoted passage with a link to the official page.

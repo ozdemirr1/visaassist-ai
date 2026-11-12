@@ -125,7 +125,7 @@ export function Layout() {
     <div className="min-h-screen lg:flex">
       <Sidebar loggedIn={Boolean(user)} />
 
-      <div className="flex min-w-0 flex-1 flex-col pb-24 lg:pb-0">
+      <div className="flex min-w-0 flex-1 flex-col pb-[calc(7rem+env(safe-area-inset-bottom))] lg:pb-0">
         <header className="va-rise flex flex-wrap items-center gap-3 px-4 pt-4 lg:px-7">
           <div className="mr-auto lg:hidden">
             <Brand />
@@ -172,7 +172,7 @@ export function Layout() {
 
       <nav
         aria-label={t("shell.menu")}
-        className="fixed inset-x-4 bottom-4 z-10 grid grid-cols-4 gap-1 rounded-[22px] bg-navy p-1.5 shadow-[0_12px_30px_rgb(11_19_36/0.35)] lg:hidden"
+        className="fixed inset-x-4 bottom-[calc(1rem+env(safe-area-inset-bottom))] z-10 grid grid-cols-4 gap-1 rounded-[22px] bg-navy p-1.5 shadow-[0_12px_30px_rgb(11_19_36/0.35)] lg:hidden"
       >
         <NavLink to="/" end className={tabLink}>
           <IconList />
