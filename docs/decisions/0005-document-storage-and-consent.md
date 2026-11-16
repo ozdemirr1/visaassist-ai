@@ -1,5 +1,5 @@
 # 0005 — Document storage: consent first, envelope encryption, deletion with the file
-Date: 2026-11-10 · Status: Proposed (to be confirmed with the advisor)
+Date: 2026-11-10 · Status: Accepted by the author (ADR 0006; open to revision by the advisor)
 
 ## Context
 Week 9 ends with document upload and deletion (FR-07, FR-11). Applicants upload copies of
