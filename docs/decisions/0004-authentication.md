@@ -1,5 +1,5 @@
 # 0004 — Authentication: e-mail and password, opaque session token in an HttpOnly cookie
-Date: 2026-11-10 · Status: Proposed (to be confirmed with the advisor)
+Date: 2026-11-10 · Status: Accepted by the author (ADR 0006; open to revision by the advisor)
 
 ## Context
 Week 9 builds accounts, application files and document upload (FR-04, FR-05, FR-07). Users
