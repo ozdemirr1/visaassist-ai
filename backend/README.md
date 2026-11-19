@@ -76,6 +76,14 @@ uv run python -m app.storage.cleanup        # daily: expired documents and orpha
 - `GET /destinations?lang=tr`: practical facts of applying to each destination, each with its
   official source (`data/destinations.yaml`).
 
+## Demo files
+`data/demo/` holds two synthetic application files with labelled errors. To compare the rule
+engine's findings with the labels:
+
+```bash
+uv run python -m app.demo.evaluate
+```
+
 ## Database and requirement data
 ```bash
 uv run alembic upgrade head                 # create or update the tables

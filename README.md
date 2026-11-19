@@ -65,6 +65,7 @@ Use only synthetic documents: the prototype is not meant for real personal docum
 | `data/requirements/` | Document types, checklist items and rules, each citing a source |
 | `data/sources.yaml`, `data/snapshots/` | Official sources and their weekly snapshots |
 | `data/destinations.yaml` | Practical facts of applying to each destination, with sources |
+| `data/demo/` | Synthetic demo application files with labelled errors (SAMPLE) |
 | `docs/` | Requirements, design, decisions (ADR), weekly notes, related work |
 | `report/` | LaTeX source of the course report |
 
