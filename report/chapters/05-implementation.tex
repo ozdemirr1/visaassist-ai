@@ -1,19 +1,147 @@
 \chapter{Implementation}\label{ch:implementation}
-% Fall: what was built, with the key design choices and short code excerpts. Spring adds the AI parts.
+% Fall: what was built, with the key design choices. Spring adds the AI parts.
+
+This chapter describes the system as it stands on 19 November 2026: a backend with 186 automated
+tests and a web client with 39, built in pull requests up to \#90. Everything in it runs without
+an AI model; the applicant enters the fields that extraction will fill in spring.
 
 \section{Development environment and tools}\label{sec:tools}
-\todo{Python 3.12, FastAPI, SQLAlchemy, PostgreSQL 17 + pgvector, Docker Compose, uv, ruff,
-pytest, GitHub Actions; AI assistants used for coding and writing support, with the developer
-reviewing and committing every change.}
+The backend is written in Python 3.12 with FastAPI, Pydantic and SQLAlchemy 2, and stores its
+data in PostgreSQL 17 with the pgvector extension, started with Docker Compose. Database changes
+are Alembic migrations (six so far). Dependencies are managed with uv and pinned in a lock file.
+The web client uses React 19, TypeScript, Vite, Tailwind CSS and TanStack Query; its tests run
+with Vitest and Testing Library.
+
+Every change follows the same path: an issue with a completion criterion, a branch, a pull
+request, a green run of GitHub Actions, and a squash merge. The \texttt{main} branch is protected
+and requires two checks: lint and tests of the backend against a PostgreSQL service, and type
+check, tests and build of the web client. Decisions are recorded as architecture decision records
+in \texttt{docs/decisions/}.
+
+An AI assistant was used to draft code, tests and documentation; Section~\ref{sec:ai-use}
+describes how it was used and how its output was checked.
 
 \section{Backend}
-\todo{Health and readiness endpoints, settings, database access.}
+The service is created by an application factory and grouped by concern: checklist, accounts,
+application files, documents, checks and destinations. Settings come from environment variables;
+the API does not start without a database address and a document key, because neither has a safe
+default. Two health endpoints separate \emph{the process is up} from \emph{the database can be
+reached}.
+
+\paragraph{Accounts and sessions (ADR 0004).} Users register with an e-mail address and a password
+that is hashed with Argon2id. A session is a random token; the browser holds it in a cookie that
+scripts cannot read, and the database stores only its SHA-256, so a copy of the database does not
+give access. Requests that change state must carry a custom header, which a form on another site
+cannot add. Five failed logins within fifteen minutes block further attempts for that address.
+
+\paragraph{Application files.} A file belongs to one user and one trip and records the requirement
+set that was active when it was created. Every query is limited to the owner; a file of another
+user is answered with \emph{not found}, not with \emph{forbidden}, so its existence is not
+revealed. Each change of step is stored as a dated event.
+
+\paragraph{Documents (ADR 0005).} Upload is refused until the user has accepted the current
+version of the consent text. The type of a file is read from its first bytes, not from its name;
+PDF, JPEG and PNG up to 10\,MB are accepted. Location data is removed from photographs. Each
+document is then encrypted with its own AES-256-GCM key, and that key is itself encrypted with a
+master key kept outside the repository (Figure~\ref{fig:envelope}). The file is stored under a
+random name; its original name, which often contains the applicant's name, is encrypted too.
+Deleting a document removes the row and the file together, and documents expire thirty days after
+the trip.
+
+\begin{figure}[ht]
+  \centering
+  \small
+  \begin{tabular}{@{}ccccc@{}}
+    master key & $\rightarrow$ & data key & $\rightarrow$ & file, file name, \\
+    (\texttt{.env}) & wraps & (one per document) & encrypts & field values \\
+  \end{tabular}
+  \caption{Envelope encryption of a document. The document identifier is bound to every
+  encrypted value, so a value cannot be moved to another document.}
+  \label{fig:envelope}
+\end{figure}
 
 \section{Requirement data and source snapshots}
-\todo{Loader and cross-checks; snapshot command and manifest.}
+The requirements live in YAML files, not in code (Chapter~\ref{ch:design},
+Listing~\ref{lst:rule}). A loader validates them and cross-checks them: every requirement and rule
+must cite a known source, every field a rule reads must exist with the right type, and no rule may
+read a document that no checklist item asks for. A seed command loads the files into the database
+as a \emph{requirement set} whose identifier is the SHA-256 of the files. Loading unchanged files
+does nothing; changed files give a new set, and older sets are kept, so a check made earlier can
+still show the rules it used.
 
-\section{Rule engine}
-\todo{W12: how a check kind is evaluated; reference date; findings with evidence.}
+A snapshot command fetches every official source, stores the content only when its hash differs
+from the last one, and appends every attempt to a manifest. It has run weekly since 23 October.
+
+\section{Field entry and rule engine}
+For every uploaded document the applicant enters the fields its type defines; the two fields about
+language are asked only where a translation rule of the destination reads them. Values are
+validated against the field type and stored encrypted with the document's key.
+
+The rule engine is a set of pure functions: it receives the rules, the documents with their
+values, and the trip, and returns one result per rule. It reads neither the database nor the
+clock. Every date is compared with the trip or with the application date of the file, so a check
+gives the same result whenever it is run, and each rule kind of Table~\ref{tab:rule-kinds} can be
+tested with invented documents. A rule ends in one of four states:
+
+\begin{description}[style=nextline,leftmargin=2.2cm]
+  \item[passed] the entered values satisfy the rule;
+  \item[failed] an entered value breaks it;
+  \item[incomplete] a value the rule needs has not been entered, or cannot be compared;
+  \item[skipped] the document the rule reads is not uploaded; the missing document is reported
+    instead.
+\end{description}
+
+Separating \emph{incomplete} from \emph{failed} matters to the applicant: an empty field is a
+task, not a problem with the application. Each issue names the document, the field, the value
+found and the value expected, which is what \reqid{FR-10} asks for. Names are compared without
+case, Turkish letters, punctuation or order, so that the name in the passport and the name printed
+on a booking in capital letters with the surname first are recognised as the same.
+
+Where a source does not state a limit that a check needs, the engine uses an assumption that is
+marked as such in the code and recorded in ADR 0006: a bank statement must end at most one month
+before the application, the newest payslip must be from the application month or the two before,
+and an amount in another currency than the rule's is not compared. Chapter~\ref{ch:evaluation}
+returns to them as threats to validity.
+
+A check can be kept. A kept check stores the state of every rule and where each issue is, but not
+the compared values, because those are personal data that stay encrypted with their documents;
+the page shows current values by running the check again.
 
 \section{Web client}
-\todo{W10--W11.}
+The client is one responsive application in Turkish and English; all interface text comes from
+two translation files, and a test fails when their keys differ. It talks to the API on its own
+origin, so the session cookie stays first-party.
+
+The checklist page needs no account: the visitor chooses a destination and a profile and sees the
+documents and rules, each with the official passage and a link. A second public page lists, per
+destination, where and when to apply, fingerprints and fees, again with the source of each fact.
+After logging in, a three-step wizard creates an application file. The application page
+(Figure~\ref{fig:app-page}) shows the route, the days to the appointment, a readiness ring with
+one segment per document and the dated steps; below it come the document table with the upload
+panel and the rules with their states (Figure~\ref{fig:app-rules}). A findings page groups the
+result into missing documents, problems, rules with missing details and passed rules, each problem
+with the passage of its source, and lists the kept checks with the change since the previous one.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=\textwidth]{app-04-web-application.png}
+  \caption{Application page of the running system.}
+  \label{fig:app-page}
+\end{figure}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=\textwidth]{app-06-web-rules.png}
+  \caption{Rules with the state of the preliminary check, and the upload panel of the selected
+  document.}
+  \label{fig:app-rules}
+\end{figure}
+
+The flow was tried on a phone, including a photograph taken with the camera. Three layout
+problems were found and corrected: date fields wider than their card, the page zooming when a
+field was focused, and a document table whose status column needed a sideways scroll.
+
+\section{State against the plan}
+The roadmap placed this work in weeks 9 to 13 of the fall semester; it was finished in week 8.
+Two items of the fall plan remain: demo application files with controlled errors, and a setup
+with a single command. The administrator's pages and all AI components belong to spring.
