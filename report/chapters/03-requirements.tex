@@ -1,20 +1,147 @@
 \chapter{Requirements}\label{ch:requirements}
 % Source: docs/requirements.md (v0.2). Keep IDs identical so tests and report agree.
 
+The requirements were written in the first two weeks of the project from the approved proposal
+and the two scope decisions (ADR 0001 and ADR 0002), and were reviewed with the advisor on
+23 October 2026. Each requirement has an identifier that is used unchanged in the code, the tests
+and this report. The goals H1--H5 are the objectives of Chapter~\ref{ch:intro}.
+
 \section{Stakeholders}
-\todo{Applicant, administrator, researcher, advisor; table from requirements.md §2.}
+Table~\ref{tab:stakeholders} lists who uses the system or depends on its results.
+
+\begin{table}[ht]
+  \centering
+  \small
+  \caption{Stakeholders and their needs.}
+  \label{tab:stakeholders}
+  \begin{tabularx}{\textwidth}{@{}lX@{}}
+    \toprule
+    Role & Needs \\
+    \midrule
+    Applicant (employed or student) & know which documents are needed, upload them, see problems before applying \\
+    Administrator & maintain requirements and expert notes, review detected source changes before they go live \\
+    Researcher (project author) & generate labelled synthetic files, run and compare approaches, measure results \\
+    Advisor and course coordinator & follow progress, agree on success criteria, assess the outcome \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
 
 \section{Functional requirements}
-\todo{Table FR-01 -- FR-22 with goal, priority, semester (longtable).}
+Table~\ref{tab:fr} lists the functional requirements. \emph{Must} is required for the semester's
+outcome, \emph{Should} is planned, \emph{Could} is done only if time allows. The last column gives
+the state on 19 November 2026; Chapter~\ref{ch:implementation} describes what was built.
+
+{\small
+\begin{longtable}{@{}p{1.1cm}>{\raggedright\arraybackslash}p{6.0cm}p{1.0cm}p{1.3cm}p{1.5cm}p{1.2cm}@{}}
+  \caption{Functional requirements.}\label{tab:fr}\\
+  \toprule
+  ID & Requirement & Goal & Priority & Semester & State \\
+  \midrule
+  \endfirsthead
+  \toprule
+  ID & Requirement & Goal & Priority & Semester & State \\
+  \midrule
+  \endhead
+  \bottomrule
+  \endfoot
+  \reqid{FR-01} & The applicant selects destination, visa type, profile and travel dates. & H1 & Must & Fall & done \\
+  \reqid{FR-02} & A personalised checklist; each item states how it is submitted and links to its official source. & H1, H4 & Must & Fall & done \\
+  \reqid{FR-03} & A discovery page shows Schengen membership, appointment and biometrics information and official links. & H1, H4 & Should & Fall & done \\
+  \reqid{FR-04} & Users register and log in; roles are applicant and administrator. & -- & Must & Fall & done \\
+  \reqid{FR-05} & The applicant creates, lists and deletes application files. & -- & Must & Fall & done \\
+  \reqid{FR-06} & The applicant tracks the application steps. & H1 & Should & Fall & done \\
+  \reqid{FR-07} & Upload per checklist item (PDF, JPEG, PNG), including from a phone camera. & H2 & Must & Fall & done \\
+  \reqid{FR-08} & The applicant enters or confirms the key fields of each document. & H2 & Must & Fall & done \\
+  \reqid{FR-09} & Rule checks detect missing, outdated and inconsistent documents. & H2 & Must & Fall & done \\
+  \reqid{FR-10} & Every finding shows the rule, the documents and fields involved, the official source and a severity. & H2, H4 & Must & Fall & done \\
+  \reqid{FR-11} & Deleting a document or an application file removes the stored files. & -- & Must & Fall & done \\
+  \reqid{FR-12} & The system classifies the type of an uploaded document. & H2 & Must & Spring & -- \\
+  \reqid{FR-13} & Fields are extracted with OCR and a vision-language model, with a confidence per field; low-confidence fields are confirmed by the applicant. & H2 & Must & Spring & -- \\
+  \reqid{FR-14} & Cross-document checks cover all pilot document pairs. & H2 & Must & Spring & partly \\
+  \reqid{FR-15} & An assistant answers from official sources and expert notes, cites its passages and gives no definitive answer without a source. & H4 & Must & Spring & -- \\
+  \reqid{FR-16} & Official pages are captured periodically; changes are detected, summarised, linked to requirements and approved by an administrator. & H3 & Must & Spring & partly \\
+  \reqid{FR-17} & After an approved change, affected applicants are notified. & H3 & Should & Spring & -- \\
+  \reqid{FR-18} & Administrators manage requirements and expert notes in the web application. & H3, H4 & Should & Spring & -- \\
+  \reqid{FR-19} & Long-running checks report their status to the browser. & -- & Should & Spring & -- \\
+  \reqid{FR-20} & The web application can be installed on a phone. & -- & Could & Spring & -- \\
+  \reqid{FR-21} & Applicants can message an expert. & -- & Could & Spring & -- \\
+  \reqid{FR-22} & Research tooling generates labelled synthetic files, runs an LLM-only baseline and computes the metrics. & H5 & Must & Spring & -- \\
+\end{longtable}
+}
+
+The checklist (\reqid{FR-02}) states whether an original, a copy or both are submitted, and the
+translation requirement of Norway; a notarisation label is not modelled because neither pilot
+source asks for one. \reqid{FR-14} is partly done because the name and passport-number
+comparisons already run across all pilot documents on the entered fields. \reqid{FR-16} is partly
+done because the pages are captured weekly and compared by hash; detecting meaningful changes and
+the approval step belong to spring.
 
 \section{Non-functional requirements}
-\todo{NFR-01 -- NFR-10; privacy (KVKK) and languages (TR/EN) in detail.}
+Table~\ref{tab:nfr} lists the non-functional requirements. Two of them shape the design more than
+the others. Privacy (\reqid{NFR-01}): the application files hold copies of passports, bank
+statements and payslips, which are personal data under the Turkish data-protection law (KVKK);
+Chapter~\ref{ch:ethics} describes the measures. Languages (\reqid{NFR-10}): the applicants read
+Turkish, the official sources are in English, so the interface is in both languages and quoted
+passages stay in their original language.
+
+\begin{table}[ht]
+  \centering
+  \small
+  \caption{Non-functional requirements.}
+  \label{tab:nfr}
+  \begin{tabularx}{\textwidth}{@{}p{3.4cm}X@{}}
+    \toprule
+    ID & Requirement \\
+    \midrule
+    \reqid{NFR-01} Privacy & consent before the first upload; documents encrypted at rest; limited retention; deletion on request; fields not needed for a check masked before any external AI call; no real personal documents in development, tests or experiments \\
+    \reqid{NFR-02} Security & salted password hashes; token-based authentication; access to one's own files only; secrets only in \texttt{.env}; the database not exposed to the network \\
+    \reqid{NFR-03} Transparency & every requirement, finding and answer links to its source; every result page states that the system prepares and does not predict a decision \\
+    \reqid{NFR-04} Usability & usable on a 375\,px wide phone screen and on desktop; status and findings understandable without technical knowledge \\
+    \reqid{NFR-05} Performance & rule checks within 2 seconds for one application file on the development machine; extraction time per document measured in spring \\
+    \reqid{NFR-06} Cost & model usage within USD 20 per month; the cost of every evaluation run logged \\
+    \reqid{NFR-07} Reproducibility & the system starts with Docker Compose following the README; pinned dependencies; lint and tests in CI on every pull request \\
+    \reqid{NFR-08} Maintainability & every rule has unit tests; decisions recorded as ADRs; code and repository documents in English \\
+    \reqid{NFR-09} Robustness & uploads validated for type and size (at most 10\,MB); liveness and readiness checks \\
+    \reqid{NFR-10} Languages & Turkish and English interface, selectable at any time; all interface text from translation files; quoted passages in their original language \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
 
 \section{Constraints}
 One developer at about 15 hours per week over two semesters; an API budget of at most USD 20 per
-month; evaluation on synthetic documents only.
+month; evaluation on synthetic documents only, so results may not fully transfer to real
+applications. Official pages can change without notice; the pilot relies on the sources described
+in Chapter~\ref{ch:background}. The pilot covers one main destination, a second national layer,
+one visa category and two profiles.
 
-\section{Success criteria}
+\section{Success criteria}\label{sec:success}
 Agreed with the advisor on 23 October 2026: every result is a comparison against a reference or
-an alternative, never an isolated score.
-\todo{Fall and spring criteria from requirements.md §6.}
+an alternative, never an isolated score. Results are reported as measured; no score is promised
+in advance.
+
+\paragraph{End of fall (prototype).}
+\begin{itemize}
+  \item An applicant of each pilot profile completes the flow from profile to checklist, upload,
+    field entry and findings.
+  \item The generated checklist is compared item by item with a checklist compiled by hand from
+    the official sources; every item and every rule cites its source.
+  \item On the demo application files, the findings of the rule engine are compared with the
+    injected error labels: every injected error of the supported types is reported, and the
+    error-free file gets no finding.
+  \item The checklist of a pilot profile is compared with the answer of a general-purpose chat
+    assistant to the same question: missing items, wrong items and missing citations.
+  \item The system starts by following the README; all tests pass in CI.
+\end{itemize}
+
+\paragraph{End of spring (complete project).}
+\begin{itemize}
+  \item A labelled synthetic data set (about 200 files, more than 1,000 documents) with a frozen
+    test set.
+  \item Hybrid and LLM-only approaches compared per error type with precision, recall, F1,
+    false-alarm rate, time and cost per file (AS1).
+  \item Human reviewers compared with the hybrid system on a subset of the test set (AS2).
+  \item Change detection compared with labelled page versions against a plain text-diff baseline
+    (AS3).
+  \item Assistant answers compared with LLM-only answers: citation coverage and unsupported
+    statements.
+\end{itemize}
