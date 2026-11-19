@@ -39,3 +39,6 @@ report/*.run.xml
 report/*.synctex.gz
 report/*.toc
 report/main.pdf
+
+# Copies of official pages: kept locally, not published (the manifest is)
+data/snapshots/*/
