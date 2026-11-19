@@ -1,0 +1,103 @@
+# SAMPLE: a synthetic application file. The person, the university and every value are invented.
+# The documents below satisfy every rule of Norway for a student; each entry under `errors`
+# breaks exactly one of them and says which finding it must produce. Documents in Turkish carry
+# an English translation, as the Norwegian checklist asks.
+id: student-no
+title: {en: "SAMPLE – student, Norway", tr: "ÖRNEK – öğrenci, Norveç"}
+destination: "NO"
+profile: student
+trip: {start: "2027-07-05", end: "2027-07-14", application_date: "2027-05-20"}
+
+documents:
+  - id: form
+    type: application_form
+    values: {signed: true}
+  - id: passport
+    type: passport
+    values:
+      full_name: Can Örnek
+      passport_number: U00000002
+      issue_date: "2024-01-15"
+      expiry_date: "2034-01-15"
+      blank_pages: 20
+      signed: true
+  - id: photo
+    type: photo
+    values: {taken_on: "2027-04-01"}
+  - id: registry
+    type: civil_registry_extract
+    values: {full_name: Can Örnek, issue_date: "2027-05-02", language: tr, translation_language: en}
+  - id: flight
+    type: travel_reservation
+    values:
+      passenger_name: ORNEK/CAN
+      departure_date: "2027-07-05"
+      return_date: "2027-07-14"
+      language: en
+  - id: hotel
+    type: accommodation
+    values: {guest_name: Can Örnek, check_in: "2027-07-05", check_out: "2027-07-14", language: en}
+  - id: bank
+    type: bank_statement
+    values:
+      holder_name: CAN ORNEK
+      period_start: "2027-02-10"
+      period_end: "2027-05-10"
+      issue_date: "2027-05-10"
+      language: tr
+      translation_language: en
+  - id: yok
+    type: yok_student_certificate
+    values:
+      full_name: Can Örnek
+      issue_date: "2027-05-05"
+      qr_code_readable: true
+      language: tr
+      translation_language: en
+  - id: insurance
+    type: travel_insurance
+    values:
+      insured_name: Can Örnek
+      coverage_start: "2027-07-05"
+      coverage_end: "2027-07-14"
+      coverage_amount: {amount: 30000, currency: EUR}
+      covers_all_schengen: true
+      covers_repatriation: true
+      language: en
+
+errors:
+  - id: S01
+    kind: translation_missing
+    description: The bank statement is in Turkish and has no translation.
+    change: {set: {document: bank, field: translation_language, value: null}}
+    expect: {rule: no-rule-translation, code: translation_missing}
+  - id: S02
+    kind: outdated_document
+    description: The civil registry extract was issued seven months before the application.
+    change: {set: {document: registry, field: issue_date, value: "2026-10-15"}}
+    expect: {rule: no-rule-document-age, code: too_old}
+  - id: S03
+    kind: unreadable_qr
+    description: The QR code of the YÖK certificate cannot be read.
+    change: {set: {document: yok, field: qr_code_readable, value: false}}
+    expect: {rule: eu-rule-yok-qr-readable, code: not_confirmed}
+  - id: S04
+    kind: missing_document
+    description: The proof of accommodation is not uploaded.
+    change: {remove: hotel}
+    expect: {missing: eu-req-accommodation}
+  - id: S05
+    kind: insurance
+    description: The insurance is valid in Norway only, not in the whole Schengen area.
+    change: {set: {document: insurance, field: covers_all_schengen, value: false}}
+    expect: {rule: no-rule-insurance-territory, code: not_confirmed}
+  - id: S06
+    kind: passport_pages
+    description: The passport has one empty page.
+    change: {set: {document: passport, field: blank_pages, value: 1}}
+    expect: {rule: no-rule-passport-blank-pages, code: below_minimum}
+  - id: S07
+    kind: name_mismatch
+    description: The flight is booked in another person's name.
+    change: {set: {document: flight, field: passenger_name, value: ORNEK/CEM}}
+    expect: {rule: eu-rule-names-match, code: name_differs}

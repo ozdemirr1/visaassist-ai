@@ -1,0 +1,131 @@
+# SAMPLE: a synthetic application file. The person, the employer and every value are invented.
+# The documents below satisfy every rule of the Netherlands for an employed applicant; each entry
+# under `errors` breaks exactly one of them and says which finding it must produce.
+id: employed-nl
+title: {en: "SAMPLE – employed applicant, the Netherlands", tr: "ÖRNEK – çalışan başvuru sahibi, Hollanda"}
+destination: NL
+profile: employed
+trip: {start: "2027-04-10", end: "2027-04-20", application_date: "2027-03-01"}
+
+documents:
+  - id: form
+    type: application_form
+    values: {signed: true}
+  - id: passport
+    type: passport
+    values:
+      full_name: Deniz Örnek
+      passport_number: U00000001
+      issue_date: "2022-05-01"
+      expiry_date: "2032-05-01"
+      blank_pages: 10
+      signed: true
+  - id: photo
+    type: photo
+    values: {taken_on: "2027-01-15"}
+  - id: registry
+    type: civil_registry_extract
+    values: {full_name: Deniz Örnek, issue_date: "2027-02-10"}
+  - id: flight
+    type: travel_reservation
+    values: {passenger_name: ORNEK/DENIZ, departure_date: "2027-04-10", return_date: "2027-04-20"}
+  - id: hotel
+    type: accommodation
+    values: {guest_name: Deniz Örnek, check_in: "2027-04-10", check_out: "2027-04-20"}
+  - id: bank
+    type: bank_statement
+    values:
+      holder_name: DENIZ ORNEK
+      period_start: "2026-11-25"
+      period_end: "2027-02-25"
+      issue_date: "2027-02-25"
+  - id: payslip-2026-12
+    type: payslip
+    values: {employee_name: Deniz Örnek, pay_month: "2026-12-28", issue_date: "2026-12-28"}
+  - id: payslip-2027-01
+    type: payslip
+    values: {employee_name: Deniz Örnek, pay_month: "2027-01-28", issue_date: "2027-01-28"}
+  - id: payslip-2027-02
+    type: payslip
+    values: {employee_name: Deniz Örnek, pay_month: "2027-02-26", issue_date: "2027-02-26"}
+  - id: letter
+    type: employer_letter
+    values:
+      employee_name: Deniz Örnek
+      passport_number: U 0000 0001
+      addressed_to_consulate: true
+      employment_start: "2021-09-01"
+      job_title: Muhasebe uzmanı
+      leave_start: "2027-04-09"
+      leave_end: "2027-04-21"
+      leave_paid: true
+      employer_contact: Örnek Muhasebe A.Ş., İstanbul
+      signatory_name: Ece Örnek, İnsan Kaynakları
+      issue_date: "2027-02-20"
+  - id: sgk-declaration
+    type: sgk_employment_declaration
+    values: {full_name: Deniz Örnek, issue_date: "2027-02-20", qr_code_readable: true}
+  - id: sgk-record
+    type: sgk_service_record
+    values: {full_name: Deniz Örnek, issue_date: "2027-02-20", qr_code_readable: true}
+  - id: insurance
+    type: travel_insurance
+    values:
+      insured_name: Deniz Örnek
+      coverage_start: "2027-04-10"
+      coverage_end: "2027-04-20"
+      coverage_amount: {amount: 30000, currency: EUR}
+      covers_all_schengen: true
+      covers_repatriation: true
+
+errors:
+  - id: E01
+    kind: missing_document
+    description: The travel insurance is not uploaded.
+    change: {remove: insurance}
+    expect: {missing: nl-req-travel-insurance}
+  - id: E02
+    kind: passport_validity
+    description: The passport expires two months after the return, one month too early.
+    change: {set: {document: passport, field: expiry_date, value: "2027-06-20"}}
+    expect: {rule: nl-rule-passport-validity, code: expires_too_soon}
+  - id: E03
+    kind: outdated_document
+    description: The photo was taken eight months before the application.
+    change: {set: {document: photo, field: taken_on, value: "2026-07-01"}}
+    expect: {rule: nl-rule-photo-age, code: too_old}
+  - id: E04
+    kind: insurance
+    description: The insurance covers EUR 20,000 instead of at least EUR 30,000.
+    change: {set: {document: insurance, field: coverage_amount, value: {amount: 20000, currency: EUR}}}
+    expect: {rule: nl-rule-insurance-amount, code: amount_too_low}
+  - id: E05
+    kind: insurance
+    description: The insurance ends one day before the return.
+    change: {set: {document: insurance, field: coverage_end, value: "2027-04-19"}}
+    expect: {rule: nl-rule-insurance-period, code: period_ends_early}
+  - id: E06
+    kind: name_mismatch
+    description: The hotel booking is in another person's name.
+    change: {set: {document: hotel, field: guest_name, value: Deniz Başka}}
+    expect: {rule: eu-rule-names-match, code: name_differs}
+  - id: E07
+    kind: leave_period
+    description: The approved leave ends two days before the return.
+    change: {set: {document: letter, field: leave_end, value: "2027-04-18"}}
+    expect: {rule: eu-rule-leave-covers-trip, code: period_ends_early}
+  - id: E08
+    kind: outdated_document
+    description: The payslip of January is missing, so the three months are not consecutive.
+    change: {remove: payslip-2027-01}
+    expect: {rule: eu-rule-payslips-last-3-months, code: month_missing}
+  - id: E09
+    kind: outdated_document
+    description: The bank statement covers only two months.
+    change: {set: {document: bank, field: period_start, value: "2026-12-25"}}
+    expect: {rule: eu-rule-bank-statement-period, code: period_too_short}
+  - id: E10
+    kind: value_mismatch
+    description: The passport number in the employer letter has a wrong digit.
+    change: {set: {document: letter, field: passport_number, value: U00000007}}
+    expect: {rule: eu-rule-passport-number-matches, code: value_differs}
