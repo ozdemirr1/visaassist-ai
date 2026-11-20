@@ -227,6 +227,17 @@
     "saved": "Kaydedildi",
     "loading": "Alanlar yükleniyor…"
   },
+  "extract": {
+    "lead": "Bir model belgeyi okuyup alanları önerebilir. Yalnızca SAMPLE işaretli örnek belgelerle kullanın.",
+    "button": "Belgeden oku",
+    "reading": "Okunuyor…",
+    "done_one": "{{model}} {{count}} alanı doldurdu. Henüz kaydedilmedi: her değeri belgeyle karşılaştırıp Kaydet'e basın.",
+    "done_other": "{{model}} {{count}} alanı doldurdu. Henüz kaydedilmedi: her değeri belgeyle karşılaştırıp Kaydet'e basın.",
+    "invalid_one": "{{count}} değer beklenen biçimde değildi, boş bırakıldı.",
+    "invalid_other": "{{count}} değer beklenen biçimde değildi, boş bırakıldı.",
+    "read": "modelden",
+    "unsure": "model emin değil"
+  },
   "check": {
     "kicker": "Ön kontrol sonucu",
     "status": {

@@ -10,6 +10,8 @@ import type {
   ConsentState,
   DocumentFields,
   DocumentInfo,
+  Extraction,
+  ExtractionStatus,
   FieldValue,
   Language,
   Profile,
@@ -258,6 +260,25 @@ export function useSaveDocumentFields(applicationFileId: string, documentId: str
       client.setQueryData(["documents", documentId, "fields", lang], fields);
       void client.invalidateQueries({ queryKey: checkKey(applicationFileId) });
     },
+  });
+}
+
+/** Whether the field form may offer reading the document with a model (ADR 0007). */
+export function useExtractionStatus() {
+  return useQuery({
+    queryKey: ["extraction", "status"],
+    queryFn: ({ signal }) => api<ExtractionStatus>("/extraction/status", { signal }),
+    staleTime: Number.POSITIVE_INFINITY,
+  });
+}
+
+/** Values a model proposes for the document's fields; the applicant checks and saves them (FR-13). */
+export function useExtractFields(documentId: string, lang: Language) {
+  return useMutation({
+    mutationFn: () =>
+      api<Extraction>(`/documents/${documentId}/extract?${new URLSearchParams({ lang })}`, {
+        method: "POST",
+      }),
   });
 }
 

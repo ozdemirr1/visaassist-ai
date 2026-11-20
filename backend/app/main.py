@@ -10,6 +10,7 @@ from app.api.checklist import router as checklist_router
 from app.api.checks import router as checks_router
 from app.api.destinations import router as destinations_router
 from app.api.documents import router as documents_router
+from app.api.extraction import router as extraction_router
 from app.config import get_settings
 from app.db import database_is_reachable
 from app.storage.crypto import decode_master_key
@@ -47,6 +48,7 @@ def create_app() -> FastAPI:
     app.include_router(applications_router)
     app.include_router(documents_router)
     app.include_router(checks_router)
+    app.include_router(extraction_router)
     app.include_router(checklist_router)
     app.include_router(destinations_router)
     return app
