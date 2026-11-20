@@ -1,0 +1,15 @@
+# Only what the images need is sent to the build; everything else, .env included, stays out.
+*
+!backend/
+!data/
+!frontend/
+**/.env
+**/.env.*
+backend/.venv
+**/__pycache__
+**/.pytest_cache
+**/.ruff_cache
+frontend/node_modules
+frontend/dist
+data/snapshots/*/
+data/private

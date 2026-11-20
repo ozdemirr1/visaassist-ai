@@ -32,17 +32,44 @@ Istanbul Bilgi University, Computer Engineering — CMPE 491/492 Senior Design P
 More screenshots: [docs/design/ui-design.md](docs/design/ui-design.md).
 
 ## Getting started
+
+### The whole system with one command
+Requirements: Docker.
+
+```bash
+cp .env.example .env                 # set POSTGRES_PASSWORD and DATABASE_URL to match
+openssl rand -base64 32              # put the output into .env as DOCUMENT_MASTER_KEY=...
+docker compose --profile app up --build
+```
+
+Open http://localhost:8080. The API container updates the tables, loads the requirement data and
+a demo account, `demo@visaassist.example`, with two synthetic application files (employed for the
+Netherlands, student for Norway). Its password is `DEMO_PASSWORD` from `.env`, or a random one
+printed once in the log (`docker compose logs api`). The demo account is reset on every start;
+set `LOAD_DEMO=false` to turn this off. To show findings, load the demo with some of its labelled
+errors applied:
+
+```bash
+docker compose exec api python -m app.demo.load --list-errors
+docker compose exec api python -m app.demo.load --error E06 --error S04
+```
+
+The session cookie is Secure: Chrome and Firefox accept it on http://localhost, Safari does not;
+for Safari set `COOKIE_SECURE=false` in `.env`.
+
+### Development
 Requirements: Docker, [uv](https://docs.astral.sh/uv/) (Python 3.12) and Node.js 22.
 
 ```bash
 cp .env.example .env                 # set POSTGRES_PASSWORD, keep DATABASE_URL in step with it
-docker compose up -d                 # PostgreSQL with pgvector
+docker compose up -d                 # only PostgreSQL with pgvector
 
 cd backend
 uv sync
 uv run python -m app.storage.new_key # once; put the printed line into ../.env
 uv run alembic upgrade head          # create the tables
 uv run python -m app.requirements.seed   # load the requirement files
+uv run python -m app.demo.load           # optional: the demo account
 uv run uvicorn app.main:app --reload     # API on http://127.0.0.1:8000/docs
 ```
 
