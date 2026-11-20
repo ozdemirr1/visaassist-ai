@@ -1,13 +1,145 @@
 \chapter{Testing and Evaluation}\label{ch:evaluation}
 
 \section{Test strategy}
-\todo{Unit tests per rule, data-consistency tests, integration tests against PostgreSQL in CI;
-branch protection requires a green run.}
+The tests follow the structure of the system. The rule engine is a set of pure functions, so every
+check kind is tested with invented documents and a fixed trip, including the boundary cases (a
+passport that expires exactly three months after the return, an insurance that ends one day
+early). The requirement files are tested for consistency: every rule cites a known source, every
+field it reads exists with the right type, and no rule reads a document that no checklist item
+asks for. Integration tests run the API against a real PostgreSQL database inside a transaction
+that is rolled back; they cover registration and login, ownership (another user's file answers
+\emph{not found}), encryption at rest, deletion of files together with their rows, the check of an
+application file and the demo files. The web client is tested with Vitest and Testing Library,
+including a test that fails when the Turkish and English translation files differ in their keys.
+
+On 20 November 2026 the backend has 216 tests and the web client 39. Every pull request runs them
+in GitHub Actions, and the \texttt{main} branch accepts a change only when both checks pass. Two
+lessons from the tests themselves: tests must not depend on the developer's settings file, and
+they must count only the rows they create, because the development database also holds the demo
+account. Both were found when tests passed in CI but failed on the development machine, and were
+fixed in the tests, not in the code.
+
+The flow was also tried by hand in Chrome and Safari on a laptop and on a phone, including a
+photograph taken with the phone's camera; Section~\ref{sec:web} lists what this found.
 
 \section{Fall evaluation}
-\todo{Against the fall success criteria: generated vs hand-compiled checklist; findings vs
-injected errors on demo files; checklist vs a general chat assistant's answer.}
+The fall success criteria (Section~\ref{sec:success}) compare the prototype with a reference or an
+alternative. This section reports what is measured on 20 November 2026 and how the remaining
+comparisons are made.
+
+\subsection{Rule engine on the demo files}\label{sec:demo-eval}
+\paragraph{Method.} The two demo files of Section~\ref{sec:demo} are first checked as they are,
+then once for every labelled error, with that error alone applied. An error counts as
+\emph{detected} when exactly its labelled finding appears: the named checklist item is missing, or
+the named rule fails with the named issue code. Any other finding in the same run counts as a
+false alarm. The command \texttt{python -m app.demo.evaluate} runs this and prints the tables below;
+the same check runs in CI.
+
+\paragraph{Result.} The error-free files give no finding: no missing document and no failed or
+incomplete rule, with 16 rules checked for the employed applicant to the Netherlands and 10 for the
+student to Norway. Every one of the 17 labelled errors is detected, and none of them produces a
+further finding (Table~\ref{tab:demo-errors}).
+
+{\small
+\begin{longtable}{@{}p{0.9cm}>{\raggedright\arraybackslash}p{6.3cm}>{\raggedright\arraybackslash}p{5.3cm}p{1.4cm}@{}}
+  \caption{Labelled errors of the demo files and the outcome (E: employed, Netherlands;
+    S: student, Norway).}\label{tab:demo-errors}\\
+  \toprule
+  Error & Change & Expected finding & Outcome \\
+  \midrule
+  \endfirsthead
+  \toprule
+  Error & Change & Expected finding & Outcome \\
+  \midrule
+  \endhead
+  \bottomrule
+  \endfoot
+  E01 & The travel insurance is not uploaded. & missing \reqid{nl-\allowbreak{}req-\allowbreak{}travel-\allowbreak{}insurance} & detected \\
+  E02 & The passport expires two months after the return, one month too early. & \reqid{nl-\allowbreak{}rule-\allowbreak{}passport-\allowbreak{}validity} & detected \\
+  E03 & The photo was taken eight months before the application. & \reqid{nl-\allowbreak{}rule-\allowbreak{}photo-\allowbreak{}age} & detected \\
+  E04 & The insurance covers EUR 20,000 instead of at least EUR 30,000. & \reqid{nl-\allowbreak{}rule-\allowbreak{}insurance-\allowbreak{}amount} & detected \\
+  E05 & The insurance ends one day before the return. & \reqid{nl-\allowbreak{}rule-\allowbreak{}insurance-\allowbreak{}period} & detected \\
+  E06 & The hotel booking is in another person's name. & \reqid{eu-\allowbreak{}rule-\allowbreak{}names-\allowbreak{}match} & detected \\
+  E07 & The approved leave ends two days before the return. & \reqid{eu-\allowbreak{}rule-\allowbreak{}leave-\allowbreak{}covers-\allowbreak{}trip} & detected \\
+  E08 & The payslip of January is missing, so the three months are not consecutive. & \reqid{eu-\allowbreak{}rule-\allowbreak{}payslips-\allowbreak{}last-\allowbreak{}3-\allowbreak{}months} & detected \\
+  E09 & The bank statement covers only two months. & \reqid{eu-\allowbreak{}rule-\allowbreak{}bank-\allowbreak{}statement-\allowbreak{}period} & detected \\
+  E10 & The passport number in the employer letter has a wrong digit. & \reqid{eu-\allowbreak{}rule-\allowbreak{}passport-\allowbreak{}number-\allowbreak{}matches} & detected \\
+  S01 & The bank statement is in Turkish and has no translation. & \reqid{no-\allowbreak{}rule-\allowbreak{}translation} & detected \\
+  S02 & The civil registry extract was issued seven months before the application. & \reqid{no-\allowbreak{}rule-\allowbreak{}document-\allowbreak{}age} & detected \\
+  S03 & The QR code of the YÖK certificate cannot be read. & \reqid{eu-\allowbreak{}rule-\allowbreak{}yok-\allowbreak{}qr-\allowbreak{}readable} & detected \\
+  S04 & The proof of accommodation is not uploaded. & missing \reqid{eu-\allowbreak{}req-\allowbreak{}accommodation} & detected \\
+  S05 & The insurance is valid in Norway only, not in the whole Schengen area. & \reqid{no-\allowbreak{}rule-\allowbreak{}insurance-\allowbreak{}territory} & detected \\
+  S06 & The passport has one empty page. & \reqid{no-\allowbreak{}rule-\allowbreak{}passport-\allowbreak{}blank-\allowbreak{}pages} & detected \\
+  S07 & The flight is booked in another person's name. & \reqid{eu-\allowbreak{}rule-\allowbreak{}names-\allowbreak{}match} & detected \\
+\end{longtable}
+}
+
+\paragraph{What the result shows and what it does not.} The result shows that the rules implement
+what they were written to check, that the engine compares dates with the trip and the application
+date as intended, and that one error does not set off other rules. It does not show that the rules
+match what a consulate decides: the labels and the rules were written by the same person from the
+same sources, so a rule that misreads a source would be matched by an equally wrong label. The
+comparison with a checklist compiled independently from the sources
+(Section~\ref{sec:checklist-eval}) and, in spring, with human reviewers address this. Seventeen
+errors in two files are also too few for rates: the result is a functional check, not a measured
+accuracy.
+
+\subsection{Generated checklist against a hand-compiled checklist}\label{sec:checklist-eval}
+For each pilot destination and profile, a checklist is compiled by hand from the official pages,
+without looking at the requirement files, and compared item by item with the generated one:
+items missing from either side, items that differ in how they are submitted, and items whose
+citation does not support them. This comparison is made in the week of 30 November 2026.
+
+\subsection{The same model with and without the rule engine}\label{sec:model-comparison}
+Suggested by the advisor on 20 November 2026, this comparison is the fall version of AS1. Both
+sides receive the same document images rendered from the demo files, with every error variant:
+\begin{itemize}
+  \item \textbf{Model alone.} The model receives all documents of a file with the trip and the
+    destination and is asked which documents are missing and which disagree with each other or
+    with the requirements.
+  \item \textbf{Model with the rule engine.} The model reads the fields of each document, and the
+    rule engine of Section~\ref{sec:engine} decides.
+\end{itemize}
+Both are scored as in Section~\ref{sec:demo-eval}: labelled errors found, false alarms on the
+error-free files and the error variants, time and cost per file. Each run is repeated three times
+because model answers vary, and the model version and date are reported. The comparison is made
+in the week of 30 November 2026.
+
+\subsection{A general chat assistant}\label{sec:chat-eval}
+The same question about the documents for one pilot profile is put to two general chat assistants
+(ChatGPT and Claude), with the date and the product version recorded. Each answer is compared with
+the hand-compiled checklist: missing items, wrong items, items without a source, and items taken
+from another destination, such as a translation requirement for the Netherlands or none for
+Norway. This also provides the evidence the advisor asked for behind the claims of
+\texttt{docs/positioning.md}.
+
+\section{Threats to validity}
+\begin{itemize}
+  \item \textbf{Synthetic documents.} The demo files are invented and clean; real documents are
+    scanned, photographed at an angle, partly unreadable or in another layout. Results on them may
+    not transfer to real applications.
+  \item \textbf{Entered values.} In the evaluation of Section~\ref{sec:demo-eval} the values are
+    entered correctly by construction, so it measures the rules, not the reading of documents.
+  \item \textbf{Assumptions where sources are silent.} The engine assumes that a bank statement
+    ends at most one month before the application, that the newest payslip is from the
+    application month or the two before, and that amounts in another currency are not compared;
+    for Norway the application form, passport and photograph are exempt from translation
+    (ADR 0006). A consulate may apply these differently.
+  \item \textbf{One author.} Requirements, rules, labels and evaluation were prepared by the same
+    person; the independent checklist and the human reviewers of the spring reduce this.
+  \item \textbf{Changing assistants.} General assistants and hosted models change over time; a
+    result holds for the version and date reported.
+\end{itemize}
 
 \section{Spring experiment design}
-\todo{Synthetic dataset and frozen test set; hybrid vs LLM-only (AS1); human reviewers (AS2);
-labelled page versions with a text-diff baseline (AS3); metrics and reporting of model versions.}
+\begin{description}[style=nextline,leftmargin=1.2cm]
+  \item[AS1] A generator produces about 200 labelled synthetic files with more than 1,000
+    documents, rendered with scanning artefacts; a test set is frozen before any tuning. The
+    hybrid system and the model alone are compared per error type with precision, recall, F1,
+    false-alarm rate, time and cost per file.
+  \item[AS2] Human reviewers check a subset of the test set; their accuracy and time are compared
+    with the hybrid system's on the same files.
+  \item[AS3] Pairs of snapshots of the official pages are labelled meaningful, minor or cosmetic;
+    the change detector is compared with a plain text-diff baseline with precision, recall, F1,
+    false-alarm rate and detection delay.
+\end{description}

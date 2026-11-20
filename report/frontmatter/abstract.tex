@@ -1,15 +1,26 @@
 \chapter*{Abstract}
 \addcontentsline{toc}{chapter}{Abstract}
-% 150--250 words. Write last. Structure: problem -- approach -- what was built -- how it is
-% evaluated -- main result (fall: prototype; spring: measured comparison).
-\todo{Problem: applicants in Türkiye prepare Schengen visa files from scattered official pages
-and often submit incomplete or inconsistent documents.}
-\todo{Approach: personalised checklists built from versioned official sources; rule-based
-checks of the applicant's documents against the requirements and against each other; every
-finding cites its source.}
-\todo{Fall result: working prototype for the Netherlands (and the Norway translation rule),
-employed and student profiles.}
-\todo{Spring: hybrid (VLM + rules) vs LLM-only comparison on a labelled synthetic dataset.}
+% 150--250 words. Update when the model comparison of Chapter 6 is measured.
+Applicants for a Schengen short-stay visa in Türkiye prepare a file of about a dozen documents
+from requirements that are spread over several official pages and differ between destination
+states. A missing document, an expired passport or a name that differs between two documents can
+cost the fee and the appointment. General-purpose AI assistants answer such questions fluently,
+but they do not show which official sentence a requirement comes from, whether it is still in
+force, or whether the applicant's own documents agree with each other.
+
+\project{} turns the official requirements into versioned data in which every checklist item and
+every rule cites its source passage. It builds a checklist for the applicant's destination and
+profile, stores the uploaded documents encrypted, and checks their key fields with a deterministic
+rule engine: missing documents, documents that are too old, and disagreements between documents
+and with the trip. Every finding names the rule, the documents and fields involved, and the
+official source.
+
+The fall prototype covers the Netherlands and Norway for employed and student applicants. On two
+synthetic application files with 17 labelled errors, the rule engine reports every error and
+nothing else, and gives no finding on the error-free files. A language model that reads the fields
+from the documents is being connected, and the same model will be compared with and without the
+rule engine. The spring semester extends this to a labelled synthetic data set, a comparison with
+human reviewers and the monitoring of official pages.
 
 \noindent\textbf{Keywords:} visa application, document verification, rule engine,
-retrieval-augmented generation, source monitoring
+vision-language model, source-grounded information

@@ -29,7 +29,7 @@ Table~\ref{tab:stakeholders} lists who uses the system or depends on its results
 \section{Functional requirements}
 Table~\ref{tab:fr} lists the functional requirements. \emph{Must} is required for the semester's
 outcome, \emph{Should} is planned, \emph{Could} is done only if time allows. The last column gives
-the state on 19 November 2026; Chapter~\ref{ch:implementation} describes what was built.
+the state on 20 November 2026; Chapter~\ref{ch:implementation} describes what was built.
 
 {\small
 \begin{longtable}{@{}p{1.1cm}>{\raggedright\arraybackslash}p{6.0cm}p{1.0cm}p{1.3cm}p{1.5cm}p{1.2cm}@{}}
@@ -56,7 +56,7 @@ the state on 19 November 2026; Chapter~\ref{ch:implementation} describes what wa
   \reqid{FR-10} & Every finding shows the rule, the documents and fields involved, the official source and a severity. & H2, H4 & Must & Fall & done \\
   \reqid{FR-11} & Deleting a document or an application file removes the stored files. & -- & Must & Fall & done \\
   \reqid{FR-12} & The system classifies the type of an uploaded document. & H2 & Must & Spring & -- \\
-  \reqid{FR-13} & Fields are extracted with OCR and a vision-language model, with a confidence per field; low-confidence fields are confirmed by the applicant. & H2 & Must & Spring & -- \\
+  \reqid{FR-13} & Fields are extracted with OCR and a vision-language model, with a confidence per field; low-confidence fields are confirmed by the applicant. & H2 & Must & Fall, Spring & ongoing \\
   \reqid{FR-14} & Cross-document checks cover all pilot document pairs. & H2 & Must & Spring & partly \\
   \reqid{FR-15} & An assistant answers from official sources and expert notes, cites its passages and gives no definitive answer without a source. & H4 & Must & Spring & -- \\
   \reqid{FR-16} & Official pages are captured periodically; changes are detected, summarised, linked to requirements and approved by an administrator. & H3 & Must & Spring & partly \\
@@ -65,7 +65,7 @@ the state on 19 November 2026; Chapter~\ref{ch:implementation} describes what wa
   \reqid{FR-19} & Long-running checks report their status to the browser. & -- & Should & Spring & -- \\
   \reqid{FR-20} & The web application can be installed on a phone. & -- & Could & Spring & -- \\
   \reqid{FR-21} & Applicants can message an expert. & -- & Could & Spring & -- \\
-  \reqid{FR-22} & Research tooling generates labelled synthetic files, runs an LLM-only baseline and computes the metrics. & H5 & Must & Spring & -- \\
+  \reqid{FR-22} & Research tooling generates labelled synthetic files, runs an LLM-only baseline and computes the metrics. & H5 & Must & Spring & partly \\
 \end{longtable}
 }
 
@@ -74,7 +74,12 @@ translation requirement of Norway; a notarisation label is not modelled because 
 source asks for one. \reqid{FR-14} is partly done because the name and passport-number
 comparisons already run across all pilot documents on the entered fields. \reqid{FR-16} is partly
 done because the pages are captured weekly and compared by hash; detecting meaningful changes and
-the approval step belong to spring.
+the approval step belong to spring. \reqid{FR-13} moved partly into the fall semester after the
+advisor meeting of 20 November 2026: the prototype reads the fields of the synthetic documents
+with a hosted model, and the applicant confirms them; OCR, confidence-based routing and a model
+that can run on the project's own server follow in spring. \reqid{FR-22} is partly done because
+two labelled demo files and the command that scores the rule engine on them exist
+(Chapter~\ref{ch:evaluation}).
 
 \section{Non-functional requirements}
 Table~\ref{tab:nfr} lists the non-functional requirements. Two of them shape the design more than
@@ -130,6 +135,9 @@ in advance.
     error-free file gets no finding.
   \item The checklist of a pilot profile is compared with the answer of a general-purpose chat
     assistant to the same question: missing items, wrong items and missing citations.
+  \item The language model that reads the fields is compared with the same model used alone on
+    the same demo files: labelled errors found, false alarms, time and cost (added after the
+    advisor meeting of 20 November 2026).
   \item The system starts by following the README; all tests pass in CI.
 \end{itemize}
 

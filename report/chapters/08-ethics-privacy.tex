@@ -1,7 +1,65 @@
 \chapter{Ethics, Privacy and Legal Considerations}\label{ch:ethics}
-\todo{KVKK: consent, encryption, retention, deletion, masking before external AI calls; synthetic
-data only; the system does not predict or guarantee visa decisions; reuse of third-party code
-and licences; accessibility.}
+An application file holds copies of a passport, bank statements, payslips and social security
+records: personal data in the sense of the Turkish Personal Data Protection Law No.~6698 (KVKK).
+This chapter lists what the prototype does to protect them, what it does not do yet, and the
+limits of what the system may claim. It describes the design; it is not a legal opinion, and a
+review of the consent text and the data flows for KVKK is planned before any real document is
+uploaded (ADR 0006, decision 10), at the latest before the end of the spring semester, as the
+advisor asked on 20 November 2026.
+
+\section{Personal data in the prototype}
+\begin{description}[style=nextline,leftmargin=1.2cm]
+  \item[Consent] No document can be uploaded before the applicant has accepted a versioned consent
+    text that states the purpose, the storage, the retention and the right to withdraw. A new
+    version of the text is asked for again. Withdrawing consent deletes every document of the
+    applicant (ADR 0005).
+  \item[Purpose and minimisation] Documents are used only to check the application file. Only the
+    fields that a rule reads are entered; the location data of photographs is removed before
+    anything is stored.
+  \item[Security] Every document is encrypted with its own AES-256-GCM key, which is itself
+    encrypted with a master key kept outside the repository; the file name and the entered field
+    values are encrypted too. Passwords are stored as Argon2id hashes, sessions as hashes of
+    random tokens. A user reaches only their own files. The database and the API are not
+    published to the network.
+  \item[Retention and deletion] Documents are deleted automatically 30 days after the end of the
+    trip, and at once when the applicant deletes them or the application file. A kept check stores
+    rule states only, not the compared values.
+  \item[Where the data is] In the prototype everything runs on the developer's machine: the
+    encrypted files on a local volume, their metadata and the encrypted field values in
+    PostgreSQL. A deployment would have to state in which country the server stands, because
+    transfers of personal data abroad are regulated by Article~9 of the law.
+\end{description}
+
+\section{Data sent to a language model}
+From the fall prototype on, a hosted language model reads the fields of uploaded documents
+(Section~\ref{sec:ai-design}). Sending a real passport or bank statement to a provider abroad
+would be a transfer of personal data abroad and would depend on that provider's retention terms.
+The project therefore follows three rules: in the fall only synthetic documents marked SAMPLE are
+sent to a model; before real documents are allowed, the fields a check does not need are masked
+and the data flow is reviewed for KVKK; and the spring moves the extraction to a model that runs
+on the project's own server or a server in Türkiye, so that documents need not leave the country.
+
+\section{Synthetic data only}
+No real personal document is used in development, tests, the demonstration or the experiments.
+Every person, number and organisation in the demo files is invented and marked SAMPLE; the
+usability check with three people uses the same synthetic files, so it collects no personal data
+of its participants beyond their remarks.
+
+\section{Limits of what the system claims}
+The system helps to prepare a file. It does not predict, influence or guarantee a visa decision,
+which rests with the consulate, and every result page says so. Every requirement and finding
+shows the official passage it comes from, so the applicant can check it. Where a source is
+silent and the engine uses an assumption, the assumption is named (ADR 0006). The system sends
+nothing on the applicant's behalf: an e-mail to a consulate would be a prepared text that the
+applicant sends from their own address.
+
+\section{Third-party material}
+The copies of the official pages are kept on the developer's machine; the public repository holds
+only their manifest and the review notes, with links to the sources. Papers behind a paywall are
+cited, not stored. Open-source code may be reused only under a permissive licence (MIT, Apache-2.0,
+BSD) with its source recorded; code under the GPL or without a licence is not copied. No code has
+been taken from the similar projects of Section~\ref{sec:similar}; only ideas are reused, and they
+are cited.
 
 \section{Use of AI assistants}\label{sec:ai-use}
 An AI assistant (Claude, Anthropic) was used during development to draft code, tests,

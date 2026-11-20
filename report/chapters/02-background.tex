@@ -53,7 +53,6 @@ but does not beat OCR-based models on every task (DocVQA ANLS 67.5 against 78.1 
 and no Turkish documents are tested. Its synthetic generator, SynthDoG, renders text on varied
 backgrounds with noise, blur and perspective; it creates visual variety, not the missing or
 contradictory documents that \project{} has to detect.
-\todo{Kazamel, Kocasarı and Alıcı (2025), Turkish ID cards: add once the full text is read.}
 
 \paragraph{What is open.} These works measure extraction from one document at a time. Whether
 an application file as a whole is complete and consistent with the requirements is not their
@@ -96,8 +95,6 @@ passages entail it (citation recall), and a citation counts as precise when it i
 support (citation precision), both judged by an inference model. Even strong models leave many
 sentences unsupported; on long-form questions (ELI5), GPT-4 with 20 passages reaches a citation
 recall of 48.5\,\% and a precision of 53.4\,\%.
-\todo{Survey of retrieval-augmented generation \autocite{gao2024ragsurvey} and of hallucination
-\autocite{ji2023hallucination}: add once read.}
 
 \paragraph{What is open.} ALCE asks whether a passage supports a sentence, not whether the source
 is official, current or the version in force. This project adds the second part by tying each
@@ -111,14 +108,13 @@ crawled about 55,000 frequently revisited pages every hour for five weeks; 11.5\
 already differed between two simultaneous requests, because of advertisements, timestamps and
 counters. A changed hash is therefore only a candidate change, which matches the first
 observation on the official visa pages above.
-\todo{Semantic change detection \autocite{zhang2004xml}: add once read.}
 
 \paragraph{What is open.} Deciding whether a change affects a visa requirement needs knowledge of
 the requirements. AS3 labels pairs of snapshots as meaningful, minor or cosmetic and measures
 precision, recall and F1 per class; small edits such as a changed number of months can matter,
 so changes are not filtered by size alone.
 
-\section{Similar systems}
+\section{Similar systems}\label{sec:similar}
 A search of public repositories on 23 October 2026 found several open-source visa and
 document-check assistants (Table~\ref{tab:similar}). None of the repositories inspected reports a
 measured error rate.

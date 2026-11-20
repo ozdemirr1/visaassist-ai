@@ -1,37 +1,44 @@
 \chapter{System Design}\label{ch:design}
-% Draft v0.1, 10 November 2026. Sources: ADR 0002, ADR 0003, docs/design/data-model.md,
+% Draft v0.2, 20 November 2026. Sources: ADR 0002, ADR 0003, ADR 0007, docs/design/data-model.md,
 % data/requirements/README.md, docs/design/ui-design.md. Status per component: built / planned.
 
 \section{Architecture}
 The system starts small and adds a component only together with the feature that needs it
-(ADR 0002). The fall prototype consists of a web client, an API and one PostgreSQL database; the
-job queue and the AI components follow in the spring (Figure~\ref{fig:architecture}).
+(ADR 0002). The fall prototype consists of a web client, an API with the rule engine, one
+PostgreSQL database and an encrypted file store, started together with Docker Compose. After the
+advisor meeting of 20 November 2026 it also gets a model client that reads the fields of uploaded
+documents with a hosted model (ADR 0007). The job queue, source review, notifications and the
+assistant follow in the spring (Figure~\ref{fig:architecture}).
 
 \begin{figure}[ht]
   \centering
   \includegraphics[width=\textwidth]{design-arch.png}
-  \caption{Components of \project{}. Solid arrows: fall prototype; dotted: spring.}
+  \caption{Components of \project{}. Solid: built; dashed: being added in the fall; dotted:
+    spring.}
   \label{fig:architecture}
 \end{figure}
 
 \begin{table}[ht]
   \centering
   \small
-  \caption{Components, technology and status on 10 November 2026.}
+  \caption{Components, technology and status on 20 November 2026.}
   \label{tab:components}
   \begin{tabularx}{\textwidth}{@{}lXl@{}}
     \toprule
     Component & Technology & Status \\
     \midrule
-    API & FastAPI, Pydantic, Python 3.12 & built (health, checklist) \\
-    Database & PostgreSQL 17 with pgvector, SQLAlchemy 2, Alembic & built (requirement tables) \\
+    API & FastAPI, Pydantic, Python 3.12 & built \\
+    Database & PostgreSQL 17 with pgvector, SQLAlchemy 2, Alembic (6 migrations) & built \\
     Requirement data & YAML files, schema validation, seed command & built \\
-    Source snapshots & weekly snapshot command, SHA-256 manifest & built \\
-    Accounts, application files, upload & encrypted local storage & planned, week 9 \\
-    Web client & React, TypeScript, Vite, TanStack Query, Tailwind CSS & planned, weeks 10--11 \\
-    Rule engine v0 & Python, rule kinds of Table~\ref{tab:rule-kinds} & planned, week 12 \\
-    Job queue and live updates & Celery, Redis, WebSocket & spring, B1 \\
-    Extraction, assistant & OpenAI models (ADR 0003), Tesseract & spring \\
+    Source snapshots & snapshot command, SHA-256 manifest & built \\
+    Accounts, files, upload & Argon2id, session cookie, AES-256-GCM per document & built \\
+    Web client & React, TypeScript, Vite, TanStack Query, Tailwind CSS & built \\
+    Rule engine & Python, the twelve check kinds of Table~\ref{tab:rule-kinds} & built \\
+    Demo files and setup & synthetic files, Docker Compose, nginx & built \\
+    Field extraction & OpenAI model behind a provider-neutral client (ADR 0007) & in progress \\
+    Job queue and live updates & Celery, Redis, WebSocket & spring \\
+    Source review, notifications & text diff, administrator approval & spring \\
+    Assistant & retrieval over source passages, pgvector & spring \\
     \bottomrule
   \end{tabularx}
 \end{table}
@@ -105,9 +112,9 @@ with the set as well, so a renamed field does not change how an earlier finding 
 \begin{figure}[ht]
   \centering
   \includegraphics[width=\textwidth]{design-er.png}
-  \caption{Entities and relationships (attributes in \texttt{docs/design/data-model.md}). The
-    requirement tables are built; the application tables follow in weeks 9--12, source changes
-    and notifications in the spring.}
+  \caption{Entities and relationships (attributes in \texttt{docs/design/data-model.md}). All
+    tables except source changes and notifications are built; a finding is stored inside a kept
+    check run (Section~\ref{sec:engine}).}
   \label{fig:data-model}
 \end{figure}
 
@@ -123,31 +130,63 @@ translated into English or Norwegian. An unknown destination returns 404 with th
 ones; a database without a loaded set returns 503. Thirteen integration tests check the counts
 above, the citations, both languages and the error responses against a real PostgreSQL database.
 
-\section{Source monitoring}
-A weekly command fetches the five official sources, stores a page only when its SHA-256 has
-changed and appends every attempt to a manifest. Changed pages are reviewed by comparing their
-visible text and labelled meaningful, minor or cosmetic; only a meaningful change leads to an
-edit of the requirement files, which then produces a new requirement set. In the first three
-weeks five pages had a new hash: three without a visible change and two with a minor one.
-\todo{Spring (FR-16, FR-17): text-diff detection, administrator approval and notification of only
-the application files whose findings change.}
+\section{Source monitoring}\label{sec:design-sources}
+A snapshot command fetches the five official sources, stores a page only when its SHA-256 has
+changed and appends every attempt to a manifest. It was run on 23 October, 5 November and
+10 November 2026. Changed pages are reviewed by comparing their visible text and labelled
+meaningful, minor or cosmetic; only a meaningful change leads to an edit of the requirement
+files, which then produces a new requirement set. In these three runs five pages had a new hash:
+three without a visible change and two with a minor one. Detecting meaningful changes
+automatically, the administrator's approval and notifying only the application files whose
+findings change (\reqid{FR-16}, \reqid{FR-17}) are spring work and the subject of AS3.
+
+The copies of the official pages are kept on the developer's machine; the public repository holds
+only the manifest (time, hash, size), because the pages belong to third parties.
 
 \section{User interface}
-The interface is one responsive web application with Turkish and English text
-(Figure~\ref{fig:ui-checklist}; all screens in Appendix~\ref{app:screens}).
+The interface is one responsive web application with Turkish and English text. The public
+checklist page (Figure~\ref{fig:ui-checklist}) needs no account: the visitor chooses a
+destination and a situation and sees every document with the official passage it comes from.
+The pages after login are described in Section~\ref{sec:web}; more screens are in
+Appendix~\ref{app:screens}.
 \begin{figure}[ht]
   \centering
-  \includegraphics[width=\textwidth]{02-web-checklist.png}
-  \caption{Application checklist: status, source tag and one action per document.}
+  \includegraphics[width=\textwidth]{shot-checklist.png}
+  \caption{Public checklist for an employed applicant to the Netherlands, with the official
+    passage of the selected document.}
   \label{fig:ui-checklist}
 \end{figure}
 
-\section{AI components and cost (spring)}
-All model calls go through one client module, and the model of each task is set in configuration
-(ADR 0003): a low-cost multimodal model for classification, field extraction, assistant answers
-and change summaries; a stronger model as a second pass for uncertain fields; and both models as
-the model-only baseline of AS1, so the comparison does not rest on a weak baseline. Spending is
-limited to USD 20 per month (\reqid{NFR-06}) by four layers: estimates before each run, a cache of
-results, a daily limit in the application and a hard limit in the provider account.
-\todo{Check the four layers against ADR 0003 wording and add the cost estimate table after the
-first 20 documents are measured.}
+\section{AI components and cost}\label{sec:ai-design}
+The original plan placed every AI component in the spring. At the meeting of 20 November 2026
+the advisor asked for the fall prototype to work with a model already, because a prototype of
+this proposal without one would not show its approach. The model choice stays open; the fall uses
+a strong hosted model, and the spring moves to the cheapest model that is good enough, preferably
+an open model on the project's own server or a server in Türkiye, which also answers the
+data-protection question of where personal data may be processed (Chapter~\ref{ch:ethics}).
+ADR 0007 records this decision.
+
+\paragraph{Field extraction (fall).} The applicant uploads a document; the model reads the fields
+that the document type defines and returns them with the value it found for each. The values are
+validated against the field types, like values the applicant types, and shown to the applicant, who confirms or
+corrects them before they are stored; the rule engine then decides as before. The model proposes,
+the rules decide, and no finding depends on the model's judgement alone. All model calls go
+through one client module, so the provider can be replaced without touching the rest of the
+system.
+
+\paragraph{What is sent to the model.} In the fall only synthetic documents marked SAMPLE are
+sent, from the demo files of Chapter~\ref{ch:evaluation}; no real personal document reaches a
+model provider. Masking the fields a check does not need before an external call
+(\reqid{NFR-01}) becomes necessary once real documents are allowed, and is spring work.
+
+\paragraph{Cost.} Spending is limited to USD 20 per month (\reqid{NFR-06}): a hard limit in the
+provider account, the token count and cost of every call logged, results cached per document, and
+no real model call in the automated tests. A cheaper model is used during development and a
+stronger one for the measurement and the presentation. With the provider's list prices of
+November 2026 and about 2,500 input and 1,500 output tokens per document, the development, three
+runs of the comparison of Section~\ref{sec:model-comparison} and the presentation are estimated
+at USD 15--18. The estimate is replaced by measured values after the first runs.
+
+\paragraph{Spring.} Document classification, OCR as a fallback, confidence per field with
+routing to the applicant, the assistant that answers from source passages, and summaries of
+source changes.

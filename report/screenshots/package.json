@@ -1,0 +1,12 @@
+{
+  "name": "visaassist-report-screenshots",
+  "private": true,
+  "type": "module",
+  "description": "Captures the report's screenshots from the running system (see README.md).",
+  "scripts": {
+    "capture": "node capture.mjs"
+  },
+  "devDependencies": {
+    "playwright-core": "1.63.0"
+  }
+}
