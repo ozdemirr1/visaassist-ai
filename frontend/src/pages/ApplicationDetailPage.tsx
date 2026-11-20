@@ -19,7 +19,7 @@ import { ReadinessRing } from "../components/ReadinessRing";
 import { RequireLogin } from "../components/RequireLogin";
 import { RouteArc } from "../components/RouteArc";
 import { STEPS, StepTimeline } from "../components/StepTimeline";
-import { daysUntil, formatDate } from "../components/format";
+import { daysUntil, formatDate, formatPercent } from "../components/format";
 import { useCountUp } from "../hooks/useCountUp";
 import { tripDays } from "../trip";
 
@@ -116,7 +116,9 @@ function Detail({ file }: { file: ApplicationFile }) {
               label={t("detail.readinessLabel", { ready, total: items.length })}
             />
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-[40px] font-extrabold tracking-tighter tabular-nums">%{percent}</span>
+              <span className="text-[40px] font-extrabold tracking-tighter tabular-nums">
+                {formatPercent(percent, i18n.language)}
+              </span>
               <span className="text-xs text-muted">{t("detail.ofDocs", { ready, total: items.length })}</span>
             </div>
           </div>

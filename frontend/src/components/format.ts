@@ -6,6 +6,14 @@ export function formatDate(value: string, language: string): string {
   });
 }
 
+/** A whole percentage in the language's form: "%89" in Turkish, "89%" in English. */
+export function formatPercent(value: number, language: string): string {
+  return new Intl.NumberFormat(language === "tr" ? "tr-TR" : "en-GB", {
+    style: "percent",
+    maximumFractionDigits: 0,
+  }).format(value / 100);
+}
+
 export function formatShortDate(value: string, language: string): string {
   return new Date(value).toLocaleDateString(language === "tr" ? "tr-TR" : "en-GB", {
     day: "numeric",
