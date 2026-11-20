@@ -1,0 +1,12 @@
+{
+  "name": "visaassist-demo-documents",
+  "private": true,
+  "type": "module",
+  "description": "Renders the HTML pages of the demo documents as JPEG images (see README.md).",
+  "scripts": {
+    "render": "node render.mjs"
+  },
+  "devDependencies": {
+    "playwright-core": "1.63.0"
+  }
+}

@@ -42,3 +42,6 @@ report/main.pdf
 
 # Copies of official pages: kept locally, not published (the manifest is)
 data/snapshots/*/
+
+# HTML pages of the demo documents: generated, only the images are kept
+data/demo/documents/html/

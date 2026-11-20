@@ -28,3 +28,20 @@ documents are one-page PDFs marked SAMPLE; the values come from these files.
 
 Adding an error: copy an entry, change one value, and name the rule and code it must trigger
 (the codes are listed in `backend/app/rules/engine.py`).
+
+## Document images
+
+`documents/` holds every document drawn as it would look on paper, marked SAMPLE, and one image
+for every error that changes a value (37 images); `documents/manifest.json` lists each image with
+its file, document, error and the values it shows. They are the input of field extraction and of
+the model-only baseline (ADR 0007), and the demo loader uploads them. Every value the rules read is
+printed on the document: the blank pages of a passport as a strip of its visa pages, a translation
+as a second page, the date of a photograph on the studio's label.
+
+```bash
+cd backend && uv run python -m app.demo.render
+cd ../tools/demo-documents && npm install --no-package-lock && npm run render
+```
+
+Render them again whenever a demo file or a template in `backend/app/demo/render.py` changes;
+`backend/tests/test_demo_render.py` fails while the committed manifest differs from the demo files.
