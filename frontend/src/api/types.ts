@@ -102,6 +102,30 @@ export interface DocumentFields {
   fields: FieldInfo[];
 }
 
+/** Whether a model can read documents in this installation (ADR 0007). */
+export interface ExtractionStatus {
+  available: boolean;
+  model: string | null;
+}
+
+export interface ExtractedField {
+  id: string;
+  type: FieldType;
+  title: string;
+  value: FieldValue;
+  confidence: number;
+}
+
+/** Values a model read from a document; proposals only, nothing is stored (FR-13). */
+export interface Extraction {
+  document_id: string;
+  fields: ExtractedField[];
+  invalid: string[];
+  model: string;
+  seconds: number;
+  cost_usd: number | null;
+}
+
 export type RuleStatus = "passed" | "failed" | "incomplete" | "skipped";
 
 export interface CheckIssue {

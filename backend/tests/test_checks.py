@@ -1,4 +1,4 @@
-"""Field entry and the check of an application file against PostgreSQL (FR-08 to FR-10).
+"""Field entry, field reading by a model and the check of a file, against PostgreSQL (FR-08 to 13).
 
 Files go to a temporary directory; each test's database work is rolled back. Run with
 RUN_INTEGRATION=1 after `docker compose up -d`. The documents and values are invented.
@@ -17,8 +17,11 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app import models
+from app.ai.client import ModelError, ModelReply
 from app.api.auth import CSRF_HEADER, CSRF_VALUE
 from app.api.documents import get_storage
+from app.api.extraction import get_model_client
+from app.config import get_settings
 from app.db import get_engine, get_session
 from app.main import create_app
 from app.requirements.loader import REQUIREMENTS_DIR, load_requirement_data
@@ -380,3 +383,114 @@ def test_kept_runs_belong_to_the_owner_and_go_with_the_file(
     assert ayse.delete(f"/applications/{file_id}").status_code == 204
     session.expire_all()
     assert runs_of(session, file_id) == []
+
+
+# Reading fields with a model (FR-13, ADR 0007); the model is a fake, no provider is called
+
+
+class FakeModel:
+    def __init__(self, model: str = "gpt-5.4-mini", fail: bool = False) -> None:
+        self.model = model
+        self.fail = fail
+        self.seen: list[dict] = []
+
+    def read(self, **kwargs) -> ModelReply:
+        self.seen.append(kwargs)
+        if self.fail:
+            raise ModelError("The model did not finish its answer.")
+        data = {
+            "holder_name": {"value": "Deniz Örnek", "confidence": 0.97},
+            "period_start": {"value": "2026-11-25", "confidence": 0.9},
+            "period_end": {"value": "25.02.2027", "confidence": 0.8},  # wrong form, dropped
+            "issue_date": {"value": None, "confidence": 0.1},
+        }
+        return ModelReply(data, self.model, 2000, 200, 1.2)
+
+
+def use(client, model) -> None:
+    client.app.dependency_overrides[get_model_client] = lambda: model
+
+
+@pytest.fixture
+def budget(monkeypatch):
+    def set_budget(usd: float) -> None:
+        monkeypatch.setattr(get_settings(), "model_monthly_budget_usd", usd)
+
+    set_budget(1_000_000.0)  # the tests do not depend on what this month already cost
+    return set_budget
+
+
+def test_without_a_model_the_endpoint_says_so(ayse, budget) -> None:
+    use(ayse, None)
+    assert ayse.get("/extraction/status").json() == {"available": False, "model": None}
+    document = upload(ayse, new_file(ayse))
+    response = ayse.post(f"/documents/{document}/extract")
+    assert response.status_code == 503
+
+
+def test_the_values_are_proposed_checked_and_not_stored(ayse, session, budget) -> None:
+    model = FakeModel()
+    use(ayse, model)
+    assert ayse.get("/extraction/status").json() == {"available": True, "model": "gpt-5.4-mini"}
+    document = upload(ayse, new_file(ayse))
+    response = ayse.post(f"/documents/{document}/extract?lang=en")
+    assert response.status_code == 200, response.text
+    body = response.json()
+    fields = {f["id"]: f for f in body["fields"]}
+    assert fields["holder_name"]["value"] == "Deniz Örnek"
+    assert fields["holder_name"]["title"] == "Account holder"
+    assert fields["period_start"]["value"] == "2026-11-25"
+    assert fields["period_end"]["value"] is None and body["invalid"] == ["period_end"]
+    assert body["cost_usd"] == pytest.approx((2000 * 0.75 + 200 * 4.50) / 1_000_000)
+    assert model.seen[0]["mime_type"] == "application/pdf"
+    assert model.seen[0]["content"].startswith(b"%PDF-")  # decrypted before it is sent
+    assert values_of(session, document) == []  # the applicant saves them, not the model
+
+    user = session.scalar(select(models.User).where(models.User.email == "ayse@example.com"))
+    calls = list(
+        session.scalars(select(models.ModelCall).where(models.ModelCall.user_id == user.id))
+    )
+    assert [(c.purpose, c.succeeded, c.input_tokens) for c in calls] == [("extract", True, 2000)]
+
+
+def test_a_failed_answer_is_logged_and_reported(ayse, session, budget) -> None:
+    use(ayse, FakeModel(fail=True))
+    document = upload(ayse, new_file(ayse))
+    assert ayse.post(f"/documents/{document}/extract").status_code == 502
+    user = session.scalar(select(models.User).where(models.User.email == "ayse@example.com"))
+    calls = list(
+        session.scalars(select(models.ModelCall).where(models.ModelCall.user_id == user.id))
+    )
+    assert [c.succeeded for c in calls] == [False]
+
+
+def test_calls_stop_when_the_budget_is_used_up(ayse, budget) -> None:
+    model = FakeModel()
+    use(ayse, model)
+    budget(0.0)
+    document = upload(ayse, new_file(ayse))
+    assert ayse.post(f"/documents/{document}/extract").status_code == 429
+    assert model.seen == []
+
+
+def test_a_model_without_a_known_price_is_not_called(ayse, budget) -> None:
+    model = FakeModel(model="unpriced-model")
+    use(ayse, model)
+    document = upload(ayse, new_file(ayse))
+    assert ayse.post(f"/documents/{document}/extract").status_code == 503
+    assert model.seen == []
+
+
+def test_another_applicants_document_cannot_be_read(ayse, mehmet, budget) -> None:
+    model = FakeModel()
+    use(mehmet, model)
+    document = upload(ayse, new_file(ayse))
+    assert mehmet.post(f"/documents/{document}/extract").status_code == 404
+    assert model.seen == []
+
+
+def test_the_csrf_header_is_required(ayse, budget) -> None:
+    use(ayse, FakeModel())
+    document = upload(ayse, new_file(ayse))
+    response = ayse.post(f"/documents/{document}/extract", headers={CSRF_HEADER: ""})
+    assert response.status_code == 403

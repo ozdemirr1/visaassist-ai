@@ -28,6 +28,13 @@ class Settings(BaseSettings):
     document_key_id: str = "k1"
     storage_dir: Path = Path(__file__).resolve().parents[2] / "storage"
 
+    # Field extraction with a model (ADR 0007). Without a key the API runs without it. In the
+    # prototype only synthetic documents marked SAMPLE are sent to the model.
+    openai_api_key: str | None = None
+    openai_base_url: str = "https://api.openai.com/v1"
+    extraction_model: str = "gpt-5.4-mini"
+    model_monthly_budget_usd: float = 20.0  # NFR-06; calls stop when the month's cost reaches it
+
 
 @lru_cache
 def get_settings() -> Settings:
