@@ -124,7 +124,8 @@ def test_the_loaded_clean_files_give_no_finding(session, storage) -> None:
         assert result.missing_documents == []
         assert result.summary.failed == 0 and result.summary.incomplete == 0
         for document in docs.documents_of(session, application):
-            assert docs.read(storage, get_keys(), document).startswith(b"%PDF-")
+            content = docs.read(storage, get_keys(), document)
+            assert content.startswith((b"\xff\xd8\xff", b"%PDF-"))  # rendered image or PDF
 
 
 @integration

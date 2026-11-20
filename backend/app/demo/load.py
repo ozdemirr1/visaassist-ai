@@ -4,9 +4,10 @@
     uv run python -m app.demo.load --error E06 --error S03
     uv run python -m app.demo.load --list-errors
 
-Every document gets a one-page PDF marked SAMPLE and the field values of the demo file, entered
-as an applicant would enter them; `--error` applies labelled errors first, so the findings page
-has something to show. Run the seed command before this one.
+Every document gets its rendered image marked SAMPLE (`data/demo/documents/`, made by
+`app.demo.render`), or a one-page SAMPLE PDF where there is none, and the field values of the demo
+file, entered as an applicant would enter them; `--error` applies labelled errors first, so the
+findings page has something to show. Run the seed command before this one.
 
 The account is reserved for the demo: each run deletes its application files and documents and
 creates them again, which is why only addresses under a reserved example domain are accepted.
@@ -28,7 +29,7 @@ from app import models
 from app.api.documents import get_keys, get_storage
 from app.auth import service
 from app.db import get_engine
-from app.demo.files import DemoFile, changed, load_all, stored_values
+from app.demo.files import DEMO_DIR, DemoFile, changed, load_all, stored_values
 from app.demo.pdf import sample_pdf
 from app.requirements import queries
 from app.requirements.loader import RequirementData, load_requirement_data
@@ -37,6 +38,7 @@ from app.storage import field_values
 from app.storage.files import LocalStorage
 
 DEFAULT_EMAIL = "demo@visaassist.example"
+IMAGE_DIR = DEMO_DIR / "documents"  # rendered by app.demo.render and tools/demo-documents
 # RFC 2606 / RFC 6761: names that can never belong to a real mailbox.
 RESERVED_DOMAINS = (".example", "@example.com", "@example.org", "@example.net")
 
@@ -115,22 +117,25 @@ def _add_file(
     )
     session.add(application)
     session.flush()
-    for step in ("draft", "documents"):
+    for step in ("draft", "appointment", "documents"):
         session.add(
             models.ApplicationEvent(application_file_id=application.id, step=step, occurred_at=now)
         )
     application.step = "documents"
 
     items = _requirement_for(data, demo)
+    # Which chosen error changed a value of each document; its image shows the changed value.
+    changed_by: dict[str, list[str]] = {}
+    for error in chosen:
+        if error.change.set is not None:
+            changed_by.setdefault(error.change.set.document, []).append(error.id)
     count = 0
     for document in changed(demo, [e.change for e in chosen]):
         if document.type not in items:
             raise DemoLoadError(f"{demo.id}: {document.type} is not on the checklist.")
         values = stored_values(data, document)
-        type_title = data.catalog.document(document.type).title.en
-        lines = [f"Application file: {demo.title.en}", ""] + [
-            f"{field_id}: {value}" for field_id, value in values.items()
-        ]
+        errors = changed_by.get(document.id, [])
+        name, content = _document_file(data, demo, document, errors, values)
         stored = docs.store(
             session,
             storage,
@@ -138,13 +143,32 @@ def _add_file(
             user,
             application,
             items[document.type],
-            f"SAMPLE-{demo.id}-{document.id}.pdf",
-            sample_pdf(f"SAMPLE - {type_title}", lines),
+            name,
+            content,
             now=now,
         )
         field_values.write(session, keys, stored, dict(values), now=now)
         count += 1
     return count
+
+
+def _document_file(
+    data: RequirementData, demo: DemoFile, document, errors: list[str], values: dict
+) -> tuple[str, bytes]:
+    """The rendered image of the document, or a one-page SAMPLE PDF when there is none.
+
+    There is no image when two chosen errors change the same document, or before the images
+    have been rendered.
+    """
+    name = f"{demo.id}--{document.id}" + (f"--{errors[0]}" if len(errors) == 1 else "")
+    image = IMAGE_DIR / f"{name}.jpg"
+    if len(errors) <= 1 and image.is_file():
+        return f"SAMPLE-{name}.jpg", image.read_bytes()
+    type_title = data.catalog.document(document.type).title.en
+    lines = [f"Application file: {demo.title.en}", ""] + [
+        f"{field_id}: {value}" for field_id, value in values.items()
+    ]
+    return f"SAMPLE-{name}.pdf", sample_pdf(f"SAMPLE - {type_title}", lines)
 
 
 def load(
