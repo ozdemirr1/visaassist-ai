@@ -8,6 +8,7 @@ file gets no finding (docs/requirements.md, section 6).
 No real person's data: every name, number and organisation is invented and the titles say SAMPLE.
 """
 
+from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
@@ -131,34 +132,41 @@ def _stored(data: RequirementData, document_type: str, field_id: str, raw: objec
         raise ValueError(f"{document_type}.{field_id}: {error}") from error
 
 
-def documents_of(
-    demo: DemoFile, data: RequirementData, change: Change | None = None
-) -> list[engine.Document]:
-    """The demo's documents as the engine reads them, with one change applied if given."""
-    documents = []
-    for document in demo.documents:
-        if change and change.remove == document.id:
-            continue
-        values = dict(document.values)
-        if change and change.set and change.set.document == document.id:
-            values[change.set.field] = change.set.value
-        documents.append(
-            engine.Document(
-                id=document.id,
-                type=document.type,
-                values={
-                    field_id: _stored(data, document.type, field_id, raw)
-                    for field_id, raw in values.items()
-                    if raw is not None
-                },
-            )
-        )
+def changed(demo: DemoFile, changes: Sequence[Change] = ()) -> list[DemoDocument]:
+    """The demo's documents with the given changes applied in order (raw values, as in YAML)."""
+    documents = [d.model_copy(update={"values": dict(d.values)}) for d in demo.documents]
+    for change in changes:
+        if change.remove is not None:
+            documents = [d for d in documents if d.id != change.remove]
+        elif change.set is not None:
+            for document in documents:
+                if document.id == change.set.document:
+                    document.values[change.set.field] = change.set.value
     return documents
 
 
-def findings(demo: DemoFile, data: RequirementData, change: Change | None = None) -> Findings:
+def stored_values(data: RequirementData, document: DemoDocument) -> dict[str, Value]:
+    """The document's values in the form the application stores them; null values are left out."""
+    return {
+        field_id: _stored(data, document.type, field_id, raw)
+        for field_id, raw in document.values.items()
+        if raw is not None
+    }
+
+
+def documents_of(
+    demo: DemoFile, data: RequirementData, changes: Sequence[Change] = ()
+) -> list[engine.Document]:
+    """The demo's documents as the engine reads them, with the given changes applied."""
+    return [
+        engine.Document(id=d.id, type=d.type, values=stored_values(data, d))
+        for d in changed(demo, changes)
+    ]
+
+
+def findings(demo: DemoFile, data: RequirementData, changes: Sequence[Change] = ()) -> Findings:
     ruleset = data.ruleset(demo.destination)
-    documents = documents_of(demo, data, change)
+    documents = documents_of(demo, data, changes)
     trip = engine.Trip(demo.trip.start, demo.trip.end, demo.trip.application_date)
     required = {r.id: r.document for r in ruleset.checklist(demo.profile)}
     results = engine.evaluate(ruleset.rules_for(demo.profile), documents, trip)
@@ -184,7 +192,7 @@ class ErrorResult:
 
 def evaluate_error(demo: DemoFile, error: DemoError, data: RequirementData) -> ErrorResult:
     """Apply one error to the clean file and compare the findings with its label."""
-    found = findings(demo, data, error.change)
+    found = findings(demo, data, [error.change])
     expect = error.expect
     if expect.missing is not None:
         hit = expect.missing in found.missing
