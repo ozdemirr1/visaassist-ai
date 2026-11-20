@@ -64,6 +64,7 @@ async function open(page, path) {
 
 async function shot(name, take) {
   const file = join(OUT, `shot-${name}.png`);
+  console.log(`taking shot-${name}.png`);
   try {
     await take(file);
     results.push(`ok      ${file}`);
@@ -124,10 +125,20 @@ try {
   });
   await shot("rules", async (file) => {
     await open(page, `/applications/${nl.id}`);
+    // A clip of the page instead of an element shot: the card holds an endless animation, and an
+    // element shot waits for the element to stand still.
     const card = cardOf(page.locator("#rules-heading"));
     await card.scrollIntoViewIfNeeded();
     await settle(page);
-    await card.screenshot({ path: file });
+    const box = await card.boundingBox();
+    if (!box) throw new Error("rules card not visible");
+    const scrollY = await page.evaluate(() => window.scrollY); // the box is relative to the viewport
+    await page.screenshot({
+      path: file,
+      fullPage: true,
+      clip: { ...box, y: box.y + scrollY },
+      animations: "disabled",
+    });
   });
   await shot("fields", async (file) => {
     await open(page, `/applications/${nl.id}`);
