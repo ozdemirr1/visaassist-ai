@@ -84,6 +84,19 @@ engine's findings with the labels:
 uv run python -m app.demo.evaluate
 ```
 
+To load them into the application, after the seed command:
+
+```bash
+uv run python -m app.demo.load                        # demo@visaassist.example, no errors
+uv run python -m app.demo.load --error E06 --error S04   # with labelled errors applied
+uv run python -m app.demo.load --list-errors
+```
+
+The command creates the account if needed (password from `DEMO_PASSWORD`, otherwise a random one
+printed once), deletes its application files, and creates one per demo file: every document is
+a one-page PDF marked SAMPLE, with the demo's field values entered. Because it replaces the
+account's files, it accepts only addresses under a reserved example domain.
+
 ## Database and requirement data
 ```bash
 uv run alembic upgrade head                 # create or update the tables

@@ -22,5 +22,9 @@ The command checks the clean file first, then applies each error alone. An error
 *detected* when exactly the labelled finding appears, and as *detected with extra findings* when
 other rules react as well. `backend/tests/test_demo.py` runs the same check in CI.
 
+To load the files into the application as a demo account, with or without some of the errors
+applied: `uv run python -m app.demo.load --error E06` (see `backend/README.md`). The uploaded
+documents are one-page PDFs marked SAMPLE; the values come from these files.
+
 Adding an error: copy an entry, change one value, and name the rule and code it must trigger
 (the codes are listed in `backend/app/rules/engine.py`).

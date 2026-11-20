@@ -5,6 +5,7 @@ RUN_INTEGRATION=1 after `docker compose up -d`. The documents and values are inv
 """
 
 import os
+import uuid
 from collections.abc import Iterator
 from pathlib import Path
 
@@ -12,7 +13,7 @@ import pytest
 from alembic import command
 from alembic.config import Config
 from fastapi.testclient import TestClient
-from sqlalchemy import func, select
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app import models
@@ -112,6 +113,25 @@ def put(client: TestClient, document_id: str, values: dict):
     return client.put(f"/documents/{document_id}/fields", json={"values": values})
 
 
+def values_of(session: Session, document_id: str) -> list[models.DocumentFieldValue]:
+    """The stored values of one document; other rows (a demo account, say) are not counted."""
+    return list(
+        session.scalars(
+            select(models.DocumentFieldValue).where(
+                models.DocumentFieldValue.document_id == uuid.UUID(document_id)
+            )
+        )
+    )
+
+
+def runs_of(session: Session, file_id: str) -> list[models.CheckRun]:
+    return list(
+        session.scalars(
+            select(models.CheckRun).where(models.CheckRun.application_file_id == uuid.UUID(file_id))
+        )
+    )
+
+
 def rule(client: TestClient, file_id: str, rule_id: str) -> dict:
     check = client.get(f"/applications/{file_id}/check").json()
     return next(r for r in check["rules"] if r["rule_id"] == rule_id)
@@ -151,7 +171,7 @@ def test_entered_values_come_back_and_are_stored_encrypted(
     assert values == {"holder_name": "Ayşe Yılmaz", **GOOD_PERIOD, "issue_date": None}
     assert ayse.get(f"/documents/{document_id}/fields").json() == response.json()
 
-    rows = session.scalars(select(models.DocumentFieldValue)).all()
+    rows = values_of(session, document_id)
     assert {row.field_id for row in rows} == {"holder_name", "period_start", "period_end"}
     for row in rows:
         assert b"Y\xc4\xb1lmaz" not in row.value_encrypted and b"2027" not in row.value_encrypted
@@ -189,7 +209,7 @@ def test_a_wrong_value_or_an_unknown_field_is_422_and_nothing_is_stored(
     response = put(ayse, document_id, {"issue_date": "2027-02-25", **values})
     assert response.status_code == 422
     assert next(iter(values)) in response.json()["detail"]
-    assert session.scalar(select(func.count()).select_from(models.DocumentFieldValue)) == 0
+    assert values_of(session, document_id) == []
 
 
 def test_money_int_and_bool_fields_keep_their_form(ayse: TestClient) -> None:
@@ -241,7 +261,7 @@ def test_deleting_a_document_deletes_its_values(ayse: TestClient, session: Sessi
     put(ayse, document_id, GOOD_PERIOD)
     assert ayse.delete(f"/documents/{document_id}").status_code == 204
     session.expire_all()
-    assert session.scalar(select(func.count()).select_from(models.DocumentFieldValue)) == 0
+    assert values_of(session, document_id) == []
 
 
 # Check
@@ -332,7 +352,7 @@ def test_a_kept_run_records_rule_states_but_no_entered_values(
     ]
     assert run["summary"]["failed"] == 1
 
-    stored = session.scalars(select(models.CheckRun)).one()
+    [stored] = runs_of(session, file_id)
     assert "Kaya" not in str(stored.results) and "Yılmaz" not in str(stored.results)
 
 
@@ -359,4 +379,4 @@ def test_kept_runs_belong_to_the_owner_and_go_with_the_file(
     assert mehmet.get(f"/applications/{file_id}/checks").status_code == 404
     assert ayse.delete(f"/applications/{file_id}").status_code == 204
     session.expire_all()
-    assert session.scalar(select(func.count()).select_from(models.CheckRun)) == 0
+    assert runs_of(session, file_id) == []
