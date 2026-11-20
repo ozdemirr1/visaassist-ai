@@ -1,5 +1,5 @@
 # 0003 — LLM models and API cost control
-Date: 2026-10-23 · Status: Accepted
+Date: 2026-10-23 · Status: Accepted; timing amended by ADR 0007 (a model in the fall prototype)
 
 ## Context
 The advisor asked which LLM the project uses and how the API credit will be managed (meeting of

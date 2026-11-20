@@ -1,3 +1,37 @@
 \chapter{Conclusion and Future Work}\label{ch:conclusion}
-\todo{Fall: what the prototype does and how far the success criteria were met.
-Spring: the remaining work packages and the experiments of Chapter~\ref{ch:evaluation}.}
+
+\section{State of the work}
+The fall semester set out to build a working prototype of the document pre-check for the
+Schengen short-stay visa from Türkiye. On 20 November 2026 the prototype covers the Netherlands
+and Norway for employed and student applicants. The requirements are versioned data in which
+every checklist item and rule cites its official passage; the web client shows the checklist in
+Turkish and English, keeps an application file with its steps, stores the uploaded documents
+encrypted, and checks the entered fields with a deterministic rule engine whose every finding
+names its documents, fields and source. The whole system starts with one command.
+
+Against the fall success criteria of Section~\ref{sec:success}: the flow from profile to
+checklist, upload, field entry and findings works for both profiles; on the demo files every
+labelled error is reported and the error-free files give no finding; the system starts from the
+README and all tests pass in CI. The comparison of the generated checklist with a hand-compiled
+one and with a general chat assistant, and the comparison of a model with and without the rule
+engine, are made in the remaining weeks (Section~\ref{sec:model-comparison}).
+
+The main limitation is that the applicant still enters the fields; the documents themselves are
+not read yet. Reading them with a model is the work of the coming weeks, and only on synthetic
+documents.
+
+\section{Future work}
+The spring semester follows the proposal (Section~\ref{sec:rq}):
+\begin{itemize}
+  \item a generator of about 200 labelled synthetic application files with a frozen test set, and
+    the comparison of the hybrid system with the model alone per error type (AS1);
+  \item a comparison with human reviewers on part of the test set (AS2);
+  \item detection of meaningful changes on the official pages against a text-diff baseline, the
+    administrator's approval, and notifying only the applicants whose files are affected (AS3);
+  \item an assistant that answers only from official passages and cites them;
+  \item moving the extraction to an open model on the project's own server or a server in Türkiye,
+    masking the fields a check does not need, and a KVKK review before real documents are allowed.
+\end{itemize}
+If the system is used beyond the project, anonymised records of which checks failed could show
+where applicants most often go wrong. This is a possible direction, not something the project
+measures.

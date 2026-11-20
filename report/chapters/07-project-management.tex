@@ -1,11 +1,102 @@
 \chapter{Project Management}\label{ch:management}
 
 \section{Methodology}
-Weekly increments, each an issue, a pull request with tests and a green CI run; decisions are
-recorded as architecture decision records; the advisor is met every Friday.
+The project is developed by one person in weekly increments. Every piece of work starts as an
+issue with a completion criterion, is built on its own branch and reaches \texttt{main} through a
+pull request that passes the automated checks (Section~\ref{sec:tools}). Decisions that would be
+expensive to reverse, or that depart from the proposal, are recorded as architecture decision
+records (ADRs) in \texttt{docs/decisions/}; seven exist by 20 November 2026. A weekly note in
+\texttt{docs/weekly/} records what was done, what was demonstrated, the problems met, the limits
+of the work and the questions for the advisor.
+
+The advisor is met on Fridays. Meetings took place on 23 October and 20 November 2026; the three
+in between did not, and the weekly notes and questions were sent by e-mail instead. So that the
+work would not wait for the answers, the open questions were decided as proposed and recorded in
+ADR 0006 together with the cost of reversing each; at the meeting of 20 November the advisor kept
+all of them and changed one plan, the timing of the model (Section~\ref{sec:ai-design}).
 
 \section{Schedule}
-\todo{Work packages WP1--WP12 against weeks (ROADMAP.md); planned vs actual.}
+Table~\ref{tab:schedule} compares the fall roadmap with the dates on which the work was merged.
+The work packages of the proposal were front-loaded: everything planned up to week 13 was done
+by week 9, about four weeks ahead.
+
+\begin{table}[ht]
+  \centering
+  \small
+  \caption{Fall plan against the work done (W: course week; dates of the merged pull requests).}
+  \label{tab:schedule}
+  \begin{tabularx}{\textwidth}{@{}l>{\raggedright\arraybackslash}Xll@{}}
+    \toprule
+    Plan & Work & Done & Pull requests \\
+    \midrule
+    W5--W6 & requirements, sources, rule schema, design, ADR 0001--0003 & 29 Oct & up to \#40 \\
+    W7 & database, requirement data, checklist API & 5 Nov & \#42--\#50 \\
+    W8 & buffer; report chapters 1, 2 and 4 & 12 Nov & \#52--\#56, \#82 \\
+    W9 & accounts, application files, encrypted upload (ADR 0004, 0005) & 10 Nov & \#58--\#66 \\
+    W10 & web client in two languages, wizard, checklist, destinations & 12 Nov & \#68--\#74, \#82 \\
+    W11 & application page, consent, upload; tried on a phone & 12 Nov & \#76, \#84 \\
+    W12 & field entry, rule engine & 12 Nov & \#80 \\
+    W13 & findings page, demo files, one-command setup & 20 Nov & \#82, \#94--\#100 \\
+    W14--W17 & report, presentation, usability check, \texttt{v0.1.0} & in progress & \#92 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+The time gained was first used for the report and the evaluation of the demo files. After the
+meeting of 20 November it goes to the model: rendering the demo documents as images, reading
+their fields with a hosted model, and comparing the model with and without the rule engine. The
+remaining fall work is planned so that everything can be handed in by 13 December 2026, because
+the date of the CMPE~491 presentation has not been announced yet; a later date leaves time to
+rehearse and to start on the spring work.
+
+\begin{table}[ht]
+  \centering
+  \small
+  \caption{Remaining fall work after 20 November 2026.}
+  \label{tab:remaining}
+  \begin{tabularx}{\textwidth}{@{}l>{\raggedright\arraybackslash}X@{}}
+    \toprule
+    Week & Work \\
+    \midrule
+    23--29 Nov & ADR 0007; demo documents as images; model client and field extraction with the
+      applicant's confirmation; recorded answers of general chat assistants \\
+    30 Nov -- 6 Dec & comparison of the model with and without the rule engine; hand-compiled
+      checklists; Chapters 6 and 8 \\
+    7 -- 13 Dec & usability check with three people on synthetic documents; Chapters 7 and 9;
+      presentation; release \texttt{v0.1.0} \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
 
 \section{Risks}
-\todo{Source changes, API cost, OCR quality, time; mitigation for each.}
+Table~\ref{tab:risks} lists the main risks with what is done about each.
+
+\begin{table}[ht]
+  \centering
+  \small
+  \caption{Risks and their mitigation.}
+  \label{tab:risks}
+  \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3.6cm}X@{}}
+    \toprule
+    Risk & Mitigation \\
+    \midrule
+    Official requirements change & weekly snapshots with a manifest; requirement sets are
+      versioned, so earlier checks stay explainable; meaningful changes are reviewed before they
+      reach the rules \\
+    A source is silent on a limit & the engine's assumption is marked in the code, the data and
+      the report (ADR 0006) and named as a threat to validity \\
+    Model cost & USD 20 per month with a hard limit in the provider account, logged cost per
+      call, cached results, no real calls in the automated tests (Section~\ref{sec:ai-design}) \\
+    Model reads a field wrongly & the applicant confirms every value before it is stored; the
+      rules decide, not the model \\
+    Personal data leaves Türkiye & only synthetic documents are sent to a model in the fall; a
+      model on the project's own or a Turkish server is planned for spring
+      (Chapter~\ref{ch:ethics}) \\
+    One developer, limited time & weekly increments with tests; the proposal's priority order:
+      simplify source monitoring first, then the assistant, keep the pre-check and the experiments \\
+    Presentation date not yet known & the remaining fall work is planned to finish by 13 December \\
+    Advisor meetings missed & weekly notes by e-mail; open questions decided and recorded with
+      the cost of reversal (ADR 0006) \\
+    \bottomrule
+  \end{tabularx}
+\end{table}

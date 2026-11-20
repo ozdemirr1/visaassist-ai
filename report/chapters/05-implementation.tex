@@ -1,9 +1,10 @@
 \chapter{Implementation}\label{ch:implementation}
 % Fall: what was built, with the key design choices. Spring adds the AI parts.
 
-This chapter describes the system as it stands on 19 November 2026: a backend with 186 automated
-tests and a web client with 39, built in pull requests up to \#90. Everything in it runs without
-an AI model; the applicant enters the fields that extraction will fill in spring.
+This chapter describes the system as it stands on 20 November 2026: a backend with 216 automated
+tests and a web client with 39, built in pull requests up to \#100. Everything described here runs
+without an AI model; the applicant enters the fields. Reading the fields with a model is being
+added (Section~\ref{sec:ai-design}).
 
 \section{Development environment and tools}\label{sec:tools}
 The backend is written in Python 3.12 with FastAPI, Pydantic and SQLAlchemy 2, and stores its
@@ -70,9 +71,10 @@ does nothing; changed files give a new set, and older sets are kept, so a check 
 still show the rules it used.
 
 A snapshot command fetches every official source, stores the content only when its hash differs
-from the last one, and appends every attempt to a manifest. It has run weekly since 23 October.
+from the last one, and appends every attempt to a manifest. It was run on 23 October, 5 November
+and 10 November 2026 (Section~\ref{sec:design-sources}).
 
-\section{Field entry and rule engine}
+\section{Field entry and rule engine}\label{sec:engine}
 For every uploaded document the applicant enters the fields its type defines; the two fields about
 language are asked only where a translation rule of the destination reads them. Values are
 validated against the field type and stored encrypted with the document's key.
@@ -107,7 +109,7 @@ A check can be kept. A kept check stores the state of every rule and where each 
 the compared values, because those are personal data that stay encrypted with their documents;
 the page shows current values by running the check again.
 
-\section{Web client}
+\section{Web client}\label{sec:web}
 The client is one responsive application in Turkish and English; all interface text comes from
 two translation files, and a test fails when their keys differ. It talks to the API on its own
 origin, so the session cookie stays first-party.
@@ -118,30 +120,64 @@ destination, where and when to apply, fingerprints and fees, again with the sour
 After logging in, a three-step wizard creates an application file. The application page
 (Figure~\ref{fig:app-page}) shows the route, the days to the appointment, a readiness ring with
 one segment per document and the dated steps; below it come the document table with the upload
-panel and the rules with their states (Figure~\ref{fig:app-rules}). A findings page groups the
-result into missing documents, problems, rules with missing details and passed rules, each problem
-with the passage of its source, and lists the kept checks with the change since the previous one.
+panel and the rules with their states (Figure~\ref{fig:app-rules}). A findings page (Figure~\ref{fig:app-findings}) groups the result into missing documents, problems,
+rules with missing details and passed rules, each problem with the passage of its source, and
+lists the kept checks with the change since the previous one. The figures show the demo file of
+an employed applicant to the Netherlands with one labelled error applied: the guest name on the
+hotel booking differs from the name in the passport.
 
 \begin{figure}[ht]
   \centering
-  \includegraphics[width=\textwidth]{app-04-web-application.png}
-  \caption{Application page of the running system.}
+  \includegraphics[width=\textwidth]{shot-application.png}
+  \caption{Application page of the running system with the demo file for the Netherlands: route,
+    days to the appointment, readiness ring and steps.}
   \label{fig:app-page}
 \end{figure}
 
 \begin{figure}[ht]
   \centering
-  \includegraphics[width=\textwidth]{app-06-web-rules.png}
-  \caption{Rules with the state of the preliminary check, and the upload panel of the selected
-  document.}
+  \includegraphics[width=\textwidth,height=0.75\textheight,keepaspectratio]{shot-rules.png}
+  \caption{Rules of the same file with the state of the preliminary check; the name rule reports
+    a problem.}
   \label{fig:app-rules}
+\end{figure}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=\textwidth,height=0.8\textheight,keepaspectratio]{shot-findings.png}
+  \caption{Findings page: the problem names the documents, the field and the official passage.}
+  \label{fig:app-findings}
 \end{figure}
 
 The flow was tried on a phone, including a photograph taken with the camera. Three layout
 problems were found and corrected: date fields wider than their card, the page zooming when a
 field was focused, and a document table whose status column needed a sideways scroll.
 
+\section{Demo files and setup}\label{sec:demo}
+Two synthetic application files serve the demonstration and the evaluation of
+Chapter~\ref{ch:evaluation}: an employed applicant to the Netherlands with 14 documents and a
+student to Norway with 9. Every person, number and organisation in them is invented, and their
+titles say SAMPLE. Each file holds field values that satisfy every rule of its destination and
+profile, and a list of labelled errors; an error changes one thing, either removing a document or
+setting one value, and names the finding it must produce. A loader checks every value against the
+field types of the catalogue, so a demo file cannot drift from the data model.
+
+A second command loads the files into the running system as a demo account: one application file
+per demo file, a one-page PDF marked SAMPLE for every document, and the field values entered as an
+applicant would enter them. Labelled errors can be applied on request, so the findings page has
+something to show. Because the command replaces the account's files, it accepts only addresses
+under a reserved example domain.
+
+The whole system starts with one command, \texttt{docker compose --profile app up --build}: the
+database, the API, which updates the tables and loads the requirement data and the demo account
+when it starts, and the web client served by nginx, which forwards \texttt{/api} to the API on
+the same origin. Only the web client's port is published, and only on the local machine
+(\reqid{NFR-07}).
+
 \section{State against the plan}
-The roadmap placed this work in weeks 9 to 13 of the fall semester; it was finished in week 8.
-Two items of the fall plan remain: demo application files with controlled errors, and a setup
-with a single command. The administrator's pages and all AI components belong to spring.
+The roadmap placed this work in weeks 9 to 13 of the fall semester. All of it was finished by
+20 November, in week 9: the demo files and the one-command setup, the last two items of the fall
+plan, were completed in that week. The time gained goes to the change decided on 20 November:
+reading the fields with a model and comparing the model with and without the rule engine
+(Section~\ref{sec:ai-design}). The administrator's pages and the remaining AI components belong
+to spring.

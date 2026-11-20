@@ -1,7 +1,24 @@
 \chapter*{Özet}
 \addcontentsline{toc}{chapter}{Özet}
-% Turkish abstract, if the department template asks for one; otherwise delete this file and its \input.
-\todo{Abstract'ın Türkçe karşılığı.}
+Türkiye'den Schengen kısa süreli vizesine başvuranlar, birden fazla resmî sayfaya dağılmış ve
+ülkeden ülkeye değişen gereksinimlerden yaklaşık on iki belgelik bir dosya hazırlar. Eksik bir
+belge, süresi dolmak üzere olan bir pasaport ya da iki belgede farklı yazılmış bir isim, ödenen
+ücrete ve randevuya mal olabilir. Genel amaçlı yapay zekâ asistanları bu sorulara akıcı cevaplar
+verir; ancak bir gereksinimin hangi resmî cümleden geldiğini, hâlâ geçerli olup olmadığını ya da
+başvuru sahibinin kendi belgelerinin birbiriyle tutarlı olup olmadığını göstermez.
+
+\project{}, resmî gereksinimleri her belge ve kuralın kaynak cümlesini gösterdiği, sürümlenen
+verilere dönüştürür. Başvuru sahibinin gideceği ülke ve durumu için belge listesi oluşturur,
+yüklenen belgeleri şifreli saklar ve belgelerin temel bilgilerini deterministik bir kural motoruyla
+kontrol eder: eksik belgeler, fazla eski belgeler, belgeler arasındaki ve seyahatle olan
+uyuşmazlıklar. Her bulgu kuralı, ilgili belge ve alanları ve resmî kaynağı gösterir.
+
+Güz dönemi prototipi Hollanda ve Norveç'i, çalışan ve öğrenci başvuru sahipleri için kapsar.
+Etiketli 17 hata içeren iki sentetik başvuru dosyasında kural motoru her hatayı ve yalnızca onu
+bulmuş, hatasız dosyalarda hiçbir bulgu vermemiştir. Belgelerdeki bilgileri okuyan bir dil modeli
+sisteme bağlanmaktadır; aynı model kural motoruyla ve kural motoru olmadan karşılaştırılacaktır.
+Bahar döneminde çalışma, etiketli bir sentetik veri setine, insan değerlendiricilerle
+karşılaştırmaya ve resmî sayfaların takibine genişletilecektir.
 
 \noindent\textbf{Anahtar kelimeler:} vize başvurusu, belge doğrulama, kural motoru,
-kaynak destekli üretim, kaynak takibi
+görüntü-dil modeli, kaynağa dayalı bilgi
