@@ -94,6 +94,7 @@ Use only synthetic documents: the prototype is not meant for real personal docum
 | `data/destinations.yaml` | Practical facts of applying to each destination, with sources |
 | `data/demo/` | Synthetic demo application files with labelled errors (SAMPLE) |
 | `docs/` | Requirements, design, decisions (ADR), weekly notes, related work |
+| `docs/standards.md` | Standards and regulations the system applies, and how |
 | `report/` | LaTeX source of the course report |
 
 ## Checks
@@ -109,6 +110,7 @@ Both run in CI on every pull request.
 - [Data model](docs/design/data-model.md) · [Interface design](docs/design/ui-design.md)
 - [Architecture decisions](docs/decisions/) · [Weekly progress notes](docs/weekly/)
 - [Related work](docs/related-work.md) · [How it differs from a general assistant](docs/positioning.md)
+- [Standards and regulations](docs/standards.md) · [Licence](LICENSE) ([ADR 0008](docs/decisions/0008-licence.md))
 
 ## Licence
 All rights reserved; see [LICENSE](LICENSE). The repository is public for academic review.

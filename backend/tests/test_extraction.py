@@ -22,7 +22,7 @@ FIELDS = [
 
 
 class FakeModel:
-    model = "gpt-5.4-mini"
+    model = "gpt-6.1-terra"
 
     def __init__(self, data: dict) -> None:
         self.data = data
@@ -66,7 +66,7 @@ def test_values_are_checked_like_typed_values_and_wrong_ones_dropped() -> None:
     }
     assert result.invalid == ["check_in"]
     assert result.confidence["nights"] == 1.0  # clamped
-    assert result.cost_usd == pytest.approx((2500 * 0.75 + 300 * 4.50) / 1_000_000)
+    assert result.cost_usd == pytest.approx((2500 * 1.00 + 300 * 5.00) / 1_000_000)
     assert "Proof of accommodation" in model.calls[0]["prompt"]
 
 
@@ -77,19 +77,22 @@ def test_a_missing_field_in_the_answer_counts_as_not_read() -> None:
 
 
 def test_prices_cover_dated_snapshots_and_refuse_unknown_models() -> None:
-    assert cost_usd("gpt-5.4-mini-2026-03-05", 1_000_000, 0) == pytest.approx(0.75)
-    assert cost_usd("gpt-5.4", 0, 1_000_000) == pytest.approx(15.0)
+    assert cost_usd("gpt-6.1-terra-2026-10-01", 1_000_000, 0) == pytest.approx(1.00)
+    assert cost_usd("gpt-6.2-sol", 0, 1_000_000) == pytest.approx(10.0)
+    assert cost_usd("gpt-5.4-mini", 1_000_000, 0) == pytest.approx(0.75)
     assert cost_usd("some-other-model", 10, 10) is None
+    # A faster tier is a different model with a higher price, not a snapshot of Sol.
+    assert cost_usd("gpt-6.1-sol-ultrafast", 10, 10) is None
 
 
 def _openai(handler) -> OpenAIClient:
-    return OpenAIClient("test-key", "gpt-5.4-mini", transport=httpx.MockTransport(handler))
+    return OpenAIClient("test-key", "gpt-6.1-terra", transport=httpx.MockTransport(handler))
 
 
 def _completed(text: str) -> dict:
     return {
         "status": "completed",
-        "model": "gpt-5.4-mini-2026-03-05",
+        "model": "gpt-6.1-terra-2026-10-01",
         "output": [{"type": "message", "content": [{"type": "output_text", "text": text}]}],
         "usage": {"input_tokens": 1800, "output_tokens": 240},
     }
@@ -120,7 +123,7 @@ def test_the_openai_client_sends_the_image_and_a_strict_schema() -> None:
         "data:image/jpeg;base64,"
     )
     assert reply.data == {"a": 1} and (reply.input_tokens, reply.output_tokens) == (1800, 240)
-    assert reply.model == "gpt-5.4-mini-2026-03-05"
+    assert reply.model == "gpt-6.1-terra-2026-10-01"
 
 
 def test_a_pdf_is_sent_as_a_file() -> None:
