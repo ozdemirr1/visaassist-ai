@@ -54,6 +54,12 @@ docker compose exec api python -m app.demo.load --list-errors
 docker compose exec api python -m app.demo.load --error E06 --error S04
 ```
 
+Keep `--build` after every pull: the API image carries the migrations, and an older image stops
+with "Can't locate revision" once the database has been upgraded by a newer one. With
+`OPENAI_API_KEY` in `.env` the field form offers **Read from document** (ADR 0007); only the
+synthetic SAMPLE documents may be read. To score the model on all demo images, from `backend/`:
+`uv run python -m app.demo.read_fields` (about USD 0.10 per run with the default model).
+
 The session cookie is Secure: Chrome and Firefox accept it on http://localhost, Safari does not;
 for Safari set `COOKIE_SECURE=false` in `.env`.
 

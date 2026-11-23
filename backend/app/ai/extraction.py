@@ -12,13 +12,17 @@ from app.ai.client import ModelClient
 from app.ai.prices import cost_usd
 from app.rules.values import Value, normalise
 
-PROMPT_VERSION = "extract-v1"
+# extract-v1 (23 Nov 2026): first version. extract-v2: after the development trial of 23 November
+# (report/data/extraction/README.md) the hints for signatures, names with titles and the employer's
+# contact details were made explicit. The measurement uses extract-v2 unchanged.
+PROMPT_VERSION = "extract-v2"
 
 INSTRUCTIONS = (
     "You read one document of a Schengen visa application file and report what is printed on it. "
     "Return the value of every requested field exactly as the document shows it. If a field is not "
     "shown or cannot be read, return null for its value; never guess or infer a value from other "
-    "fields. Write dates as YYYY-MM-DD. Write names as printed, keeping Turkish letters. Give a "
+    "fields. Write dates as YYYY-MM-DD. Write names as printed, keeping Turkish letters, without a "
+    "title such as MR, MRS or Dr. Give a "
     "confidence from 0 to 1 for each value: how sure you are that you read it correctly."
 )
 
@@ -42,7 +46,14 @@ FIELD_HINTS = {
     ),
     "addressed_to_consulate": "true if the letter is addressed to a consulate or embassy",
     "covers_all_schengen": "true if the insurance is valid in all Schengen states",
-    "signed": "true if the document carries a handwritten signature in its signature field",
+    "signed": (
+        "true if the signature field holds a signature (a name or mark written in it, in any "
+        "style); false if the field is empty"
+    ),
+    "employer_contact": (
+        "the employer's name with its address, city, telephone or e-mail as printed, usually in "
+        "the letterhead"
+    ),
     "taken_on": "the date the photograph was taken",
     "pay_month": "the payment date of the salary slip",
 }

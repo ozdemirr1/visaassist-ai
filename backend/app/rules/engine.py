@@ -77,15 +77,19 @@ def add_months(day: date, months: int) -> date:
     raise ValueError(day)
 
 
-def normalise_name(name: str) -> tuple[str, ...]:
-    """Name parts without case, Turkish letters, punctuation or order.
+# Titles that bookings and tickets add to a name ("YILMAZ/AYSE MRS"); they are not part of it.
+_TITLES = frozenset({"mr", "mrs", "ms", "miss", "mstr", "dr", "bay", "bayan"})
 
-    Bookings print `YILMAZ/AYSE`, passports `Ayşe Yılmaz`: both give ("ayse", "yilmaz").
+
+def normalise_name(name: str) -> tuple[str, ...]:
+    """Name parts without case, Turkish letters, punctuation, order or a title.
+
+    Bookings print `YILMAZ/AYSE MRS`, passports `Ayşe Yılmaz`: both give ("ayse", "yilmaz").
     """
     table = str.maketrans("şŞıİğĞüÜöÖçÇâÂîÎûÛ", "sSiIgGuUoOcCaAiIuU")
     plain = name.translate(table).lower().replace("i̇", "i")
     cleaned = "".join(c if c.isalnum() else " " for c in plain)
-    return tuple(sorted(cleaned.split()))
+    return tuple(sorted(part for part in cleaned.split() if part not in _TITLES))
 
 
 def normalise_code(value: str) -> str:
