@@ -227,6 +227,17 @@
     "saved": "Saved",
     "loading": "Loading fields…"
   },
+  "extract": {
+    "lead": "A model can read the document and propose the fields. Use it only with sample documents marked SAMPLE.",
+    "button": "Read from document",
+    "reading": "Reading…",
+    "done_one": "{{model}} filled {{count}} field. Not saved yet: compare each value with the document, then press Save.",
+    "done_other": "{{model}} filled {{count}} fields. Not saved yet: compare each value with the document, then press Save.",
+    "invalid_one": "{{count}} value was not in the expected form and was left empty.",
+    "invalid_other": "{{count}} values were not in the expected form and were left empty.",
+    "read": "from model",
+    "unsure": "model unsure"
+  },
   "check": {
     "kicker": "Preliminary check",
     "status": {

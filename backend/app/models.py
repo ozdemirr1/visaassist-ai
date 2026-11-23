@@ -15,6 +15,7 @@ from sqlalchemy import (
     CheckConstraint,
     Date,
     DateTime,
+    Float,
     ForeignKey,
     ForeignKeyConstraint,
     Index,
@@ -317,3 +318,27 @@ class CheckRun(Base):
     missing_documents: Mapped[list[str]] = mapped_column(ARRAY(Text))
     results: Mapped[list[dict]] = mapped_column(JSONB)
     summary: Mapped[dict] = mapped_column(JSONB)
+
+
+class ModelCall(Base):
+    """One call to a language model, with its tokens and cost (NFR-06, ADR 0007).
+
+    The cost of the current month is the sum of these rows; no field value is stored here.
+    """
+
+    __tablename__ = "model_calls"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("users.id", ondelete="SET NULL"), index=True
+    )
+    purpose: Mapped[str] = mapped_column(String(32))
+    document_type_id: Mapped[str | None] = mapped_column(Text)
+    model: Mapped[str] = mapped_column(Text)
+    prompt_version: Mapped[str] = mapped_column(String(32))
+    input_tokens: Mapped[int] = mapped_column(Integer)
+    output_tokens: Mapped[int] = mapped_column(Integer)
+    cost_usd: Mapped[float | None] = mapped_column(Float)
+    seconds: Mapped[float] = mapped_column(Float)
+    succeeded: Mapped[bool] = mapped_column(Boolean)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)

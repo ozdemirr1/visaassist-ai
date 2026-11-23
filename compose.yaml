@@ -39,6 +39,10 @@ services:
       COOKIE_SECURE: ${COOKIE_SECURE:-true}
       LOAD_DEMO: ${LOAD_DEMO:-true}
       DEMO_PASSWORD: ${DEMO_PASSWORD:-}
+      # Field extraction (ADR 0007); without a key the "Read from document" button is hidden.
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      EXTRACTION_MODEL: ${EXTRACTION_MODEL:-gpt-5.4-mini}
+      MODEL_MONTHLY_BUDGET_USD: ${MODEL_MONTHLY_BUDGET_USD:-20}
     volumes:
       - documents:/app/storage
     # No published port: only the web container talks to the API.
