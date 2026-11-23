@@ -111,4 +111,4 @@ Both run in CI on every pull request.
 - [Related work](docs/related-work.md) · [How it differs from a general assistant](docs/positioning.md)
 
 ## Licence
-No licence has been chosen yet.
+All rights reserved; see [LICENSE](LICENSE). The repository is public for academic review.
