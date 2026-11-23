@@ -41,7 +41,7 @@ services:
       DEMO_PASSWORD: ${DEMO_PASSWORD:-}
       # Field extraction (ADR 0007); without a key the "Read from document" button is hidden.
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
-      EXTRACTION_MODEL: ${EXTRACTION_MODEL:-gpt-5.4-mini}
+      EXTRACTION_MODEL: ${EXTRACTION_MODEL:-gpt-6.1-terra}
       MODEL_MONTHLY_BUDGET_USD: ${MODEL_MONTHLY_BUDGET_USD:-20}
     volumes:
       - documents:/app/storage

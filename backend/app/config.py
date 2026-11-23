@@ -32,7 +32,7 @@ class Settings(BaseSettings):
     # prototype only synthetic documents marked SAMPLE are sent to the model.
     openai_api_key: str | None = None
     openai_base_url: str = "https://api.openai.com/v1"
-    extraction_model: str = "gpt-5.4-mini"
+    extraction_model: str = "gpt-6.1-terra"
     model_monthly_budget_usd: float = 20.0  # NFR-06; calls stop when the month's cost reaches it
 
 

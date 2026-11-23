@@ -28,14 +28,14 @@ assistant follow in the spring (Figure~\ref{fig:architecture}).
     Component & Technology & Status \\
     \midrule
     API & FastAPI, Pydantic, Python 3.12 & built \\
-    Database & PostgreSQL 17 with pgvector, SQLAlchemy 2, Alembic (6 migrations) & built \\
+    Database & PostgreSQL 17 with pgvector, SQLAlchemy 2, Alembic (7 migrations) & built \\
     Requirement data & YAML files, schema validation, seed command & built \\
     Source snapshots & snapshot command, SHA-256 manifest & built \\
     Accounts, files, upload & Argon2id, session cookie, AES-256-GCM per document & built \\
     Web client & React, TypeScript, Vite, TanStack Query, Tailwind CSS & built \\
     Rule engine & Python, the twelve check kinds of Table~\ref{tab:rule-kinds} & built \\
     Demo files and setup & synthetic files, Docker Compose, nginx & built \\
-    Field extraction & OpenAI model behind a provider-neutral client (ADR 0007) & in progress \\
+    Field extraction & OpenAI model behind a provider-neutral client (ADR 0007) & built \\
     Job queue and live updates & Celery, Redis, WebSocket & spring \\
     Source review, notifications & text diff, administrator approval & spring \\
     Assistant & retrieval over source passages, pgvector & spring \\
@@ -179,13 +179,17 @@ sent, from the demo files of Chapter~\ref{ch:evaluation}; no real personal docum
 model provider. Masking the fields a check does not need before an external call
 (\reqid{NFR-01}) becomes necessary once real documents are allowed, and is spring work.
 
-\paragraph{Cost.} Spending is limited to USD 20 per month (\reqid{NFR-06}): a hard limit in the
-provider account, the token count and cost of every call logged, results cached per document, and
-no real model call in the automated tests. A cheaper model is used during development and a
-stronger one for the measurement and the presentation. With the provider's list prices of
-November 2026 and about 2,500 input and 1,500 output tokens per document, the development, three
-runs of the comparison of Section~\ref{sec:model-comparison} and the presentation are estimated
-at USD 15--18. The estimate is replaced by measured values after the first runs.
+\paragraph{Cost.} Spending is limited to USD 20 per month (\reqid{NFR-06}) in four ways: a
+prepaid credit of USD 20 without automatic recharge, a monthly hard spend limit of USD 20 in the
+provider account, a separate provider project with its own key, and the API's own log of every
+call with its tokens and cost, which stops calls when the month's cost reaches the budget. The
+automated tests make no real model call. Caching the result per document is planned. The models
+were fixed on 23 November 2026: \texttt{gpt-6.1-terra} for development (USD 1.00 per million input
+and 5.00 per million output tokens) and \texttt{gpt-6.2-sol} for the measurement and the
+presentation (USD 2.00 and 10.00). With about 2,500 input and up to 1,500 output tokens per
+document, one document costs at most about USD 0.01 with Terra and 0.02 with Sol; three runs of
+the comparison of Section~\ref{sec:model-comparison} on the 37 demo images stay below USD 3. The
+estimate is replaced by measured values after the first runs.
 
 \paragraph{Spring.} Document classification, OCR as a fallback, confidence per field with
 routing to the applicant, the assistant that answers from source passages, and summaries of

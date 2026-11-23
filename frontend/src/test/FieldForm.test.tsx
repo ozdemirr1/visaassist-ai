@@ -89,7 +89,7 @@ describe("reading the document with a model", () => {
       { id: "blank_pages", type: "int", title: "Boş vize sayfası", value: null, confidence: 0.2 },
     ],
     invalid: ["blank_pages"],
-    model: "gpt-5.4-mini",
+    model: "gpt-6.1-terra",
     seconds: 2.1,
     cost_usd: 0.002,
   };
@@ -98,7 +98,7 @@ describe("reading the document with a model", () => {
     const fetchMock = vi.fn((url: unknown, _init?: unknown) => {
       const json =
         url === "/api/extraction/status"
-          ? { available, model: available ? "gpt-5.4-mini" : null }
+          ? { available, model: available ? "gpt-6.1-terra" : null }
           : String(url).includes("/extract")
             ? extraction
             : body;
@@ -113,7 +113,7 @@ describe("reading the document with a model", () => {
     const fetchMock = stubRoutes(true);
     renderForm();
     fireEvent.click(await screen.findByRole("button", { name: "Belgeden oku" }));
-    expect(await screen.findByRole("status")).toHaveTextContent("gpt-5.4-mini 3 alanı doldurdu");
+    expect(await screen.findByRole("status")).toHaveTextContent("gpt-6.1-terra 3 alanı doldurdu");
     expect(screen.getByRole("status")).toHaveTextContent("1 değer beklenen biçimde değildi");
     expect(screen.getByLabelText(/Teminat başlangıcı/)).toHaveValue("2027-04-10");
     expect(screen.getByLabelText(/Tedavi teminat tutarı/)).toHaveValue(30000);

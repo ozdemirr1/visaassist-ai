@@ -54,3 +54,19 @@ before the remaining report chapters, because the comparison is the main result 
 - Synthetic document images are needed: the SAMPLE PDFs of the demo loader carry only text.
 - The report's Chapters 4 to 6 and 8 describe the model, the data sent to it and the comparison.
 - Every model call costs money; the tests must not make real calls.
+
+## Amendment, 23 November 2026: the models
+After FR-13 was built (#110) the models were fixed from the provider's model list and price page
+of 23 November 2026 (standard tier, USD per million input / output tokens):
+
+- development and the default of the API: `gpt-6.1-terra` (1.00 / 5.00), which the provider
+  describes as fast and efficient for visual reasoning;
+- measurement (Section 6.2) and the presentation: `gpt-6.2-sol` (2.00 / 10.00).
+
+`gpt-5.4-mini` and `gpt-5.4`, named above as examples, are still available and stay in the price
+table. With about 2,500 input and 300 to 1,500 output tokens per document, one document costs
+about USD 0.004 to 0.01 with Terra and 0.008 to 0.02 with Sol, so three runs of the comparison on
+the 37 demo images stay below USD 3. The limits in force: a USD 20 prepaid credit without
+automatic recharge, a USD 20 monthly hard spend limit in the provider account, a separate
+provider project with its own key, and the API's own stop at USD 20 per month. Caching results
+per document (point 4) is not built yet.

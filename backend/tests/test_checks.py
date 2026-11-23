@@ -389,7 +389,7 @@ def test_kept_runs_belong_to_the_owner_and_go_with_the_file(
 
 
 class FakeModel:
-    def __init__(self, model: str = "gpt-5.4-mini", fail: bool = False) -> None:
+    def __init__(self, model: str = "gpt-6.1-terra", fail: bool = False) -> None:
         self.model = model
         self.fail = fail
         self.seen: list[dict] = []
@@ -431,7 +431,7 @@ def test_without_a_model_the_endpoint_says_so(ayse, budget) -> None:
 def test_the_values_are_proposed_checked_and_not_stored(ayse, session, budget) -> None:
     model = FakeModel()
     use(ayse, model)
-    assert ayse.get("/extraction/status").json() == {"available": True, "model": "gpt-5.4-mini"}
+    assert ayse.get("/extraction/status").json() == {"available": True, "model": "gpt-6.1-terra"}
     document = upload(ayse, new_file(ayse))
     response = ayse.post(f"/documents/{document}/extract?lang=en")
     assert response.status_code == 200, response.text
@@ -441,7 +441,7 @@ def test_the_values_are_proposed_checked_and_not_stored(ayse, session, budget) -
     assert fields["holder_name"]["title"] == "Account holder"
     assert fields["period_start"]["value"] == "2026-11-25"
     assert fields["period_end"]["value"] is None and body["invalid"] == ["period_end"]
-    assert body["cost_usd"] == pytest.approx((2000 * 0.75 + 200 * 4.50) / 1_000_000)
+    assert body["cost_usd"] == pytest.approx((2000 * 1.00 + 200 * 5.00) / 1_000_000)
     assert model.seen[0]["mime_type"] == "application/pdf"
     assert model.seen[0]["content"].startswith(b"%PDF-")  # decrypted before it is sent
     assert values_of(session, document) == []  # the applicant saves them, not the model

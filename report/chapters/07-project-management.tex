@@ -5,7 +5,7 @@ The project is developed by one person in weekly increments. Every piece of work
 issue with a completion criterion, is built on its own branch and reaches \texttt{main} through a
 pull request that passes the automated checks (Section~\ref{sec:tools}). Decisions that would be
 expensive to reverse, or that depart from the proposal, are recorded as architecture decision
-records (ADRs) in \texttt{docs/decisions/}; seven exist by 20 November 2026. A weekly note in
+records (ADRs) in \texttt{docs/decisions/}; eight exist by 23 November 2026. A weekly note in
 \texttt{docs/weekly/} records what was done, what was demonstrated, the problems met, the limits
 of the work and the questions for the advisor.
 
@@ -85,8 +85,8 @@ Table~\ref{tab:risks} lists the main risks with what is done about each.
       reach the rules \\
     A source is silent on a limit & the engine's assumption is marked in the code, the data and
       the report (ADR 0006) and named as a threat to validity \\
-    Model cost & USD 20 per month with a hard limit in the provider account, logged cost per
-      call, cached results, no real calls in the automated tests (Section~\ref{sec:ai-design}) \\
+    Model cost & USD 20 per month: prepaid credit and a hard limit in the provider account, logged cost per
+      call, calls stopped at the budget, no real calls in the automated tests (Section~\ref{sec:ai-design}) \\
     Model reads a field wrongly & the applicant confirms every value before it is stored; the
       rules decide, not the model \\
     Personal data leaves Türkiye & only synthetic documents are sent to a model in the fall; a
