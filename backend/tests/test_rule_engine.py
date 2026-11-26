@@ -370,3 +370,9 @@ def test_names_match_across_case_turkish_letters_and_order(written: str) -> None
 
 def test_a_missing_middle_name_is_a_difference() -> None:
     assert normalise_name("Ayşe Nur Yılmaz") != normalise_name("Ayşe Yılmaz")
+
+
+def test_a_title_on_a_booking_is_not_part_of_the_name() -> None:
+    assert normalise_name("YILMAZ/AYSE MRS") == normalise_name("Ayşe Yılmaz")
+    assert normalise_name("ORNEK/DENIZ MR") == ("deniz", "ornek")
+    assert normalise_name("Dr. Can Örnek") == ("can", "ornek")
