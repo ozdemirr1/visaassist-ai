@@ -1,25 +1,26 @@
 \chapter*{Abstract}
 \addcontentsline{toc}{chapter}{Abstract}
-% 150--250 words. Update when the model comparison of Chapter 6 is measured.
+% 150--250 words.
 Applicants for a Schengen short-stay visa in Türkiye prepare a file of about a dozen documents
 from requirements that are spread over several official pages and differ between destination
-states. A missing document, an expired passport or a name that differs between two documents can
-cost the fee and the appointment. General-purpose AI assistants answer such questions fluently,
+states. General-purpose AI assistants answer such questions fluently,
 but they do not show which official sentence a requirement comes from, whether it is still in
 force, or whether the applicant's own documents agree with each other.
 
 \project{} turns the official requirements into versioned data in which every checklist item and
 every rule cites its source passage. It builds a checklist for the applicant's destination and
-profile, stores the uploaded documents encrypted, and checks their key fields with a deterministic
+profile and checks their key fields with a deterministic
 rule engine: missing documents, documents that are too old, and disagreements between documents
 and with the trip. Every finding names the rule, the documents and fields involved, and the
 official source.
 
 The fall prototype covers the Netherlands and Norway for employed and student applicants. On two
 synthetic application files with 17 labelled errors, the rule engine reports every error and
-nothing else, and gives no finding on the error-free files. A language model that reads the fields
-from the documents is being connected, and the same model will be compared with and without the
-rule engine. The spring semester extends this to a labelled synthetic data set, a comparison with
+nothing else, and gives no finding on the error-free files. A language model now reads the fields
+from the document images for the applicant to confirm. Given the same images, the same model
+alone found 16 of the 17 errors but raised 6.5 further points per file, most of them asking for
+more than the official sources require; with the rule engine it found all 17 and raised none. The
+spring semester extends this to a labelled synthetic data set, a comparison with
 human reviewers and the monitoring of official pages.
 
 \noindent\textbf{Keywords:} visa application, document verification, rule engine,

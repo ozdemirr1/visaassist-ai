@@ -28,3 +28,13 @@ regulations the system applies are listed in `docs/standards.md` (added in the s
 The review works as before. Reuse by others needs the author's permission. If the TTO answers that
 the university holds rights, or the author later chooses an open-source licence, this ADR is
 superseded by a new one and the `LICENSE` file is replaced in the same pull request.
+
+## Amendment, 26 November 2026: the TTO's answer
+The university's technology transfer office answered on 26 November 2026: under the Law on
+Intellectual and Artistic Works (FSEK, Law No. 5846) a computer program is a work whose rights
+belong to its author, so the university claims no rights to the code; the university's claims and
+the duty to notify apply to inventions, and a program alone is not an invention. For a later
+commercial use the office advised keeping the code confidential. The author decided to keep the
+repository public for the course review, under "all rights reserved", accepting that public code
+can be read and copied in breach of the licence; the decision can be revisited before any
+commercial step, and the office offered to help with the road map then.
