@@ -90,20 +90,64 @@ without looking at the requirement files, and compared item by item with the gen
 items missing from either side, items that differ in how they are submitted, and items whose
 citation does not support them. This comparison is made in the week of 30 November 2026.
 
+\subsection{Reading the fields of the documents}\label{sec:extraction-eval}
+Before the comparison, the model's reading was scored alone on the 23 error-free document images
+(\texttt{app.demo.read\_fields}): every value the demo file states is compared with the value read,
+as the rule engine would compare it. With \texttt{gpt-6.1-terra} the first prompt
+(\texttt{extract-v1}) read 83 of 90 values correctly; the seven misses were four signatures read as
+absent, two booking names that kept the title \emph{MR}, and one employer's contact details left
+empty. The prompt was changed once for these three cases and then frozen (\texttt{extract-v2}); it
+read 90 of 90. Because the change was made on the same images, the 90 of 90 is a development
+result, not a measurement; both runs and the change are kept in \texttt{report/data/extraction/}.
+
 \subsection{The same model with and without the rule engine}\label{sec:model-comparison}
-Suggested by the advisor on 20 November 2026, this comparison is the fall version of AS1. Both
-sides receive the same document images rendered from the demo files, with every error variant:
+Suggested by the advisor on 20 November 2026, this comparison is the fall version of AS1. It was run
+on 26 November 2026 with \texttt{gpt-6.2-sol}, three times, on the 19 cases of the demo files: each
+file without errors and each of the 17 labelled errors applied alone. Both sides receive the same
+rendered SAMPLE images (\texttt{app.demo.compare}; results in \texttt{report/data/comparison/}).
 \begin{itemize}
-  \item \textbf{Model alone.} The model receives all documents of a file with the trip and the
-    destination and is asked which documents are missing and which disagree with each other or
-    with the requirements.
-  \item \textbf{Model with the rule engine.} The model reads the fields of each document, and the
-    rule engine of Section~\ref{sec:engine} decides.
+  \item \textbf{Model alone.} One call per case with all document images, the destination, purpose,
+    profile and dates, and the list of document types to name in the answer; no rule, checklist or
+    source text. It returns every problem it sees, each tied to a document type.
+  \item \textbf{Model with the rule engine.} The model reads the fields of each document with the
+    frozen \texttt{extract-v2} prompt, and the rule engine of Section~\ref{sec:engine} decides.
 \end{itemize}
-Both are scored as in Section~\ref{sec:demo-eval}: labelled errors found, false alarms on the
-error-free files and the error variants, time and cost per file. Each run is repeated three times
-because model answers vary, and the model version and date are reported. The comparison is made
-in the week of 30 November 2026.
+An error counts as found by the rule engine when its labelled rule fails with its labelled code. For
+the model alone an answer was first counted as a hit when it named the affected document; every
+such hit was then read, and a hit whose text was about something else was not counted.
+
+\begin{table}[ht]
+  \centering
+  \caption{The same model with and without the rule engine, three runs on 19 cases
+    (\texttt{gpt-6.2-sol}, 26 November 2026). Cost and time per application file, with every
+    document of the file read.}\label{tab:model-comparison}
+  \small
+  \begin{tabular}{p{0.5\textwidth}cc}
+    \toprule
+    & Model alone & Model + rule engine \\
+    \midrule
+    Labelled errors found (of 17), per run & 16, 16, 16 & 17, 17, 17 \\
+    Further findings on the 2 error-free files, per run & 15, 16, 17 & 0, 0, 0 \\
+    Further findings in the 17 error cases, per run & 115, 107, 100 & 0, 0, 0 \\
+    Cost per file (list price) & USD 0.08 & USD 0.09 \\
+    Time per file & 21 s & 28 s \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Both found every labelled error except one: the model alone missed S01, the Norwegian bank
+statement without a translation, in all three runs. The translation duty is a rule of the
+destination, not general knowledge, and the model alone was not told it. The larger difference is
+in the further findings: the model alone raised on average 6.5 points per file that no label names, the
+rule engine none. Reading them shows that they are mostly not mistakes. One was wrong (a correct
+check digit of the passport's machine-readable zone reported as wrong); most asked for more than
+the official sources require, such as a bank officer's signature (102 of 370) or the employer's full
+address (54); and many pointed at simplifications of the synthetic documents, such as translations
+that give only the name and the issue date (79) or partial SGK records. For an applicant every such
+point is work to check, and the system cannot say which of them a consulate would raise; the rule
+engine reports only what a cited source requires. Its silence on the simplified documents is
+equally a limit: it does not see what no rule describes. The rule engine side costs a little more
+and takes longer because each document is read in its own call; the calls could run in parallel.
 
 \subsection{A general chat assistant}\label{sec:chat-eval}
 The same question about the documents for one pilot profile is put to two general chat assistants
@@ -127,6 +171,11 @@ Norway. This also provides the evidence the advisor asked for behind the claims 
     (ADR 0006). A consulate may apply these differently.
   \item \textbf{One author.} Requirements, rules, labels and evaluation were prepared by the same
     person; the independent checklist and the human reviewers of the spring reduce this.
+  \item \textbf{Prompt adjusted on the evaluation images.} The reading prompt was changed once
+    after a development run on the 23 error-free images that the comparison also uses
+    (Section~\ref{sec:extraction-eval}); the 14 images with an error were not used for it.
+  \item \textbf{Lenient scoring of the model alone.} A hit of the model alone was accepted when its
+    text described the labelled error, read by the author; a second reader would make this firmer.
   \item \textbf{Changing assistants.} General assistants and hosted models change over time; a
     result holds for the version and date reported.
 \end{itemize}
