@@ -84,6 +84,18 @@ comparison with a checklist compiled independently from the sources
 errors in two files are also too few for rates: the result is a functional check, not a measured
 accuracy.
 
+\subsection{Automated accessibility check}\label{sec:a11y-eval}
+On 28 November 2026 the accessibility audit of Lighthouse 13.5 (Chrome DevTools) was run on three
+pages of the running system, each in its desktop and its mobile setting: the application page
+with its documents, the findings page with one finding, and the application page of a new account
+that still shows the consent card. All six runs scored 100: none of the automated checks failed
+(24 to 27 passed per page, the rest did not apply), so there was nothing to correct. An automated
+check covers only part of WCAG 2.2. Lighthouse itself lists ten checks it leaves to a person,
+among them a logical tab order, visible and managed focus, no focus traps and labels on custom
+controls; keyboard-only use, a screen reader and contrast in every state (hover, focus,
+disabled) are also untested. The system is therefore not claimed to conform to WCAG 2.2 AA; that
+audit is planned for the spring. The reports are kept in \texttt{report/data/accessibility/}.
+
 \subsection{Generated checklist against a hand-compiled checklist}\label{sec:checklist-eval}
 For each pilot destination and profile, a checklist is compiled by hand from the official pages,
 without looking at the requirement files, and compared item by item with the generated one:
